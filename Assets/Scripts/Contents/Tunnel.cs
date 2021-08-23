@@ -6,6 +6,8 @@ public class Tunnel : MonoBehaviour
 {
 	public Transform interiorPrefab; // Temp
 
+	[Header("Tunnel Shape")]
+
 	public float tunnelRadius;
 	public int tunnelSegmentCount;
 
@@ -54,6 +56,10 @@ public class Tunnel : MonoBehaviour
 	private Vector3[] vertices;
 	private int[] triangles;
 
+	[Header("Tunnel noise")]
+	public float noiseStrength;
+
+	[Header("Tunnel Item Generator")]
 	public ItemGenerator[] generators;
 	public ItemGenerator[] itemGenerator;
 
@@ -132,53 +138,105 @@ public class Tunnel : MonoBehaviour
 	}
 
 
-	private void SetVertices()
-	{
-		vertices = new Vector3[tunnelSegmentCount * curveSegmentCount * 4];
+    //private void SetVertices()
+    //{
+    //	vertices = new Vector3[tunnelSegmentCount * curveSegmentCount * 4];
+    //	float uStep = ringDistance / curveRadius;
+    //	curveAngle = uStep * curveSegmentCount * (360f / (2f * Mathf.PI));
+    //	CreateFirstQuadRing(uStep);
+    //	int iDelta = tunnelSegmentCount * 4;
+    //	for (int u = 2, i = iDelta; u <= curveSegmentCount; u++, i += iDelta)
+    //	{
+    //		CreateQuadRing(u * uStep, i);
+    //	}
+    //	mesh.vertices = vertices;
+    //}
+
+    //private void CreateFirstQuadRing(float u)
+    //{
+    //	float vStep = (2f * Mathf.PI) / tunnelSegmentCount;
+
+    //	Vector3 vertexA = GetPointOnTorus(0f, 0f, tunnelRadius);
+    //	Vector3 vertexB = GetPointOnTorus(u, 0f, tunnelRadius);
+    //	for (int v = 1, i = 0; v <= tunnelSegmentCount; v++, i += 4)
+    //	{
+    //		vertices[i] = vertexA;
+    //		vertices[i + 1] = vertexA = GetPointOnTorus(0f, v * vStep, tunnelRadius);
+    //		vertices[i + 2] = vertexB;
+    //		vertices[i + 3] = vertexB = GetPointOnTorus(u, v * vStep, tunnelRadius);
+
+    //	}
+    //}
+
+    //private void CreateQuadRing(float u, int i)
+    //{
+    //	float vStep = (2f * Mathf.PI) / tunnelSegmentCount;
+    //	int ringOffset = tunnelSegmentCount * 4;
+
+    //	Vector3 vertex = GetPointOnTorus(u, 0f, tunnelRadius);
+    //	for (int v = 1; v <= tunnelSegmentCount; v++, i += 4)
+    //	{
+    //		vertices[i] = vertices[i - ringOffset + 2];
+    //		vertices[i + 1] = vertices[i - ringOffset + 3];
+    //		vertices[i + 2] = vertex;
+    //		vertices[i + 3] = vertex = GetPointOnTorus(u, v * vStep, tunnelRadius);
+
+    //	}
+    //}
+
+    private void SetVertices()
+    {
+        vertices = new Vector3[tunnelSegmentCount * curveSegmentCount * 4];
 		float uStep = ringDistance / curveRadius;
 		curveAngle = uStep * curveSegmentCount * (360f / (2f * Mathf.PI));
-		CreateFirstQuadRing(uStep);
-		int iDelta = tunnelSegmentCount * 4;
-		for (int u = 2, i = iDelta; u <= curveSegmentCount; u++, i += iDelta)
-		{
-			CreateQuadRing(u * uStep, i);
-		}
-		mesh.vertices = vertices;
-	}
+        int iDelta = tunnelSegmentCount * 4;
 
-	private void CreateFirstQuadRing(float u)
-	{
-		float vStep = (2f * Mathf.PI) / tunnelSegmentCount;
+        for (int u = 1, i = 0; u <= curveSegmentCount; u++, i += iDelta)
+        {
+            CreateQuadRing(u, i);
+        }
 
-		Vector3 vertexA = GetPointOnTorus(0f, 0f);
-		Vector3 vertexB = GetPointOnTorus(u, 0f);
-		for (int v = 1, i = 0; v <= tunnelSegmentCount; v++, i += 4)
-		{
-			vertices[i] = vertexA;
-			vertices[i + 1] = vertexA = GetPointOnTorus(0f, v * vStep);
-			vertices[i + 2] = vertexB;
-			vertices[i + 3] = vertexB = GetPointOnTorus(u, v * vStep);
+        mesh.vertices = vertices;
+    }
 
-		}
-	}
-
-	private void CreateQuadRing(float u, int i)
-	{
-		float vStep = (2f * Mathf.PI) / tunnelSegmentCount;
+    private void CreateQuadRing(float u, int i)
+    {
+        float vStep = (2f * Mathf.PI) / tunnelSegmentCount;
+		float uStep = ringDistance / curveRadius;
 		int ringOffset = tunnelSegmentCount * 4;
 
-		Vector3 vertex = GetPointOnTorus(u, 0f);
-		for (int v = 1; v <= tunnelSegmentCount; v++, i += 4)
-		{
-			vertices[i] = vertices[i - ringOffset + 2];
-			vertices[i + 1] = vertices[i - ringOffset + 3];
-			vertices[i + 2] = vertex;
-			vertices[i + 3] = vertex = GetPointOnTorus(u, v * vStep);
+        Vector3 vertex = GetPointOnTorus( u * uStep, 0f, GetTunnelRadius(u == curveSegmentCount ? uStep : u * uStep, 0));
+		Vector3 vertexB = GetPointOnTorus(0, 0f, GetTunnelRadius(0, 0));
+        for (int v = 1; v <= tunnelSegmentCount; v++, i += 4)
+        {
 
-		}
-	}
+			// u - 1
+			if (i >= ringOffset)
+			{
+				vertices[i] = vertices[i - ringOffset + 2];
+				vertices[i + 1] = vertices[i - ringOffset + 3];
+			}
+            else
+            {
+				vertices[i] = vertexB;
+				vertices[i + 1] = vertexB = GetPointOnTorus(0, v * vStep, GetTunnelRadius(0, v== tunnelSegmentCount? vStep :  v * vStep));
+			}
 
-	private void SetTriangles()
+			// u
+            vertices[i + 2] = vertex;
+            vertices[i + 3] = vertex = GetPointOnTorus(u * uStep, v * vStep, GetTunnelRadius(u == curveSegmentCount ? uStep : u * uStep, v == tunnelSegmentCount ? vStep : v * vStep));
+
+        }
+    }
+
+	private float GetTunnelRadius(float u, float v)
+    {
+
+
+		return tunnelRadius + Mathf.PerlinNoise(u, v) * noiseStrength;
+    }
+
+    private void SetTriangles()
 	{
 		triangles = new int[tunnelSegmentCount * curveSegmentCount * 6];
 		for (int t = 0, i = 0; t < triangles.Length; t += 6, i += 4)
@@ -228,27 +286,28 @@ public class Tunnel : MonoBehaviour
 		return Vector3.Cross(sideAB, sideAC).normalized;
 	}
 
-	private Vector3 GetPointOnTorus(float u, float v)
+	public Vector3 GetPointOnTorus(float u, float v, float cylinderRadius)
 	{
 		Vector3 p;
-		float r = (curveRadius + tunnelRadius * Mathf.Cos(v));
+		float r = (curveRadius + cylinderRadius * Mathf.Cos(v));
 		p.x = r * Mathf.Sin(u);
 		p.y = r * Mathf.Cos(u);
-		p.z = tunnelRadius * Mathf.Sin(v);
+		p.z = cylinderRadius * Mathf.Sin(v);
 		return p;
 	}
-	public void AlignWith(Tunnel pipe)
+
+	public void AlignWith(Tunnel tunnel)
 	{
 		relativeRotation =
 		Random.Range(0, curveSegmentCount) * 360f / tunnelSegmentCount;
 
-		transform.SetParent(pipe.transform, false);
+		transform.SetParent(tunnel.transform, false);
 		transform.localPosition = Vector3.zero;
-		transform.localRotation = Quaternion.Euler(0f, 0f, -pipe.curveAngle);
-		transform.Translate(0f, pipe.curveRadius, 0f);
+		transform.localRotation = Quaternion.Euler(0f, 0f, -tunnel.curveAngle);
+		transform.Translate(0f, tunnel.curveRadius, 0f);
 		transform.Rotate(relativeRotation, 0f, 0f);
 		transform.Translate(0f, -curveRadius, 0f);
-		transform.SetParent(pipe.transform.parent);
+		transform.SetParent(tunnel.transform.parent);
 		transform.localScale = Vector3.one;
 	}
 }

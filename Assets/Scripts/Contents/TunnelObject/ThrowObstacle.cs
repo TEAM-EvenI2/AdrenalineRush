@@ -6,9 +6,9 @@ public class ThrowObstacle : TunnelItem
 {
     public SimpleAnimationMove sam;
 
-	public override void Setting(Tunnel pipe, float curveRotation, float ringRotation)
+	public override void Setting(Tunnel pipe, float curveRotation, float ringRotation, float distanceFromCenter)
     {
-        base.Setting(pipe, curveRotation, ringRotation);
+        base.Setting(pipe, curveRotation, ringRotation, distanceFromCenter);
 
         float deltaToRotation = 360f / (2f * Mathf.PI * pipe.CurveRadius);
 

@@ -11,13 +11,12 @@ public class TunnelItem : MonoBehaviour
 		rotater = transform.GetChild(0);
 	}
 
-	public virtual void Setting(Tunnel tunnel, float curveRotation, float ringRotation)
+	public virtual void Setting(Tunnel tunnel, float curveRotation, float ringRotation, float distanceFromCenter)
 	{
 		transform.SetParent(tunnel.transform, false);
-		transform.localRotation = Quaternion.Euler(0f, 0f, -curveRotation);
-		rotater.localPosition = new Vector3(0f, tunnel.CurveRadius);
-		rotater.localRotation = Quaternion.Euler(ringRotation, 0f, 0f);
+        transform.localRotation = Quaternion.Euler(0f, 0f, -curveRotation);
+        rotater.localRotation = Quaternion.Euler(ringRotation, 0f, 0f); 
 
-		// TODO : tunnel의 반지름 크기에 따라서 obstacle 위치, 크기 조정
+        transform.localPosition = tunnel.GetPointOnTorus(curveRotation * Mathf.Deg2Rad, ringRotation * Mathf.Deg2Rad, distanceFromCenter);
 	}
 }
