@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Tunnel
-  m_Shader: {fileID: -6465566751694194690, guid: 83c26daa458037a41afcf97d918cec1f, type: 3}
+  m_Name: TestMat
+  m_Shader: {fileID: -6465566751694194690, guid: 652b8d3e410378f4c9c923ebaa9abdc2, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -59,8 +59,8 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _SampleTexture2D_385f3d106eab48fa81c87d8d3302024c_Texture_1:
-        m_Texture: {fileID: 2800000, guid: 5e05e4cef96c9bc438075794617c9233, type: 3}
+    - _SampleTexture2D_0f9e8324bc314988a9a748af412dadc4_Texture_1:
+        m_Texture: {fileID: 10309, guid: 0000000000000000f000000000000000, type: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
@@ -107,13 +107,14 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - Color_7dc7148223e54e8b86722f523a08ac1c: {r: 0.6509434, g: 0.11974897, b: 0.11974897, a: 0}
+    - Color_36e1fc07bc4249ad858796c2403f2631: {r: 0.9372549, g: 0.21411534, b: 0, a: 0.57254905}
+    - Color_619480de482a4c95a720c3a1474616f5: {r: 0.24528301, g: 0, b: 0, a: 0}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
---- !u!114 &4919624578576658068
+--- !u!114 &1618032848322157177
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

@@ -845,7 +845,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 60
+  field of view: 90
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -878,6 +878,7 @@ MonoBehaviour:
   target: {fileID: 1548857776}
   rotater: {fileID: 1794690116}
   distance: 1
+  player: {fileID: 1051754835}
 --- !u!114 &998490253
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6292,7 +6293,7 @@ Transform:
   m_GameObject: {fileID: 1505778899}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_LocalScale: {x: 0.4532036, y: 0.4532036, z: 0.4532036}
   m_Children: []
   m_Father: {fileID: 1548857776}
   m_RootOrder: 0
@@ -6316,7 +6317,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 04ef6f3057648a949b6571f330bc886c, type: 2}
+  - {fileID: 2100000, guid: 3c9d6c373f5bb844c829e432aa41147b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -6345,7 +6346,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1505778899}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 2832280311799026054, guid: d6cd9279ca03fdf468c1d23ffa724807, type: 3}
 --- !u!1 &1548857775
 GameObject:
   m_ObjectHideFlags: 0
@@ -6422,8 +6423,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.1, y: 0.1, z: 0.1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.1, y: 0.06947349, z: 0.1}
+  m_Center: {x: 0, y: -0.015263252, z: 0}
 --- !u!1 &1675432998
 GameObject:
   m_ObjectHideFlags: 0
