@@ -15,13 +15,13 @@ public class Avatar : MonoBehaviour
 
 	private void OnTriggerEnter(Collider collider)
 	{
-		if(collider.tag.Equals("Obstacle"))
-		player.Die();
-		else if (collider.tag.Equals("Item"))
-        {
+		// if(collider.tag.Equals("Obstacle"))
+		// player.Die();
+		// else if (collider.tag.Equals("Item"))
+        // {
 
-			player.earnedScore += collider.GetComponentInParent<ScoreItem>().point;
-			Destroy(collider.gameObject);
-        }
+		// 	player.earnedScore += collider.GetComponentInParent<ScoreItem>().point;
+		// 	Destroy(collider.gameObject);
+        // }
 	}
 }
