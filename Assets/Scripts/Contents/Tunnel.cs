@@ -70,24 +70,6 @@ public class Tunnel : MonoBehaviour
 		mesh.name = "Pipe";
 	}
 
-	//private void OnDrawGizmos()
-	//{
-	//	float uStep = (2f * Mathf.PI) / curveSegmentCount;
-	//	float vStep = (2f * Mathf.PI) / tunnelSegmentCount;
-
-	//	for (int u = 0; u < curveSegmentCount; u++)
-	//	{
-	//		for (int v = 0; v < tunnelSegmentCount; v++)
-	//		{
-	//			Vector3 point = GetPointOnTorus(u * uStep, v * vStep);
-	//			Gizmos.color = new Color(
-	//				1f,
-	//				(float)v / tunnelSegmentCount,
-	//				(float)u / curveSegmentCount);
-	//			Gizmos.DrawSphere(point, 0.1f);
-	//		}
-	//	}
-	//}
 
 	public void Generate(bool withItems = true)
 	{
@@ -136,53 +118,6 @@ public class Tunnel : MonoBehaviour
 			item.transform.GetChild(0).GetChild(0).localEulerAngles = new Vector3(Random.Range(0, 180), Random.Range(0, 180), Random.Range(0, 180));
 		}
 	}
-
-
-    //private void SetVertices()
-    //{
-    //	vertices = new Vector3[tunnelSegmentCount * curveSegmentCount * 4];
-    //	float uStep = ringDistance / curveRadius;
-    //	curveAngle = uStep * curveSegmentCount * (360f / (2f * Mathf.PI));
-    //	CreateFirstQuadRing(uStep);
-    //	int iDelta = tunnelSegmentCount * 4;
-    //	for (int u = 2, i = iDelta; u <= curveSegmentCount; u++, i += iDelta)
-    //	{
-    //		CreateQuadRing(u * uStep, i);
-    //	}
-    //	mesh.vertices = vertices;
-    //}
-
-    //private void CreateFirstQuadRing(float u)
-    //{
-    //	float vStep = (2f * Mathf.PI) / tunnelSegmentCount;
-
-    //	Vector3 vertexA = GetPointOnTorus(0f, 0f, tunnelRadius);
-    //	Vector3 vertexB = GetPointOnTorus(u, 0f, tunnelRadius);
-    //	for (int v = 1, i = 0; v <= tunnelSegmentCount; v++, i += 4)
-    //	{
-    //		vertices[i] = vertexA;
-    //		vertices[i + 1] = vertexA = GetPointOnTorus(0f, v * vStep, tunnelRadius);
-    //		vertices[i + 2] = vertexB;
-    //		vertices[i + 3] = vertexB = GetPointOnTorus(u, v * vStep, tunnelRadius);
-
-    //	}
-    //}
-
-    //private void CreateQuadRing(float u, int i)
-    //{
-    //	float vStep = (2f * Mathf.PI) / tunnelSegmentCount;
-    //	int ringOffset = tunnelSegmentCount * 4;
-
-    //	Vector3 vertex = GetPointOnTorus(u, 0f, tunnelRadius);
-    //	for (int v = 1; v <= tunnelSegmentCount; v++, i += 4)
-    //	{
-    //		vertices[i] = vertices[i - ringOffset + 2];
-    //		vertices[i + 1] = vertices[i - ringOffset + 3];
-    //		vertices[i + 2] = vertex;
-    //		vertices[i + 3] = vertex = GetPointOnTorus(u, v * vStep, tunnelRadius);
-
-    //	}
-    //}
 
     private void SetVertices()
     {

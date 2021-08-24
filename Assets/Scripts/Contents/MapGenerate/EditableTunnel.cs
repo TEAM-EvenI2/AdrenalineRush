@@ -4,6 +4,75 @@ using UnityEngine;
 
 public class EditableTunnel : MonoBehaviour
 {
+	[System.Serializable]
+	public class PrefabObjectEditInfo
+    {
+		public TunnelItem itemPrefab;
+		public Color c;
+
+		public List<ObjectEditInfo> spawnedObjectInfos = new List<ObjectEditInfo>();
+
+		public PrefabObjectEditInfo(TunnelItem prefab)
+        {
+			itemPrefab = prefab;
+			c= new Color(Random.Range(0, 1f), Random.Range(0, 1f), Random.Range(0, 1f));
+		}
+
+		public ObjectEditInfo GetObject(int index)
+        {
+
+			return spawnedObjectInfos[index];
+        }
+	}
+
+	[System.Serializable]
+	public class ObjectEditInfo
+	{
+		public TunnelItem ti;
+		[HideInInspector] public int tunnelLength;
+
+		public float distanceFromCenter;
+
+		public float percent
+		{
+			get
+			{
+				if (ti == null)
+					return 0;
+				return ti.transform.localPosition.x / tunnelLength;
+			}
+		}
+
+		public float angle
+		{
+			get
+			{
+				if (ti == null)
+					return 0;
+
+				Vector3 a = ti.transform.GetChild(0).localEulerAngles;
+
+				if (a.y > 90 && a.z > 90)
+				{
+					a.x = 180 - a.x;
+				}
+				else
+				{
+					if (a.x >= 270)
+						a.x = -(360 - a.x);
+				}
+
+				return a.x;
+			}
+		}
+
+		public ObjectEditInfo(TunnelItem ti, int tunnelLength, float distanceFromCenter)
+		{
+			this.ti = ti;
+			this.tunnelLength = tunnelLength;
+			this.distanceFromCenter = distanceFromCenter;
+		}
+	}
 
 	public float tunnelRadius;
 	public int tunnelSegmentCount = 20;
@@ -13,10 +82,17 @@ public class EditableTunnel : MonoBehaviour
 	private Vector3[] vertices;
 	private int[] triangles;
 
-	
+	public List<PrefabObjectEditInfo> prefabObjectEditInfos = new List<PrefabObjectEditInfo>();
 
 
-	public void Generate()
+    private void Awake()
+    {
+		gameObject.SetActive(false);
+    }
+
+
+    #region Mesh Generate
+    public void Generate()
 	{
 		if(mesh == null)
 		{
@@ -132,4 +208,117 @@ public class EditableTunnel : MonoBehaviour
 		Vector3 sideAC = pointC - pointA;
 		return Vector3.Cross(sideAB, sideAC).normalized;
 	}
+
+	#endregion
+
+	#region Edit Object
+
+	public void ValidateCheck()
+    {
+		for(int i = prefabObjectEditInfos.Count - 1; i >=0; i--)
+        {
+			for(int j = prefabObjectEditInfos[i].spawnedObjectInfos.Count - 1; j >= 0; j--)
+            {
+				if(prefabObjectEditInfos[i].spawnedObjectInfos[j].ti == null)
+                {
+					prefabObjectEditInfos[i].spawnedObjectInfos.RemoveAt(j);
+                }
+            }
+			if(prefabObjectEditInfos[i].spawnedObjectInfos.Count <= 0)
+            {
+				prefabObjectEditInfos.RemoveAt(i);
+            }
+        }
+    }
+
+	public Vector2Int AddObject(TunnelItem obj, float percent)
+	{
+		PrefabObjectEditInfo spoei;
+
+		int i = 0;
+		for (i = 0; i < prefabObjectEditInfos.Count; i++)
+		{
+			if (obj == prefabObjectEditInfos[i].itemPrefab)
+            {
+				break;
+            }
+		}
+
+		if(i >= prefabObjectEditInfos.Count)
+        {
+			spoei = new PrefabObjectEditInfo(obj);
+			prefabObjectEditInfos.Add(spoei);
+        }
+        else
+        {
+			spoei = prefabObjectEditInfos[i];
+        }
+
+		TunnelItem ti = Instantiate(spoei.itemPrefab);
+		float posZ = percent * tunnelLength;
+
+		ti.transform.SetParent(transform);
+		ti.transform.localPosition = GetPointOnSurface(posZ, ti.transform.GetChild(0).localEulerAngles.x * Mathf.Deg2Rad, tunnelRadius);
+
+
+
+		for (int j = 0; j < spoei.spawnedObjectInfos.Count; j++)
+		{
+			if (percent < spoei.spawnedObjectInfos[j].percent)
+			{
+				spoei.spawnedObjectInfos.Insert(j, new ObjectEditInfo(ti, tunnelLength, tunnelRadius));
+				return new Vector2Int(i, j);
+			}
+		}
+
+		spoei.spawnedObjectInfos.Add(new ObjectEditInfo(ti, tunnelLength, tunnelRadius));
+		return new Vector2Int(i, spoei.spawnedObjectInfos.Count - 1);
+	}
+
+	public void UpdateObject(Vector2Int index, float percent, float angle, float distanceFormCenter)
+	{
+		Transform t = prefabObjectEditInfos[index.x].spawnedObjectInfos[index.y].ti.transform;
+		t.localPosition = GetPointOnSurface(tunnelLength * percent, angle * Mathf.Deg2Rad, distanceFormCenter);
+		t.GetChild(0).localEulerAngles = Vector3.right * angle;
+		prefabObjectEditInfos[index.x].spawnedObjectInfos[index.y].distanceFromCenter = distanceFormCenter;
+	}
+
+	public void RemoveObject(ref Vector2Int index)
+	{
+		if (prefabObjectEditInfos.Count < 0)
+			return;
+		if (prefabObjectEditInfos[index.x].spawnedObjectInfos[index.y].ti != null)
+			DestroyImmediate(prefabObjectEditInfos[index.x].spawnedObjectInfos[index.y].ti.gameObject);
+		prefabObjectEditInfos[index.x].spawnedObjectInfos.RemoveAt(index.y);
+		if (prefabObjectEditInfos[index.x].spawnedObjectInfos.Count <= index.y)
+			index.y = prefabObjectEditInfos[index.x].spawnedObjectInfos.Count - 1;
+
+		if(prefabObjectEditInfos[index.x].spawnedObjectInfos.Count <= 0)
+        {
+			prefabObjectEditInfos.RemoveAt(index.x);
+			if (index.x >= prefabObjectEditInfos.Count)
+				index.x = prefabObjectEditInfos.Count - 1;
+        }
+	}
+
+	public Vector2Int GetInfoIndex(int index)
+    {
+		Vector2Int vIndex = Vector2Int.zero;
+		for (int  i = 0; i < prefabObjectEditInfos.Count; i++)
+        {
+			if (index >= prefabObjectEditInfos[i].spawnedObjectInfos.Count)
+			{
+				vIndex.x++;
+				index -= prefabObjectEditInfos[i].spawnedObjectInfos.Count;
+			}
+			else
+				break;
+		}
+		vIndex.y = index;
+
+		return vIndex;
+    }
+
+
+	#endregion
 }
