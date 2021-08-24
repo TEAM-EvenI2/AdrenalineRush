@@ -19,8 +19,7 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(player.velocity);
-        gameCam.fieldOfView = Mathf.Clamp(player.velocity*10, 70, 120); // TODO: fov 따라 카메라 distance도 동적으로 변경할지 결정하기.
+        // gameCam.fieldOfView = Mathf.Clamp(player.velocity*10, 70, 120); // TODO: fov 따라 카메라 distance도 동적으로 변경할지 결정하기.
         transform.position = target.position - transform.forward * distance;
         transform.parent.eulerAngles = rotater.eulerAngles;
     }

@@ -15,6 +15,7 @@ MonoBehaviour:
   components:
   - {fileID: 368366840469533835}
   - {fileID: 7004551199289457389}
+  - {fileID: 1004713059009180495}
 --- !u!114 &368366840469533835
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -50,16 +51,16 @@ MonoBehaviour:
     m_Value: 0
   focusDistance:
     m_OverrideState: 1
-    m_Value: 1.5
+    m_Value: 50
     min: 0.1
   aperture:
     m_OverrideState: 1
-    m_Value: 6.3
+    m_Value: 4.9
     min: 1
     max: 32
   focalLength:
     m_OverrideState: 1
-    m_Value: 51
+    m_Value: 17
     min: 1
     max: 300
   bladeCount:
@@ -69,14 +70,44 @@ MonoBehaviour:
     max: 9
   bladeCurvature:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0.572
     min: 0
     max: 1
   bladeRotation:
     m_OverrideState: 1
-    m_Value: -98
+    m_Value: -123
     min: -180
     max: 180
+--- !u!114 &1004713059009180495
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccf1aba9553839d41ae37dd52e9ebcce, type: 3}
+  m_Name: MotionBlur
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  mode:
+    m_OverrideState: 0
+    m_Value: 0
+  quality:
+    m_OverrideState: 1
+    m_Value: 0
+  intensity:
+    m_OverrideState: 1
+    m_Value: 0.732
+    min: 0
+    max: 1
+  clamp:
+    m_OverrideState: 1
+    m_Value: 0.048
+    min: 0
+    max: 0.2
 --- !u!114 &7004551199289457389
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -89,7 +120,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66f335fb1ffd8684294ad653bf1c7564, type: 3}
   m_Name: ColorAdjustments
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   m_AdvancedMode: 0
   postExposure:
     m_OverrideState: 1
