@@ -28,10 +28,13 @@ public class MeshWrapper : MonoBehaviour
         }
     }
 
+    public float cumulativeRelativeRotation;
+
     private void Awake()
     {
-        GetComponent<MeshFilter>().mesh = mesh = new Mesh();   
+        GetComponent<MeshFilter>().mesh = mesh = new Mesh();
     }
+
 
     public void Generate(MapMesh mapMesh, MapMeshType type, bool destoryChild = true)
     {
@@ -70,5 +73,6 @@ public class MeshWrapper : MonoBehaviour
         transform.Translate(0f, -curveRadius, 0f);
         transform.SetParent(meshWrapper.transform.parent);
         transform.localScale = Vector3.one;
+
     }
 }

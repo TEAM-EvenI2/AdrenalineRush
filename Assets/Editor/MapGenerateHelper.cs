@@ -187,6 +187,7 @@ public class MapGenerateHelper : EditorWindow
                             EditableMap.ObjectEditInfo emoei = targetMap.prefabObjectEditInfos[i].spawnedObjectInfos[j];
                             targetMap.UpdateObject(new Vector2Int(i, j), emoei.percent, emoei.angle);
                             emoei.curveAngle = targetMap.meshWrapper.curveAngle;
+                            emoei.curveRadius = targetMap.meshWrapper.curveRadius;
                         }
                     }
                 }

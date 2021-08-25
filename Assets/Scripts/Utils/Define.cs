@@ -32,7 +32,7 @@ public class Define
         public MapItem prefab;
 
         public float percent;
-        public float positionDelta;
+        public float curveArc;
         public float angle;
     }
 }

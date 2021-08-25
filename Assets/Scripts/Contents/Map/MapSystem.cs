@@ -11,7 +11,7 @@ public class MapSystem : MonoBehaviour
 	public int emptyPipeCount;
 
 	public List<StageInformation> stageInfo;
-	public float minDistanceEachPreset = 0.5f;
+	public float minDistanceEachPreset = 0.1f;
 
 	private int currentStage = 0;
 
@@ -29,52 +29,65 @@ public class MapSystem : MonoBehaviour
         {
 			MeshWrapper mw = maps[i] = Instantiate(meshWrapperPrefab);
 			mw.transform.SetParent(transform, false);
-			GenerateMap(mw, i > emptyPipeCount);
+			GenerateMap(mw);
 
 			if (i > 0)
 			{
 				mw.AlignWith(maps[i - 1]);
+				maps[i].cumulativeRelativeRotation = (maps[i - 1].cumulativeRelativeRotation + maps[i].relativeRotation) % 360;
 			}
+			if(i > emptyPipeCount)
+            {
+				GenerateItem(mw, i);
+            }
+
 		}
-		AlignNextPipeWithOrigin();
+		//AlignNextPipeWithOrigin();
+		SetupNextPipe();
 	}
 
-	private void GenerateMap(MeshWrapper mw, bool withItem = true)
+	private void GenerateMap(MeshWrapper mw)
     {
 		MapMeshDataWrapper mmdw = stageInfo[currentStage].meshDataWrappers[0];
 
 		mw.Generate(mmdw.GetMesh(), mmdw.meshType);
-
-        if (withItem)
-        {
-            // Generate Item
-            float finishedAngle = 0;
-            while (true)
-            {
-                if (itemInfos.Count == 0)
-                {
-                    stageInfo[currentStage].GetRandomItemPlace().AddItemToInfos(itemInfos);
-                    //finishedAngle += minDistanceEachPreset;
-                }
-
-                MapItemGenerateInfo info = itemInfos.Peek();
-                if (info.positionDelta + finishedAngle > mw.curveAngle)
-                {
-                    info.positionDelta -= mw.curveAngle - finishedAngle;
-                    break;
-                }
-                else
-                {
-                    finishedAngle += info.positionDelta;
-                    MapItem item = Instantiate(info.prefab);
-                    float pipeRotation = info.angle;
-                    item.Setting(mw, finishedAngle, pipeRotation , mmdw.GetMesh().mapSize);
-
-                    itemInfos.Dequeue();
-                }
-            }
-        }
     }
+
+	private void GenerateItem(MeshWrapper mw, int i)
+	{
+
+		MapMeshDataWrapper mmdw = stageInfo[currentStage].meshDataWrappers[0];
+		// Generate Item
+		float finishedArc = 0;
+
+		float curArc = mw.curveRadius * mw.curveAngle * Mathf.Deg2Rad;
+
+		while (true)
+		{
+			if (itemInfos.Count == 0)
+			{
+				stageInfo[currentStage].GetRandomItemPlace().AddItemToInfos(itemInfos);
+				finishedArc += minDistanceEachPreset;
+			}
+
+			MapItemGenerateInfo info = itemInfos.Peek();
+			if (finishedArc + info.curveArc > curArc)
+			{
+				info.curveArc -= curArc - finishedArc;
+				break;
+			}
+			else
+			{
+				finishedArc += info.curveArc;
+
+				MapItem item = Instantiate(info.prefab);
+				item.Setting(mw, (finishedArc / mw.curveRadius) * Mathf.Rad2Deg, info.angle + (i > 0? -mw.cumulativeRelativeRotation : 0), mmdw.GetMesh().mapSize);
+
+				itemInfos.Dequeue();
+			}
+		}
+
+	}
 
 
 	public MeshWrapper SetupFirstPipe()
@@ -89,7 +102,11 @@ public class MapSystem : MonoBehaviour
 		AlignNextPipeWithOrigin();
 		GenerateMap(maps[maps.Length - 1]);
 		maps[maps.Length - 1].AlignWith(maps[maps.Length - 2]);
+		maps[maps.Length - 1].cumulativeRelativeRotation = (maps[maps.Length - 2].cumulativeRelativeRotation + maps[maps.Length - 1].relativeRotation) % 360;
+		GenerateItem(maps[maps.Length - 1], maps.Length - 1);
 		transform.localPosition = new Vector3(0f, -maps[1].curveRadius);
+
+
 		return maps[1];
 	}
 	private void ShiftPipes()
@@ -119,5 +136,6 @@ public class MapSystem : MonoBehaviour
 				maps[i].transform.SetParent(transform);
 		}
 	}
+
 
 }

@@ -31,6 +31,7 @@ public class EditableMap : MonoBehaviour
 	{
 		public MapItem ti;
 		public float curveAngle;
+		public float curveRadius;
 
 		public float percent;
 
@@ -65,10 +66,11 @@ public class EditableMap : MonoBehaviour
             }
         }
 
-		public ObjectEditInfo(MapItem ti, float curveAngle, float percent)
+		public ObjectEditInfo(MapItem ti, float curveAngle, float curveRadius, float percent)
 		{
 			this.ti = ti;
 			this.curveAngle = curveAngle;
+			this.curveRadius = curveRadius;
 			this.percent = percent;
 		}
 	}
@@ -86,7 +88,8 @@ public class EditableMap : MonoBehaviour
 		gameObject.SetActive(false);
     }
 
-	public void AddItemToInfos(Queue<MapItemGenerateInfo> infos)
+
+    public void AddItemToInfos(Queue<MapItemGenerateInfo> infos)
     {
 		for(int i = 0; i < prefabObjectEditInfos.Count; i++)
 		{
@@ -108,11 +111,11 @@ public class EditableMap : MonoBehaviour
 				{
 					prefab = prefabObjectEditInfos[i].itemPrefab,
 					percent = oei.percent,
-					positionDelta = oei.percent * oei.curveAngle - previewPos,
+					curveArc = oei.curveRadius * oei.percent * oei.curveAngle * Mathf.Deg2Rad - previewPos,
 					angle = oei.angle
 				}) ;
 
-				previewPos = oei.percent * oei.curveAngle;
+				previewPos = oei.curveRadius * oei.percent * oei.curveAngle * Mathf.Deg2Rad;
 
 			}
         }
@@ -200,12 +203,12 @@ public class EditableMap : MonoBehaviour
 		{
 			if (percent < spoei.spawnedObjectInfos[j].percent)
 			{
-				spoei.spawnedObjectInfos.Insert(j, new ObjectEditInfo(ti, meshWrapper.curveAngle, percent));
+				spoei.spawnedObjectInfos.Insert(j, new ObjectEditInfo(ti, meshWrapper.curveAngle, meshWrapper.curveRadius, percent));
 				return new Vector2Int(i, j);
 			}
 		}
 
-		spoei.spawnedObjectInfos.Add(new ObjectEditInfo(ti, meshWrapper.curveAngle, percent));
+		spoei.spawnedObjectInfos.Add(new ObjectEditInfo(ti, meshWrapper.curveAngle, meshWrapper.curveRadius, percent));
 		return new Vector2Int(i, spoei.spawnedObjectInfos.Count - 1);
 	}
 
