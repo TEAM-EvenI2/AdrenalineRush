@@ -2,19 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEditor.Experimental.SceneManagement;
+using static Define;
 
 public class MapGenerateHelper : EditorWindow
 {
 
     private Color borderColor = new Color(.2f, .2f, .2f);
 
-    private const int headerHeight = 90;
+    private int headerHeight;
     private const float keyWidth = 10;
     private const float keyHeight = 20;
 
     private Color headerSectionColor = new Color(13f / 255f, 32f / 255f, 44f / 255f, 1f);
     private Rect headerSection;
-    private EditableTunnel targetTunnel;
+    private EditableMap targetMap;
     private Material targetMaterial;
 
 
@@ -33,6 +36,10 @@ public class MapGenerateHelper : EditorWindow
     int currentPickerWindow = -1;
     float objectPosPercent = 0;
 
+    static TorusMesh torusMesh;
+
+    MapMeshType meshType;
+
     [MenuItem("Window/Map Generate Helper")]
     static void Init()
     {
@@ -41,13 +48,16 @@ public class MapGenerateHelper : EditorWindow
         window.Show();
     }
 
-
+    private void OnEnable()
+    {
+        torusMesh = new TorusMesh();
+    }
 
     private void OnGUI()
     {
         DrawLayouts();
         DrawHeader();
-        if (targetTunnel)
+        if (targetMap)
         {
             DrawObjectSetting();
             HandleInput();
@@ -57,11 +67,25 @@ public class MapGenerateHelper : EditorWindow
                 needsRepaint = false;
                 Repaint();
             }
+
         }
     }
 
     private void DrawLayouts()
     {
+        if (PrefabStageUtility.GetCurrentPrefabStage() != null)
+            headerHeight = 120;
+        else
+            headerHeight = 90;
+        switch (meshType)
+        {
+            case MapMeshType.Tunnel:
+            case MapMeshType.ReverseTunnel:
+                headerHeight += 36;
+                break;
+        }
+
+
         headerSection.x = 0;
         headerSection.y = 0;
         headerSection.width = position.width;
@@ -77,6 +101,18 @@ public class MapGenerateHelper : EditorWindow
         EditorGUI.DrawRect(new Rect(0, headerHeight-2, position.width, 4), borderColor);
     }
 
+    #region Header
+
+    private MapMesh GetMesh()
+    {
+        switch (meshType)
+        {
+            case MapMeshType.Tunnel:
+                return torusMesh;
+        }
+        return torusMesh;
+    }
+
     private void DrawHeader()
     {
         GUIStyle style = new GUIStyle();
@@ -86,68 +122,73 @@ public class MapGenerateHelper : EditorWindow
 
         GUILayout.BeginHorizontal();
         GUILayout.Space(10);
-        GUILayout.Label("Map Generate", style);
+        GUILayout.Label("Map Generate" + (PrefabStageUtility.GetCurrentPrefabStage() != null ? " Prefab" : ""), style);
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
         GUILayout.Space(10);
-        GUILayout.Label("Main Map",GUILayout.MaxWidth(100));
-        targetTunnel = EditorGUILayout.ObjectField(targetTunnel, typeof(EditableTunnel), true, GUILayout.MaxWidth(250)) as EditableTunnel;
-        GUILayout.Label("Mat", GUILayout.MaxWidth(100));
+        GUILayout.Label("Main Map", GUILayout.MaxWidth(100));
+        targetMap = EditorGUILayout.ObjectField(targetMap, typeof(EditableMap), true, GUILayout.MaxWidth(250)) as EditableMap;
+        GUILayout.Label("Material", GUILayout.MaxWidth(100));
         targetMaterial = EditorGUILayout.ObjectField(targetMaterial, typeof(Material), true, GUILayout.MaxWidth(250)) as Material;
         GUILayout.EndHorizontal();
 
-        if(targetTunnel == null)
-        {
-
-            GUILayout.EndArea();
-            return;
-        }
-
         GUILayout.BeginHorizontal();
         GUILayout.Space(10);
-        GUILayout.Label("Tunnel Radius", GUILayout.MaxWidth(100));
-        float tunnelRadius = EditorGUILayout.FloatField(targetTunnel.tunnelRadius, GUILayout.MaxWidth(50));
-        if (tunnelRadius != targetTunnel.tunnelRadius)
+        if (targetMap == null)
+            meshType = (MapMeshType)EditorGUILayout.EnumPopup(meshType, GUILayout.MaxWidth(100));
+        else
         {
-            for (int i = 0; i < targetTunnel.prefabObjectEditInfos.Count; i++)
-            {
-                for (int j = 0; j < targetTunnel.prefabObjectEditInfos[i].spawnedObjectInfos.Count; j++)
-                {
-                    EditableTunnel.ObjectEditInfo etoei = targetTunnel.prefabObjectEditInfos[i].GetObject(j);
-                    if (etoei.distanceFromCenter > tunnelRadius)
-                        etoei.distanceFromCenter = tunnelRadius;
-                    if (etoei.distanceFromCenter < 0)
-                        etoei.distanceFromCenter = 0;
-                }
-            }
-            targetTunnel.tunnelRadius = tunnelRadius;
-        }
-        GUILayout.Space(10);
-        GUILayout.Label("Tunnel Length", GUILayout.MaxWidth(100));
-        int tunnelLength = EditorGUILayout.IntField(targetTunnel.tunnelLength, GUILayout.MaxWidth(50));
-        if(tunnelLength != targetTunnel.tunnelLength)
-        {
-            for (int i = 0; i < targetTunnel.prefabObjectEditInfos.Count; i++)
-            {
-                for (int j = 0; j < targetTunnel.prefabObjectEditInfos[i].spawnedObjectInfos.Count; j++)
-                {
-                    EditableTunnel.ObjectEditInfo etoei = targetTunnel.prefabObjectEditInfos[i].GetObject(j);
-                    etoei.tunnelLength = tunnelLength;
-                }
-            }
-            targetTunnel.tunnelLength = tunnelLength;
+            targetMap.meshType = meshType = (MapMeshType)EditorGUILayout.EnumPopup(targetMap.meshType, GUILayout.MaxWidth(100));
         }
         GUILayout.EndHorizontal();
 
-        GUILayout.BeginArea(new Rect((Screen.width / 2) - 50, headerHeight - 30, 100, 30));
-        if (targetTunnel.tunnelRadius > 0 && targetTunnel.tunnelLength > 0 && targetMaterial != null)
+
+        switch (meshType) {
+            case MapMeshType.Tunnel:
+
+                DrawTunnelMesh();
+                break;
+            case MapMeshType.Plane:
+
+                break;
+            case MapMeshType.ReverseTunnel:
+
+                break;
+
+        }
+
+        int _h = PrefabStageUtility.GetCurrentPrefabStage() != null ? 50 : 25;
+        GUILayout.BeginArea(new Rect((Screen.width / 2) - 50, headerHeight - _h, 100, _h));
+
+        if (PrefabStageUtility.GetCurrentPrefabStage() != null)
         {
-            if (targetTunnel)
+            if (GUILayout.Button("Save Prefab", GUILayout.MaxWidth(250)))
+            {
+                string path = PrefabStageUtility.GetPrefabStage(targetMap.gameObject).assetPath; // Get the prefab path in disk
+                PrefabUtility.SaveAsPrefabAsset(targetMap.gameObject, path); // Save the prefab to disk   
+            }
+        }
+
+        if ( targetMaterial != null)
+        {
+            if (targetMap)
             {
                 if (GUILayout.Button("Regenerate", GUILayout.MaxWidth(250)))
                 {
-                    targetTunnel.Generate();
+                    targetMap.GetComponent<MeshRenderer>().material = targetMaterial;
+
+                    targetMap.Generate();
+                    targetMap.transform.localPosition = new Vector3(0, -targetMap.meshWrapper.curveRadius);
+                    for (int i = 0; i < targetMap.prefabObjectEditInfos.Count; i++)
+                    {
+                        for(int j = 0; j < targetMap.prefabObjectEditInfos[i].spawnedObjectInfos.Count; j++)
+                        {
+                            EditableMap.ObjectEditInfo emoei = targetMap.prefabObjectEditInfos[i].spawnedObjectInfos[j];
+                            targetMap.UpdateObject(new Vector2Int(i, j), emoei.percent, emoei.angle);
+                            emoei.curveAngle = targetMap.meshWrapper.curveAngle;
+                        }
+                    }
                 }
             }
             else
@@ -157,18 +198,78 @@ public class MapGenerateHelper : EditorWindow
                 {
                     GameObject tunnel = new GameObject("Generated Tunnel");
                     tunnel.AddComponent<MeshFilter>();
-                    tunnel.AddComponent<MeshRenderer>().material = targetMaterial;
-                    targetTunnel = tunnel.AddComponent<EditableTunnel>();
-                    targetTunnel.Generate();
+                    tunnel.AddComponent<MeshRenderer>().material = targetMaterial;       
+                    tunnel.AddComponent<MeshWrapper>();
+                    targetMap = tunnel.AddComponent<EditableMap>();
+                    targetMap.meshWrapper = targetMap.GetComponent<MeshWrapper>();
+
+                    GenerateDefaultMapMesh();
+                    targetMap.transform.localPosition = new Vector3(0, -targetMap.meshWrapper.curveRadius);
+
                 }
             }
         }
         GUILayout.EndArea();
         GUILayout.EndArea();
 
-        targetTunnel.ValidateCheck();
+        if(targetMap != null)
+            targetMap.ValidateCheck();
     }
-   
+
+    private void DrawTunnelMesh()
+    {
+
+        TorusMesh mesh = targetMap == null ? torusMesh : (TorusMesh)targetMap.GetMesh();
+        
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Tunnel Radius", GUILayout.MaxWidth(90));
+        mesh.mapSize = EditorGUILayout.FloatField(mesh.mapSize, GUILayout.MaxWidth(40));
+        EditorGUILayout.LabelField("Tunnel Segment Count", GUILayout.MaxWidth(140));
+        mesh.roadSegmentCount = EditorGUILayout.IntField(mesh.roadSegmentCount, GUILayout.MaxWidth(40));
+
+        EditorGUILayout.LabelField("Ring Distance", GUILayout.MaxWidth(90));
+        mesh.ringDistance = EditorGUILayout.FloatField(mesh.ringDistance, GUILayout.MaxWidth(40));
+        EditorGUILayout.EndHorizontal();
+
+
+        GUIStyle style = new GUIStyle();
+        style.fontStyle = FontStyle.Bold;
+        style.normal.textColor = Color.white;
+
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Curve Radius", GUILayout.MaxWidth(90));
+        mesh.minCurveRadius = mesh.maxCurveRadius = EditorGUILayout.FloatField(mesh.maxCurveRadius, GUILayout.MaxWidth(40));
+
+        EditorGUILayout.LabelField("Curve Segment Count", GUILayout.MaxWidth(140));
+        mesh.minCurveSegmentCount = mesh.maxCurveSegmentCount = EditorGUILayout.IntField(mesh.maxCurveSegmentCount, GUILayout.MaxWidth(40));
+        EditorGUILayout.EndHorizontal();
+      
+    }
+
+    private void GenerateDefaultMapMesh()
+    {
+        if (targetMap == null)
+            return;
+
+        switch (targetMap.meshType)
+        {
+            case MapMeshType.Tunnel:
+                {
+                    TorusMesh tm = (TorusMesh)targetMap.GetMesh();
+
+                    tm.roadSegmentCount = torusMesh.roadSegmentCount;
+                    tm.minCurveRadius = tm.maxCurveRadius = torusMesh.maxCurveRadius;
+                    tm.minCurveSegmentCount = tm.maxCurveSegmentCount = torusMesh.maxCurveSegmentCount;
+                    tm.ringDistance = torusMesh.ringDistance;
+                    tm.mapSize = torusMesh.mapSize;
+                    break;
+                }
+        }
+        targetMap.Generate();
+    }
+#endregion
+
+
     private void DrawObjectSetting()
     {
         GUILayout.BeginArea(objectSettingSection);
@@ -177,72 +278,62 @@ public class MapGenerateHelper : EditorWindow
         EditorGUI.DrawRect(mapPreviewRect, new Color(0.2f, 0.2f, 0.2f));
 
 
-        if(selectedKeyIndex.x >= targetTunnel.prefabObjectEditInfos.Count)
+        if(selectedKeyIndex.x >= targetMap.prefabObjectEditInfos.Count)
         {
-            selectedKeyIndex.x = targetTunnel.prefabObjectEditInfos.Count - 1;
+            selectedKeyIndex.x = targetMap.prefabObjectEditInfos.Count - 1;
         }
-        if (targetTunnel.prefabObjectEditInfos.Count <= 0)
+        if (targetMap.prefabObjectEditInfos.Count <= 0)
         {
             GUILayout.EndArea();
             return;
         }
-        if (selectedKeyIndex.y >= targetTunnel.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos.Count)
+        if (selectedKeyIndex.y >= targetMap.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos.Count)
         {
-            selectedKeyIndex.y = targetTunnel.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos.Count - 1;
+            selectedKeyIndex.y = targetMap.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos.Count - 1;
         }
 
 
         int keyCount = 0;
-        for(int i = 0; i < targetTunnel.prefabObjectEditInfos.Count; i++)
+        for(int i = 0; i < targetMap.prefabObjectEditInfos.Count; i++)
         {
-            keyCount += targetTunnel.prefabObjectEditInfos[i].spawnedObjectInfos.Count;
+            keyCount += targetMap.prefabObjectEditInfos[i].spawnedObjectInfos.Count;
         }
 
         keyRects = new Rect[keyCount];
         int _i = 0;
-        for (int i = 0; i < targetTunnel.prefabObjectEditInfos.Count; i++)
+        for (int i = 0; i < targetMap.prefabObjectEditInfos.Count; i++)
         {
-            for (int j = 0; j < targetTunnel.prefabObjectEditInfos[i].spawnedObjectInfos.Count; j++)
+            for (int j = 0; j < targetMap.prefabObjectEditInfos[i].spawnedObjectInfos.Count; j++)
             {
                 Vector2Int vIndex = new Vector2Int(i, j);
-                EditableTunnel.ObjectEditInfo edi = targetTunnel.prefabObjectEditInfos[i].GetObject(j);
+                EditableMap.ObjectEditInfo edi = targetMap.prefabObjectEditInfos[i].GetObject(j);
                 if (edi.percent < 0)
-                    targetTunnel.UpdateObject(vIndex, 0, edi.angle, edi.distanceFromCenter);
+                    targetMap.UpdateObject(vIndex, 0, edi.angle);
                 else if (edi.percent > 1)
-                    targetTunnel.UpdateObject(vIndex, 1, edi.angle, edi.distanceFromCenter);
+                    targetMap.UpdateObject(vIndex, 1, edi.angle);
 
                 Rect keyRect = new Rect(mapPreviewRect.x + mapPreviewRect.width * (edi.percent) - keyWidth / 2f, mapPreviewRect.yMax + previewBorderSize, keyWidth, keyHeight);
                 if (vIndex == selectedKeyIndex)
                 {
                     EditorGUI.DrawRect(new Rect(keyRect.x - 2, keyRect.y - 2, keyRect.width + 4, keyRect.height + 4), new Color(0.1f, 0.1f, 0.1f));
                 }
-                EditorGUI.DrawRect(keyRect, targetTunnel.prefabObjectEditInfos[i].c);
-                EditorGUI.DrawRect(new Rect(mapPreviewRect.x + mapPreviewRect.width * (edi.percent) - keyWidth / 4f, previewBorderSize, keyWidth / 2, 40), targetTunnel.prefabObjectEditInfos[i].c);
+                EditorGUI.DrawRect(keyRect, targetMap.prefabObjectEditInfos[i].c);
+                EditorGUI.DrawRect(new Rect(mapPreviewRect.x + mapPreviewRect.width * (edi.percent) - keyWidth / 4f, previewBorderSize, keyWidth / 2, 40), targetMap.prefabObjectEditInfos[i].c);
                 keyRects[_i] = keyRect;
                 _i++;
             }
         }
-
-        EditableTunnel.ObjectEditInfo sedi = targetTunnel.prefabObjectEditInfos[selectedKeyIndex.x].GetObject(selectedKeyIndex.y);
+        EditableMap.ObjectEditInfo sedi = targetMap.prefabObjectEditInfos[selectedKeyIndex.x].GetObject(selectedKeyIndex.y);
         Rect infoRect = new Rect(previewBorderSize, mapPreviewRect.yMax + previewBorderSize * 2 + keyHeight, position.width - previewBorderSize * 2, objectSettingSection.height - (mapPreviewRect.height + previewBorderSize * 4 + keyHeight));
         GUILayout.BeginArea(infoRect);
 
 
         GUILayout.BeginHorizontal();
         GUILayout.Label("Position Percent", GUILayout.MaxWidth(100));
-        float percent = EditorGUILayout.FloatField(sedi.percent, GUILayout.MaxWidth(100));
+        float percent = EditorGUILayout.Slider(sedi.percent, 0, 1f, GUILayout.MaxWidth(200));
         if (Mathf.Abs(percent - sedi.percent) > Mathf.Epsilon)
         {
-            targetTunnel.UpdateObject(selectedKeyIndex, percent, sedi.angle, sedi.distanceFromCenter);
-        }
-        GUILayout.Label("Distance From Center", GUILayout.MaxWidth(130));
-        float distanceFromCenter = EditorGUILayout.FloatField(sedi.distanceFromCenter, GUILayout.MaxWidth(100));
-        if (Mathf.Abs(distanceFromCenter - sedi.distanceFromCenter) > Mathf.Epsilon)
-        {
-            if (distanceFromCenter > targetTunnel.tunnelRadius)
-                distanceFromCenter = targetTunnel.tunnelRadius;
-
-            targetTunnel.UpdateObject(selectedKeyIndex, sedi.percent, sedi.angle, distanceFromCenter);
+            targetMap.UpdateObject(selectedKeyIndex, percent, sedi.angle);
         }
         GUILayout.EndHorizontal();
 
@@ -254,7 +345,7 @@ public class MapGenerateHelper : EditorWindow
         float angle = EditorGUILayout.FloatField(sedi.angle, GUILayout.MaxWidth(100));
         if (Mathf.Abs(angle - sedi.angle) > Mathf.Epsilon)
         {
-            targetTunnel.UpdateObject(selectedKeyIndex, sedi.percent, angle, sedi.distanceFromCenter);
+            targetMap.UpdateObject(selectedKeyIndex, sedi.percent, angle);
         }
         GUILayout.EndVertical();
 
@@ -271,7 +362,7 @@ public class MapGenerateHelper : EditorWindow
 
         Matrix4x4 m = GUI.matrix;
         GUIUtility.RotateAroundPivot(sediAngle, point + size / 2);
-        EditorGUI.DrawRect(new Rect(point.x, point.y, size.x, size.y), targetTunnel.prefabObjectEditInfos[selectedKeyIndex.x].c);
+        EditorGUI.DrawRect(new Rect(point.x, point.y, size.x, size.y), targetMap.prefabObjectEditInfos[selectedKeyIndex.x].c);
 
         GUI.matrix = m;
         GUILayout.EndHorizontal();
@@ -289,18 +380,18 @@ public class MapGenerateHelper : EditorWindow
 
     void HandleInput()
     {
-        if (targetTunnel == null)
+        if (targetMap == null)
             return;
 
         Event guiEvent = Event.current;
 
         if (guiEvent.commandName.Equals("ObjectSelectorClosed") && currentPickerWindow == EditorGUIUtility.GetObjectPickerControlID())
         {
-            TunnelItem tiPrefab = (EditorGUIUtility.GetObjectPickerObject() as GameObject)?.GetComponent<TunnelItem>();
+            MapItem tiPrefab = (EditorGUIUtility.GetObjectPickerObject() as GameObject)?.GetComponent<MapItem>();
             if (tiPrefab == null)
                 return;
 
-            selectedKeyIndex = targetTunnel.AddObject(tiPrefab, objectPosPercent);
+            selectedKeyIndex = targetMap.AddObject(tiPrefab, objectPosPercent);
 
             mouseIsDownOverKey = true;
             needsRepaint = true;
@@ -317,8 +408,9 @@ public class MapGenerateHelper : EditorWindow
                 if (wolrdKeyRect.Contains(guiEvent.mousePosition))
                 {
                     mouseIsDownOverKey = true;
-                    selectedKeyIndex = targetTunnel.GetInfoIndex(i);
+                    selectedKeyIndex = targetMap.GetInfoIndex(i);
                     needsRepaint = true;
+                    GUI.FocusControl(null);
                     break;
                 }
             }
@@ -345,7 +437,7 @@ public class MapGenerateHelper : EditorWindow
                 float percent = Mathf.InverseLerp(mapPreviewRect.x, mapPreviewRect.xMax, guiEvent.mousePosition.x);
                 //selectedKeyIndex = gradient.UpdateKeyTime(selectedKeyIndex, keyTime);
                 // Update Object Position
-                targetTunnel.UpdateObject(selectedKeyIndex, percent, targetTunnel.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos[selectedKeyIndex.y].angle, targetTunnel.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos[selectedKeyIndex.y].distanceFromCenter);
+                targetMap.UpdateObject(selectedKeyIndex, percent, targetMap.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos[selectedKeyIndex.y].angle);
                 needsRepaint = true;
             }
             RotateObjectEvent(guiEvent);
@@ -357,7 +449,7 @@ public class MapGenerateHelper : EditorWindow
         {
             if (selectedKeyIndex.x >= 0 && selectedKeyIndex.y >= 0)
             {
-                targetTunnel.RemoveObject(ref selectedKeyIndex);
+                targetMap.RemoveObject(ref selectedKeyIndex);
                 needsRepaint = true;
             }
         }
@@ -372,7 +464,7 @@ public class MapGenerateHelper : EditorWindow
         if (worldRotatePointRect.Contains(guiEvent.mousePosition))
         {
             float angle = Mathf.Atan2((wrpc.x - guiEvent.mousePosition.x), (wrpc.y - guiEvent.mousePosition.y)) * Mathf.Rad2Deg;
-            targetTunnel.UpdateObject(selectedKeyIndex, targetTunnel.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos[selectedKeyIndex.y].percent, angle, targetTunnel.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos[selectedKeyIndex.y].distanceFromCenter);
+            targetMap.UpdateObject(selectedKeyIndex, targetMap.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos[selectedKeyIndex.y].percent, angle);
             needsRepaint = true;
         }
     }

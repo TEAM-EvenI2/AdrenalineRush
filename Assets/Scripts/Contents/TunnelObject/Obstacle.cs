@@ -2,18 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Obstacle : TunnelItem
+public class Obstacle : MapItem
 {
 
     public DeformableObject[] deformableObjects;
 
-    public override void Setting(Tunnel tunnel, float curveRotation, float ringRotation, float distanceFromCenter)
+    public override void Setting(MeshWrapper mw, float curveRotation, float ringRotation, float distanceFromCenter)
     {
 
-        base.Setting(tunnel, curveRotation, ringRotation, distanceFromCenter);
+        base.Setting(mw, curveRotation, ringRotation, distanceFromCenter);
         for (int i = 0; i < deformableObjects.Length; i++)
         {
-            deformableObjects[i].Transformation(tunnel);
+            deformableObjects[i].Transformation(mw);
         }
     }
 }

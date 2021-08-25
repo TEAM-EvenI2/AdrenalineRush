@@ -86,15 +86,15 @@ public class Tunnel : MonoBehaviour
 		}
 		if (withItems)
 		{
-			if (generators != null && generators.Length > 0)
-			{
-				generators[Random.Range(0, generators.Length)].GenerateItems(this);
-			}
+		//	if (generators != null && generators.Length > 0)
+		//	{
+		//		generators[Random.Range(0, generators.Length)].GenerateItems(this);
+		//	}
 
-			if(generators != null && generators.Length > 0)
-			{
-				itemGenerator[Random.Range(0, itemGenerator.Length)].GenerateItems(this);
-			}
+		//	if(generators != null && generators.Length > 0)
+		//	{
+		//		itemGenerator[Random.Range(0, itemGenerator.Length)].GenerateItems(this);
+		//	}
 		}
 		InteriorPlace();
 	}

@@ -13,10 +13,26 @@ public class Define
         Game,
     }
 
+    public enum MapMeshType
+    {
+        Tunnel,
+        Plane,
+        ReverseTunnel
+    }
+
     [System.Serializable]
     public struct SmoothDampStruct<T>
     {
         public float smoothTime;
         [HideInInspector]public T smoothVelocity;
+    }
+
+    public class MapItemGenerateInfo
+    {
+        public MapItem prefab;
+
+        public float percent;
+        public float positionDelta;
+        public float angle;
     }
 }

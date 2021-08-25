@@ -4,25 +4,25 @@ using UnityEngine;
 
 public class RandomGenerator : ItemGenerator
 {
-	public TunnelItem[] itemPrefabs;
+	public MapItem[] itemPrefabs;
 
 	public float spawnPercent = 0.5f;
 
-	public override void GenerateItems(Tunnel tunnel)
+	public override void GenerateItems(MeshWrapper mw)
 	{
-		float angleStep = tunnel.CurveAngle / tunnel.CurveSegmentCount;
-		for (int i = 0; i < tunnel.CurveSegmentCount; i++)
-		{
-			if(Random.Range(0 ,1f) > spawnPercent)
-            {
-				continue;	
-            }
-			TunnelItem item = Instantiate(
-				itemPrefabs[Random.Range(0, itemPrefabs.Length)]);
-			float pipeRotation =
-				(Random.Range(0, tunnel.tunnelSegmentCount) + 0.5f) *
-				360f / tunnel.tunnelSegmentCount;
-			item.Setting(tunnel, i * angleStep, pipeRotation, tunnel.tunnelRadius);
-		}
+		//float angleStep = mw.curveAngle / mw.curveSegmentCount;
+		//for (int i = 0; i < mw.curveSegmentCount; i++)
+		//{
+		//	if(Random.Range(0 ,1f) > spawnPercent)
+  //          {
+		//		continue;	
+  //          }
+		//	MapItem item = Instantiate(
+		//		itemPrefabs[Random.Range(0, itemPrefabs.Length)]);
+		//	float pipeRotation =
+		//		(Random.Range(0, mw.tunnelSegmentCount) + 0.5f) *
+		//		360f / mw.tunnelSegmentCount;
+		//	item.Setting(mw, i * angleStep, pipeRotation, mw.tunnelRadius);
+		//}
 	}
 }

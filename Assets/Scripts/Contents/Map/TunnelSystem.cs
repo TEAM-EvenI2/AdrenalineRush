@@ -10,7 +10,7 @@ public class TunnelSystem : MonoBehaviour
 	public int emptyPipeCount;
 
 	private Tunnel[] tunnel;
-
+	 
 
 	private void Awake()
 	{
@@ -58,7 +58,7 @@ public class TunnelSystem : MonoBehaviour
 		for (int i = 0; i < tunnel.Length; i++)
 		{
 			if(i != 1)
-			tunnel[i].transform.SetParent(transformToAlign);
+				tunnel[i].transform.SetParent(transformToAlign);
 		}
 
 		transformToAlign.localPosition = Vector3.zero;
