@@ -62,7 +62,7 @@ public class Player : MonoBehaviour
 
 	private void SetupCurrentPipe()
 	{
-		deltaToRotation = 360f / (2f * Mathf.PI * currentPipe.curveRadius);
+		deltaToRotation = Mathf.Rad2Deg * (1 / currentPipe.curveRadius); 
 		worldRotation += currentPipe.relativeRotation;
 		if (worldRotation < 0f)
 		{

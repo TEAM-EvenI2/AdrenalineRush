@@ -283,15 +283,21 @@ public class MapGenerateHelper : EditorWindow
         {
             selectedKeyIndex.x = targetMap.prefabObjectEditInfos.Count - 1;
         }
+        if (selectedKeyIndex.x < 0)
+            selectedKeyIndex.x = 0;
         if (targetMap.prefabObjectEditInfos.Count <= 0)
         {
             GUILayout.EndArea();
             return;
         }
+
+
         if (selectedKeyIndex.y >= targetMap.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos.Count)
         {
             selectedKeyIndex.y = targetMap.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos.Count - 1;
         }
+        if (selectedKeyIndex.y < 0)
+            selectedKeyIndex.y = 0;
 
 
         int keyCount = 0;

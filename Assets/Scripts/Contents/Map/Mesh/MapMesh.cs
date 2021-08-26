@@ -7,6 +7,7 @@ using static Define;
 public abstract class MapMesh 
 {
 	protected Vector3[] vertices;
+	protected Vector2[] uv;
 	protected int[] triangles;
 
 	public int roadSegmentCount;
@@ -24,6 +25,8 @@ public abstract class MapMesh
 	}
 
 	protected abstract void SetVertices(MeshWrapper meshWrapper);
+
+	protected abstract void SetUV(MeshWrapper meshWrapper);
 	protected abstract void SetTriangles(MeshWrapper meshWrapper);
 
 	public abstract Vector3 GetPointOnSurface(MeshWrapper meshWrapper, float i, float j, float k);

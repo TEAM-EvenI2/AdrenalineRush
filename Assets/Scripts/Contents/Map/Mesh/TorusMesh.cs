@@ -64,6 +64,18 @@ public class TorusMesh : MapMesh
         }
     }
 
+    protected override void SetUV(MeshWrapper meshWrapper)
+    {
+        uv = new Vector2[vertices.Length];
+        for (int i = 0; i < vertices.Length; i += 4)
+        {
+            uv[i] = Vector2.zero;
+            uv[i + 1] = Vector2.right;
+            uv[i + 2] = Vector2.up;
+            uv[i + 3] = Vector2.one;
+        }
+        meshWrapper.mesh.uv = uv;
+    }
 
     protected override void SetTriangles(MeshWrapper meshWrapper)
     {
