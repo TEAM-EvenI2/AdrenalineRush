@@ -14,8 +14,8 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
-  m_Fog: 1
-  m_FogColor: {r: 0.9056604, g: 0.764685, b: 0.764685, a: 1}
+  m_Fog: 0
+  m_FogColor: {r: 0, g: 0, b: 0, a: 1}
   m_FogMode: 3
   m_FogDensity: 0.14
   m_LinearFogStart: 0
@@ -616,7 +616,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 599809135}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -1.11, y: -0.332, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 998490248}
@@ -788,6 +788,7 @@ GameObject:
   - component: {fileID: 998490249}
   - component: {fileID: 998490252}
   - component: {fileID: 998490253}
+  - component: {fileID: 998490254}
   m_Layer: 7
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -803,7 +804,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 998490247}
   m_LocalRotation: {x: 0.12278779, y: 0.6963643, z: -0.12278779, w: 0.6963643}
-  m_LocalPosition: {x: -0.413, y: -0.686, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 599809136}
@@ -850,7 +851,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 100
+  field of view: 120
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -882,7 +883,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1548857776}
   rotater: {fileID: 1794690116}
-  distance: 1
+  distance: 0.5
   player: {fileID: 1051754835}
 --- !u!114 &998490253
 MonoBehaviour:
@@ -916,6 +917,19 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
+--- !u!114 &998490254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 998490247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 604785fcb5288b847b60d66b00ac26ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  particle: {fileID: 7413920043961223082, guid: a87f861cf2f27bd4db9f90b4e2132aa3, type: 3}
 --- !u!1 &1020678017
 GameObject:
   m_ObjectHideFlags: 0
@@ -1096,6 +1110,36 @@ Transform:
   - {fileID: 1794690116}
   m_Father: {fileID: 0}
   m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1137191964
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1137191965}
+  m_Layer: 0
+  m_Name: ----------- Effects -------------
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1137191965
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1137191964}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.7201233, y: -3.4910622, z: 2.7688959}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1153183455
 PrefabInstance:
@@ -6389,7 +6433,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   deathCountdown: -1
-  maxRotateX: 45
+  maxRotateX: 10
   accelRotationSpeed: 2
   balanceRotationSpeed: 0.8
 --- !u!54 &1548857778
@@ -11352,7 +11396,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tunnelPrefab: {fileID: 1800054830239517439, guid: 820c56c059caa47e28b6eee68944329b, type: 3}
-  pipeCount: 5
+  pipeCount: 8
   emptyPipeCount: 2
 --- !u!1 &2035098833
 GameObject:
