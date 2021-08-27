@@ -103,16 +103,6 @@ public class MapGenerateHelper : EditorWindow
 
     #region Header
 
-    private MapMesh GetMesh()
-    {
-        switch (meshType)
-        {
-            case MapMeshType.Tunnel:
-                return torusMesh;
-        }
-        return torusMesh;
-    }
-
     private void DrawHeader()
     {
         GUIStyle style = new GUIStyle();
@@ -146,7 +136,6 @@ public class MapGenerateHelper : EditorWindow
 
         switch (meshType) {
             case MapMeshType.Tunnel:
-
                 DrawTunnelMesh();
                 break;
             case MapMeshType.Plane:
@@ -243,6 +232,9 @@ public class MapGenerateHelper : EditorWindow
 
         EditorGUILayout.LabelField("Curve Segment Count", GUILayout.MaxWidth(140));
         mesh.minCurveSegmentCount = mesh.maxCurveSegmentCount = EditorGUILayout.IntField(mesh.maxCurveSegmentCount, GUILayout.MaxWidth(40));
+
+        EditorGUILayout.LabelField("Noise Strength", GUILayout.MaxWidth(90));
+        mesh.noiseStrength = EditorGUILayout.FloatField(mesh.noiseStrength, GUILayout.MaxWidth(40));
         EditorGUILayout.EndHorizontal();
       
     }
@@ -409,16 +401,19 @@ public class MapGenerateHelper : EditorWindow
 
         if (guiEvent.type == EventType.MouseDown && guiEvent.button == 0)
         {
-            for (int i = 0; i < keyRects.Length; i++)
+            if (keyRects != null)
             {
-                Rect wolrdKeyRect = new Rect(keyRects[i].x, keyRects[i].y + headerHeight, keyRects[i].width, keyRects[i].height);
-                if (wolrdKeyRect.Contains(guiEvent.mousePosition))
+                for (int i = 0; i < keyRects.Length; i++)
                 {
-                    mouseIsDownOverKey = true;
-                    selectedKeyIndex = targetMap.GetInfoIndex(i);
-                    needsRepaint = true;
-                    GUI.FocusControl(null);
-                    break;
+                    Rect wolrdKeyRect = new Rect(keyRects[i].x, keyRects[i].y + headerHeight, keyRects[i].width, keyRects[i].height);
+                    if (wolrdKeyRect.Contains(guiEvent.mousePosition))
+                    {
+                        mouseIsDownOverKey = true;
+                        selectedKeyIndex = targetMap.GetInfoIndex(i);
+                        needsRepaint = true;
+                        //GUI.FocusControl(null);
+                        break;
+                    }
                 }
             }
 
