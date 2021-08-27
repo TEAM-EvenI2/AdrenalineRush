@@ -15,13 +15,15 @@ public class MapSystem : MonoBehaviour
 
 	private int currentStage = 0;
 
-	private MeshWrapper[] maps;
-	private Queue<MapItemGenerateInfo> itemInfos;
+	public MeshWrapper[] maps;
+	private List<MapItemGenerateInfo> itemInfos;
 
 	private void Awake()
 	{
+		Random.InitState(0);
+
 		maps = new MeshWrapper[mapCount];
-		itemInfos = new Queue<MapItemGenerateInfo>();
+		itemInfos = new List<MapItemGenerateInfo>();
 
 		currentStage = 0;
 
@@ -43,7 +45,7 @@ public class MapSystem : MonoBehaviour
 
 		}
 		//AlignNextPipeWithOrigin();
-		SetupNextPipe();
+		//SetupNextPipe();
 	}
 
 	private void GenerateMap(MeshWrapper mw)
@@ -66,11 +68,18 @@ public class MapSystem : MonoBehaviour
 		{
 			if (itemInfos.Count == 0)
 			{
-				stageInfo[currentStage].GetRandomItemPlace().AddItemToInfos(itemInfos);
+				EditableMap itemPlace = stageInfo[currentStage].GetRandomItemPlace();
+				if (itemPlace == null)
+					break;
+				itemPlace.AddItemToInfos(itemInfos);
+
+				if (itemInfos.Count == 0)
+					break;
+
 				finishedArc += minDistanceEachPreset;
 			}
 
-			MapItemGenerateInfo info = itemInfos.Peek();
+			MapItemGenerateInfo info = itemInfos[0];
 			if (finishedArc + info.curveArc > curArc)
 			{
 				info.curveArc -= curArc - finishedArc;
@@ -83,7 +92,7 @@ public class MapSystem : MonoBehaviour
 				MapItem item = Instantiate(info.prefab);
 				item.Setting(mw, (finishedArc / mw.curveRadius) * Mathf.Rad2Deg, info.angle + (i > 0? -mw.cumulativeRelativeRotation : 0), mmdw.GetMesh().mapSize);
 
-				itemInfos.Dequeue();
+				itemInfos.RemoveAt(0);
 			}
 		}
 

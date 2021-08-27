@@ -88,38 +88,44 @@ public class EditableMap : MonoBehaviour
 		gameObject.SetActive(false);
     }
 
-
-    public void AddItemToInfos(Queue<MapItemGenerateInfo> infos)
+    public void AddItemToInfos(List<MapItemGenerateInfo> infos)
     {
-		for(int i = 0; i < prefabObjectEditInfos.Count; i++)
+		
+		List<KeyValuePair<MapItem, ObjectEditInfo >> l = new List<KeyValuePair<MapItem, ObjectEditInfo>>();
+
+		for (int i = 0; i < prefabObjectEditInfos.Count; i++)
 		{
-			float previewPos = 0;
-			prefabObjectEditInfos[i].spawnedObjectInfos.Sort(delegate (ObjectEditInfo x1, ObjectEditInfo x2)
+			for (int j = 0; j < prefabObjectEditInfos[i].spawnedObjectInfos.Count; j++)
 			{
-				if (x1.percent < x2.percent)
-					return -1;
-				else if (x1.percent > x2.percent)
-					return 1;
-				return 0;
+				l.Add(new KeyValuePair<MapItem, ObjectEditInfo>(prefabObjectEditInfos[i].itemPrefab, prefabObjectEditInfos[i].spawnedObjectInfos[j] ));
+			}
+		}
+
+		l.Sort(delegate (KeyValuePair<MapItem, ObjectEditInfo> x1, KeyValuePair<MapItem, ObjectEditInfo> x2)
+		{
+			if (x1.Value.percent < x2.Value.percent)
+				return -1;
+			else if (x1.Value.percent > x2.Value.percent)
+				return 1;
+			return 0;
+		});
+
+		float previewPos = 0;
+		for (int i = 0; i < l.Count; i++)
+		{
+			float curArc = l[i].Value.curveRadius * l[i].Value.percent * l[i].Value.curveAngle * Mathf.Deg2Rad;
+			infos.Add(new MapItemGenerateInfo()
+			{
+				prefab = l[i].Key,
+				percent = l[i].Value.percent,
+				curveArc = curArc - previewPos,
+				angle = l[i].Value.angle
 			});
 
-			for (int j = 0; j < prefabObjectEditInfos[i].spawnedObjectInfos.Count; j++)
-            {
-				ObjectEditInfo oei = prefabObjectEditInfos[i].spawnedObjectInfos[j];
+			previewPos = curArc;
+		}
 
-				infos.Enqueue(new MapItemGenerateInfo()
-				{
-					prefab = prefabObjectEditInfos[i].itemPrefab,
-					percent = oei.percent,
-					curveArc = oei.curveRadius * oei.percent * oei.curveAngle * Mathf.Deg2Rad - previewPos,
-					angle = oei.angle
-				}) ;
-
-				previewPos = oei.curveRadius * oei.percent * oei.curveAngle * Mathf.Deg2Rad;
-
-			}
-        }
-    }
+	}
 
     #region Mesh Generate
     public void Generate()
