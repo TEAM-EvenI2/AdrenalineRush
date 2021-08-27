@@ -411,7 +411,7 @@ public class MapGenerateHelper : EditorWindow
                         mouseIsDownOverKey = true;
                         selectedKeyIndex = targetMap.GetInfoIndex(i);
                         needsRepaint = true;
-                        //GUI.FocusControl(null);
+                        GUI.FocusControl(null);
                         break;
                     }
                 }
