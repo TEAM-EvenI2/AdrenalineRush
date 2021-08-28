@@ -15,6 +15,7 @@ public class MeshWrapper : MonoBehaviour
 
     public float curveAngle;
 
+    public MapMeshType meshType { get; private set; }
     private MapMesh _mapMesh;
     public MapMesh mapMesh
     {
@@ -30,21 +31,28 @@ public class MeshWrapper : MonoBehaviour
 
     public float cumulativeRelativeRotation;
 
+    public Vector3 position;
+    public Vector3 angle;
+
     private void Awake()
     {
         GetComponent<MeshFilter>().mesh = mesh = new Mesh();
     }
 
-
-    public void Generate(MapMesh mapMesh, MapMeshType type, bool destoryChild = true)
+    public void Init(MapMesh mapMesh, MapMeshType type)
     {
-        if(mesh == null)
+        if (mesh == null)
         {
             GetComponent<MeshFilter>().mesh = mesh = new Mesh();
         }
         mesh.name = type.ToString();
-
+        meshType = type;
         _mapMesh = mapMesh;
+        _mapMesh.Init(this);
+    }
+
+    public void GenerateMesh(bool destoryChild = true)
+    {
         _mapMesh.Generate(this);
 
         if(destoryChild)

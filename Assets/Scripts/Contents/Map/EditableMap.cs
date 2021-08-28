@@ -135,7 +135,8 @@ public class EditableMap : MonoBehaviour
 		transform.localEulerAngles = Vector3.zero;
 		transform.localPosition = Vector3.zero;
 
-		meshWrapper.Generate(GetMesh(), meshType, false);
+		meshWrapper.Init(GetMesh(), meshType);
+		meshWrapper.GenerateMesh( false);
 
 		transform.localEulerAngles = oldAngle;
 		transform.localPosition = oldPos;

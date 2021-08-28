@@ -10,6 +10,9 @@ public class StageInformation
 
     public EditableMap GetRandomItemPlace()
     {
+        if (itemPlaces.Count == 0)
+            return null;
+
         return itemPlaces[Random.Range(0, itemPlaces.Count)];
     }
 }

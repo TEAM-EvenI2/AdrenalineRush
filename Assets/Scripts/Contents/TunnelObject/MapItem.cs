@@ -14,16 +14,20 @@ public class MapItem : MonoBehaviour
 	/// <summary>
 	/// 
 	/// </summary>
-	/// <param name="map"></param>
-	/// <param name="curveRotation"> Degree </param>
-	/// <param name="ringRotation"> Degree </param>
+	/// <param name="mw"></param>
+	/// <param name="curverPecent"> Degree percent</param>
+	/// <param name="ringPercent"> Degree percent</param>
 	/// <param name="distanceFromCenter"></param>
-	public virtual void Setting(MeshWrapper map, float curveRotation, float ringRotation, float distanceFromCenter)
+	public virtual void Setting(MeshWrapper mw, float curverPecent, float ringPercent, float distanceFromCenter)
 	{
-		transform.SetParent(map.transform, false);
+		float curveArc = mw.curveRadius * mw.curveAngle * Mathf.Deg2Rad;
+		float curveRotation = ((curverPecent * curveArc) / mw.curveRadius) * Mathf.Rad2Deg;
+		float ringRotation = ringPercent * 360;
+
+		transform.SetParent(mw.transform, false);
         transform.localRotation = Quaternion.Euler(0f, 0f, -curveRotation);
         rotater.localRotation = Quaternion.Euler(ringRotation, 0f, 0f); 
 
-        transform.localPosition = map.GetPointOnSurface(curveRotation * Mathf.Deg2Rad, ringRotation * Mathf.Deg2Rad, distanceFromCenter);
+        transform.localPosition = mw.GetPointOnSurface(curveRotation * Mathf.Deg2Rad, ringRotation * Mathf.Deg2Rad, distanceFromCenter);
 	}
 }

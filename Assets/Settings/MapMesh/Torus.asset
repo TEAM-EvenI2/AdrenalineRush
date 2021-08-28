@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   meshType: 0
   torus:
-    roadSegmentCount: 30
+    roadSegmentCount: 50
     minCurveRadius: 10
     maxCurveRadius: 10
-    minCurveSegmentCount: 10
-    maxCurveSegmentCount: 10
+    minCurveSegmentCount: 20
+    maxCurveSegmentCount: 20
     mapSize: 1
-    ringDistance: 1
-    noiseStrength: 0
+    ringDistance: 0.5
+    noiseStrength: 0.4
   foldout: 1

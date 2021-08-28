@@ -75,6 +75,11 @@ public class MapMeshDataWrapperEditor : Editor
                     mesh.maxCurveSegmentCount = EditorGUILayout.IntField(mesh.maxCurveSegmentCount, GUILayout.MaxWidth(30));
                     EditorGUILayout.EndHorizontal();
 
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField("Noise Strength", GUILayout.MaxWidth(90));
+                    mesh.noiseStrength = EditorGUILayout.FloatField(mesh.noiseStrength, GUILayout.MaxWidth(30));
+                    EditorGUILayout.EndHorizontal();
+
 
                     break;
                 }
