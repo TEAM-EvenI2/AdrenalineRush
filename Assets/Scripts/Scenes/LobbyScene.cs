@@ -21,6 +21,6 @@ public class LobbyScene : BaseScene
     
     public void MoveGameScene()
     {
-        Managers.Instance.Scene.LoadScene("Test_Game", null, null);
+        Managers.Instance.Scene.LoadScene("Game", null, null);
     }
 }
