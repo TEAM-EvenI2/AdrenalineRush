@@ -5,13 +5,13 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
 
-	public TunnelSystem pipeSystem;
+	public MapSystem mapSystem;
 
 	public float velocity;
 	public float rotationVelocity;
 
 
-	private Tunnel currentPipe;
+	private MeshWrapper currentPipe;
 	private float distanceTraveled;
 	public float DistanceTraveled
     {
@@ -34,9 +34,9 @@ public class Player : MonoBehaviour
 
 	private void Start()
 	{
-		world = pipeSystem.transform.parent;
+		world = mapSystem.transform.parent;
 		rotater = transform.GetChild(0);
-		currentPipe = pipeSystem.SetupFirstPipe();
+		currentPipe = mapSystem.SetupFirstPipe();
 		SetupCurrentPipe();
 	}
 
@@ -46,15 +46,15 @@ public class Player : MonoBehaviour
 		distanceTraveled += delta;
 		systemRotation += delta * deltaToRotation;
 
-		if (systemRotation >= currentPipe.CurveAngle)
+		if (systemRotation >= currentPipe.curveAngle)
 		{
-			delta = (systemRotation - currentPipe.CurveAngle) / deltaToRotation;
-			currentPipe = pipeSystem.SetupNextPipe();
+			delta = (systemRotation - currentPipe.curveAngle) / deltaToRotation;
+			currentPipe = mapSystem.SetupNextPipe();
 			SetupCurrentPipe();
 			systemRotation = delta * deltaToRotation;
 		}
 
-		pipeSystem.transform.localRotation =
+		mapSystem.transform.localRotation =
 			Quaternion.Euler(0f, 0f, systemRotation);
 
 		UpdateAvatarRotation();
@@ -62,8 +62,8 @@ public class Player : MonoBehaviour
 
 	private void SetupCurrentPipe()
 	{
-		deltaToRotation = 360f / (2f * Mathf.PI * currentPipe.CurveRadius);
-		worldRotation += currentPipe.RelativeRotation;
+		deltaToRotation = Mathf.Rad2Deg * (1 / currentPipe.curveRadius); 
+		worldRotation += currentPipe.relativeRotation;
 		if (worldRotation < 0f)
 		{
 			worldRotation += 360f;

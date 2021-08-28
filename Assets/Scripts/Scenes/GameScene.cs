@@ -23,9 +23,9 @@ public class GameScene : BaseScene
 
     }
 
-    public void Re()
+    public void Re(string sceneName)
     {
-        Managers.Instance.Scene.LoadScene("Game", null, null);
+        Managers.Instance.Scene.LoadScene(sceneName, null, null);
     }
 
     public void Exit()

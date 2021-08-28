@@ -4,5 +4,5 @@ using UnityEngine;
 
 public abstract class ItemGenerator : MonoBehaviour
 {
-	public abstract void GenerateItems(Tunnel pipe);
+	public abstract void GenerateItems(MeshWrapper pipe);
 }
