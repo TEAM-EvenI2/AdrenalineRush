@@ -65,4 +65,26 @@ public class Utils
         }
         return cur;
     }
+
+    public static Vector3 RotateTranslate(Vector3 origin, Vector3 angle, Vector3 translate)
+    {
+        Quaternion rotation = Quaternion.Euler(angle);
+        Matrix4x4 rMat = Matrix4x4.TRS(translate, rotation, Vector3.one);
+
+        Vector3 rotated = rMat.MultiplyPoint3x4(origin);
+        //Vector3 rotated;
+
+        //rotated.x = origin.x * Mathf.Cos(angle.x) * Mathf.Cos(angle.y) +
+        //    origin.y * (Mathf.Cos(angle.x) * Mathf.Sin(angle.y) * Mathf.Sin(angle.z) -Mathf.Sin(angle.x) * Mathf.Cos(angle.z)) +
+        //    origin.z *(Mathf.Cos(angle.x) * Mathf.Sin(angle.y) * Mathf.Cos(angle.z) + Mathf.Sin(angle.x) * Mathf.Sin(angle.z));
+        //rotated.y = origin.x * Mathf.Sin(angle.x) * Mathf.Cos(angle.y) +
+        //    origin.y * (Mathf.Sin(angle.x) * Mathf.Sin(angle.y) * Mathf.Sin(angle.z) + Mathf.Cos(angle.x) * Mathf.Cos(angle.z)) +
+        //    origin.z * (Mathf.Sin(angle.x) * Mathf.Sin(angle.y) * Mathf.Cos(angle.z) + Mathf.Cos(angle.x) * Mathf.Sin(angle.z));
+        //rotated.z = origin.x * (-Mathf.Sin(angle.y)) +
+        //    origin.y * (Mathf.Cos(angle.y) * Mathf.Sin(angle.z)) +
+        //    origin.z * (Mathf.Cos(angle.y) * Mathf.Cos(angle.z));
+        //
+        //rotated += translate;
+        return rotated;
+    }
 }
