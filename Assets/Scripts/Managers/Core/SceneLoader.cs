@@ -51,7 +51,7 @@ public class SceneLoader : MonoBehaviour
     {
         loadingText.text = "0%";
         yield return StartCoroutine(CoFade(true));
-        AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);
+        AsyncOperation op = SceneManager.LoadSceneAsync(sceneName); // 엔진단에서 실제로 씬이 로딩되는 부분
         op.allowSceneActivation = false; 
 
         while (!op.isDone)

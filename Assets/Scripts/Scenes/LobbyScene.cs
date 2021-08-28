@@ -23,4 +23,14 @@ public class LobbyScene : BaseScene
     {
         Managers.Instance.Scene.LoadScene("Game", null, null);
     }
+
+    public void MoveAchievementScene()
+    {
+        Managers.Instance.Scene.LoadScene("Achievement", null, null);
+    }
+
+    public void MoveOptionScene()
+    {
+        Managers.Instance.Scene.LoadScene("Option", null, null);
+    }
 }

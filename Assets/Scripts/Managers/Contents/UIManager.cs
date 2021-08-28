@@ -18,8 +18,8 @@ public class UIManager : MonoBehaviour
     public LoadingWindow loadingWindow;
     public void Clear()
     {
-        // PopupÀÌ³ª TooltipÀÌ ÄÑÁ® ÀÖÀ» ¶§ esc´©¸£¸é ´Ù ²¨Áö°í, 
-        // ´Ù ²¨Á®ÀÖÀ¸¸é ¿É¼Ç Å©±â
+        // Popupï¿½Ì³ï¿½ Tooltipï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ escï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, 
+        // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½É¼ï¿½ Å©ï¿½ï¿½
         CloseAllPopupItem();
         
     }

@@ -20,8 +20,8 @@ public class CameraController : MonoBehaviour
     void Update()
     {
         gameCam.fieldOfView = Mathf.Clamp(player.velocity*10, 70, 120);
-        distance = Mathf.Clamp(player.velocity/10, 1f, 2f);
-        transform.position = target.position - transform.forward * distance;
+        distance = Mathf.Clamp(player.velocity/6, 1.1f, 2f);
+        transform.position = target.position - transform.forward * distance + transform.up * (distance * 0.2f);
         transform.parent.eulerAngles = rotater.eulerAngles;
     }
 }
