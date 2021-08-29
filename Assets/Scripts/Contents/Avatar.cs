@@ -21,7 +21,7 @@ public class Avatar : MonoBehaviour
 	private void OnTriggerEnter(Collider collider)
 	{
         if (collider.tag.Equals("Obstacle"))
-            player.Die();
+            player.Hit();
         else if (collider.tag.Equals("Item"))
         {
 

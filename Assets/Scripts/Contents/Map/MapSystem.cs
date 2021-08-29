@@ -84,9 +84,12 @@ public class MapSystem : MonoBehaviour
 		currentStage++;
 		Managers.Instance.GetScene<GameScene>().postProcessVolume.profile = stageInfo[currentStage].volumeProfile;
 
-		for (int i = 0; i < mapCount / 2; i++)
+		for (int i = 0; i < mapCount ; i++)
 		{
-			SetupNextPipe(true);
+			if(i < emptyPipeCount)
+				SetupNextPipe(true);
+			else
+				SetupNextPipe();
 		}
 	}
 

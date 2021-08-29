@@ -11,6 +11,9 @@ public class GameUIManager : UIManager
     public CanvasGroup cg;
 
     public float a = 0;
+
+    public RectTransform healthBar;
+
     public void ActiveRe()
     {
         re.SetActive(true);
@@ -25,6 +28,9 @@ public class GameUIManager : UIManager
             a -= Time.deltaTime;
             cg.alpha = a;
         }
+
+        float percent = Managers.Instance.GetScene<GameScene>().player.health / 100;
+        healthBar.sizeDelta = new Vector2(800 * percent, healthBar.sizeDelta.y);
     }
 
 

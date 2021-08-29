@@ -31,6 +31,8 @@ public class Player : MonoBehaviour
 
 	public int earnedScore;
 
+	public float health = 100;
+
 
 	private void Start()
 	{
@@ -58,6 +60,13 @@ public class Player : MonoBehaviour
 			Quaternion.Euler(0f, 0f, systemRotation);
 
 		UpdateAvatarRotation();
+
+		if(health < 100)
+        {
+			health += velocity * Time.deltaTime;
+			if (health > 100)
+				health = 100;
+        }
 	}
 
 
@@ -91,9 +100,16 @@ public class Player : MonoBehaviour
 		rotater.localRotation = Quaternion.Euler(avatarRotation, 0f, 0f);
 	}
 
-	public void Die()
+	public void Hit()
 	{
-		
+
+		health -= 34;
+		if (health <= 0)
+			Die();
+	}
+
+	private void Die()
+	{
 		gameObject.SetActive(false);
 		Managers.Instance.GetUIManager<GameUIManager>().ActiveRe();
 	}
