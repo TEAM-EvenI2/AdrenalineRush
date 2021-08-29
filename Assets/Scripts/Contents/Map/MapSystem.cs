@@ -5,7 +5,7 @@ using static Define;
 
 public class MapSystem : MonoBehaviour
 {
-	public MeshWrapper meshWrapperPrefab;
+	public MapMeshWrapper meshWrapperPrefab;
 
 	public int mapCount; // 월드에 한 번에 생성될 수 있는 map의 개수
 	public int emptyPipeCount;
@@ -13,17 +13,15 @@ public class MapSystem : MonoBehaviour
 	public List<StageInformation> stageInfo;
 	public float minDistanceEachPreset = 0.1f;
 
-	private int currentStage = 0;
+	private int currentStage = -1;
 	private int currentMap = 0;
 
-	public MeshWrapper[] maps;
+	public MapMeshWrapper[] maps;
 	private List<MapItemGenerateInfo> itemInfos;
 
 	private void Awake()
 	{
-		Random.InitState(0);
-
-		maps = new MeshWrapper[mapCount];
+		maps = new MapMeshWrapper[mapCount];
 		itemInfos = new List<MapItemGenerateInfo>();
 
 		currentStage = 0;
@@ -31,7 +29,7 @@ public class MapSystem : MonoBehaviour
 		for(int i = 0; i< mapCount; i++)
 		{
 			MapMeshDataWrapper mmdw = stageInfo[currentStage].meshDataWrappers[currentMap];
-			MeshWrapper mw = maps[i] = Instantiate(meshWrapperPrefab);
+			MapMeshWrapper mw = maps[i] = Instantiate(meshWrapperPrefab);
 			mw.gameObject.name = mw.gameObject.name + " " + i;
 			mw.transform.SetParent(transform, false);
 			mw.Init(mmdw.GetMesh(), mmdw.meshType);
@@ -52,7 +50,7 @@ public class MapSystem : MonoBehaviour
 
 		for (int i = 0; i < mapCount; i++)
 		{
-			MeshWrapper mw = maps[i];
+			MapMeshWrapper mw = maps[i];
 			mw.GenerateMesh(false);
 
 		}
@@ -61,8 +59,39 @@ public class MapSystem : MonoBehaviour
 
     }
 
+    private void Update()
+    {
+		if (currentStage < stageInfo.Count - 1)
+		{
 
-    private void GenerateItem(MeshWrapper mw, int i)
+			float score = Managers.Instance.GetScene<GameScene>().player.earnedScore;
+
+			if(score >= stageInfo[currentStage + 1].enterPoint)
+            {
+				// TODO Update Stage
+				ChangeStage();
+
+				Managers.Instance.GetUIManager<GameUIManager>().a = 1;
+
+			}
+		}
+
+		
+    }
+
+	private void ChangeStage()
+	{
+		currentStage++;
+		Managers.Instance.GetScene<GameScene>().postProcessVolume.profile = stageInfo[currentStage].volumeProfile;
+
+		for (int i = 0; i < mapCount / 2; i++)
+		{
+			SetupNextPipe(true);
+		}
+	}
+
+
+    private void GenerateItem(MapMeshWrapper mw, int i)
 	{
 
 		MapMeshDataWrapper mmdw = stageInfo[currentStage].meshDataWrappers[currentMap];
@@ -104,6 +133,12 @@ public class MapSystem : MonoBehaviour
 				float distance = mmdw.GetMesh().GetDistance(mw, finishedArc / curArc, angle / 360);
 				if (item is ScoreItem)
 					distance = mmdw.GetMesh().mapSize;
+				else if(item is LongObstacle)
+                {
+					LongObstacle lo = (LongObstacle)item;
+					lo.size = info.size;
+					lo.angleInTunnel = info.angleInTunnel;
+                }
 
 				item.Setting(mw, finishedArc / curArc, angle/ 360, distance);
 
@@ -114,18 +149,18 @@ public class MapSystem : MonoBehaviour
 	}
 
 
-	public MeshWrapper SetupFirstPipe()
+	public MapMeshWrapper SetupFirstPipe()
 	{
 		transform.localPosition = new Vector3(0f, -maps[1].curveRadius);
 		return maps[1];
 	}
 
-	public MeshWrapper SetupNextPipe()
+	public MapMeshWrapper SetupNextPipe(bool dontCreateItem = false)
 	{
 		ShiftPipes();
 		AlignNextPipeWithOrigin();
 		MapMeshDataWrapper mmdw = stageInfo[currentStage].meshDataWrappers[currentMap];
-		MeshWrapper mw = maps[maps.Length - 1];
+		MapMeshWrapper mw = maps[maps.Length - 1];
 
         mw.Init(mmdw.GetMesh(), mmdw.meshType);
         mw.AlignWith(maps[maps.Length - 2]);
@@ -135,15 +170,24 @@ public class MapSystem : MonoBehaviour
 		mw.angle = maps[maps.Length - 2].angle + (mw.transform.localEulerAngles - maps[maps.Length - 2].transform.localEulerAngles);
 
 		mw.GenerateMesh(true);
-		GenerateItem(maps[maps.Length - 1], maps.Length - 1);
+		if (dontCreateItem) 
+			GenerateItem(maps[maps.Length - 1], maps.Length - 1);
 
 		transform.localPosition = new Vector3(0f, -maps[1].curveRadius);
+
+		for (int i=0; i < maps[1].transform.childCount; i++){
+            if (maps[1].transform.GetChild(i).GetComponent<MeshCollider>())
+            {
+				maps[1].transform.GetChild(i).GetComponent<MeshCollider>().enabled = true;
+
+			}
+        }
 
 		return maps[1];
 	}
 	private void ShiftPipes()
 	{
-		MeshWrapper temp = maps[0];
+		MapMeshWrapper temp = maps[0];
 		for (int i = 1; i < maps.Length; i++)
 		{
 			maps[i - 1] = maps[i];

@@ -6,7 +6,7 @@ public class ThrowObstacle : MapItem
 {
     public SimpleAnimationMove sam;
 
-	public override void Setting(MeshWrapper mw, float curveRotation, float ringRotation, float distanceFromCenter)
+	public override void Setting(MapMeshWrapper mw, float curveRotation, float ringRotation, float distanceFromCenter)
     {
         base.Setting(mw, curveRotation, ringRotation, distanceFromCenter);
 

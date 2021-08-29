@@ -8,7 +8,7 @@ public class RandomGenerator : ItemGenerator
 
 	public float spawnPercent = 0.5f;
 
-	public override void GenerateItems(MeshWrapper mw)
+	public override void GenerateItems(MapMeshWrapper mw)
 	{
 		//float angleStep = mw.curveAngle / mw.curveSegmentCount;
 		//for (int i = 0; i < mw.curveSegmentCount; i++)

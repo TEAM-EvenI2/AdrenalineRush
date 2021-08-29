@@ -9,7 +9,7 @@ using static Define;
 public class MapGenerateHelper : EditorWindow
 {
 
-    private Color borderColor = new Color(.2f, .2f, .2f);
+    private Color borderColor = new Color(.7f, .7f, .7f);
 
     private int headerHeight;
     private const float keyWidth = 10;
@@ -21,10 +21,17 @@ public class MapGenerateHelper : EditorWindow
     private Material targetMaterial;
 
 
+    private Color objectPrefabSectionColor = new Color(0.2f, 0.2f, 0.2f);
+    private Rect objectPrefabSection;
+    private const float prefabFavoriteGap = 5;
+    private const float prefabButtonSize = 30;
+
     private Color objectSettingSectionColor = new Color(0.4f,0.4f,0.4f);
     private Rect objectSettingSection;
     private Rect mapPreviewRect;
     private const int previewBorderSize = 10;
+
+    Vector2 scrollPos;
 
     Rect rotatePointRect;
     Vector2 rotatePointCenter;
@@ -44,7 +51,7 @@ public class MapGenerateHelper : EditorWindow
     static void Init()
     {
         MapGenerateHelper window = (MapGenerateHelper)GetWindow(typeof(MapGenerateHelper));
-        window.minSize = new Vector2(600, 400);
+        window.minSize = new Vector2(500, 350);
         window.Show();
     }
 
@@ -59,6 +66,7 @@ public class MapGenerateHelper : EditorWindow
         DrawHeader();
         if (targetMap)
         {
+            DrawObjectPrefab();
             DrawObjectSetting();
             HandleInput();
 
@@ -91,20 +99,54 @@ public class MapGenerateHelper : EditorWindow
         headerSection.width = position.width;
         headerSection.height = headerHeight;
 
+        float prefabSectionHeight = 0;
+        if (targetMap != null)
+        {
+            float tWidth = 0;
+            prefabSectionHeight = 30;
+            for (int i = 0; i < targetMap.prefabObjectEditInfos.Count; i++)
+            {
+                GUIContent label = new GUIContent(targetMap.prefabObjectEditInfos[i].itemPrefab.name);
+                GUIStyle style = GUI.skin.box;
+                style.alignment = TextAnchor.MiddleCenter;
+                Vector2 size = style.CalcSize(label);
+                tWidth += size.x + prefabButtonSize + prefabFavoriteGap;
+
+                if(tWidth > Screen.width)
+                {
+                    tWidth = size.x + prefabButtonSize + prefabFavoriteGap;
+                    prefabSectionHeight += 30;
+                }
+            }
+        }
+        objectPrefabSection.x = 0;
+        objectPrefabSection.y = headerHeight;
+        objectPrefabSection.width = position.width;
+        objectPrefabSection.height = prefabSectionHeight;
+
         objectSettingSection.x = 0;
-        objectSettingSection.y = headerHeight;
+        objectSettingSection.y = headerHeight + prefabSectionHeight;
         objectSettingSection.width = position.width;
-        objectSettingSection.height = position.height - headerHeight;
+        objectSettingSection.height = position.height - (headerHeight - prefabSectionHeight);
 
         EditorGUI.DrawRect(headerSection, headerSectionColor);
+        EditorGUI.DrawRect(objectPrefabSection, objectPrefabSectionColor);
         EditorGUI.DrawRect(objectSettingSection, objectSettingSectionColor);
-        EditorGUI.DrawRect(new Rect(0, headerHeight-2, position.width, 4), borderColor);
+        EditorGUI.DrawRect(new Rect(0, headerHeight-2, position.width, 2), borderColor);
     }
 
     #region Header
 
     private void DrawHeader()
     {
+
+        if (PrefabStageUtility.GetCurrentPrefabStage() != null)
+        {
+            if (targetMap == null)
+                targetMap = StageUtility.GetCurrentStageHandle().FindComponentOfType<EditableMap>();
+
+        }
+
         GUIStyle style = new GUIStyle();
         style.normal.textColor = Color.white;
         style.fontStyle = FontStyle.Bold;
@@ -148,6 +190,14 @@ public class MapGenerateHelper : EditorWindow
         }
 
         int _h = PrefabStageUtility.GetCurrentPrefabStage() != null ? 50 : 25;
+        GUILayout.BeginArea(new Rect(10, headerHeight - _h, 100, _h));
+
+        if (targetMap != null)
+            if (GUILayout.Button("Refresh", GUILayout.MaxWidth(250)))
+        {
+                targetMap.Refresh();
+        }
+            GUILayout.EndArea();
         GUILayout.BeginArea(new Rect((Screen.width / 2) - 50, headerHeight - _h, 100, _h));
 
         if (PrefabStageUtility.GetCurrentPrefabStage() != null)
@@ -165,21 +215,10 @@ public class MapGenerateHelper : EditorWindow
             {
                 if (GUILayout.Button("Regenerate", GUILayout.MaxWidth(250)))
                 {
-                    targetMap.GetComponent<MeshRenderer>().material = targetMaterial;
-
-                    targetMap.Generate();
-                    targetMap.transform.localPosition = new Vector3(0, -targetMap.meshWrapper.curveRadius);
-                    for (int i = 0; i < targetMap.prefabObjectEditInfos.Count; i++)
-                    {
-                        for(int j = 0; j < targetMap.prefabObjectEditInfos[i].spawnedObjectInfos.Count; j++)
-                        {
-                            EditableMap.ObjectEditInfo emoei = targetMap.prefabObjectEditInfos[i].spawnedObjectInfos[j];
-                            targetMap.UpdateObject(new Vector2Int(i, j), emoei.percent, emoei.angle);
-                            emoei.curveAngle = targetMap.meshWrapper.curveAngle;
-                            emoei.curveRadius = targetMap.meshWrapper.curveRadius;
-                        }
-                    }
+                    Regenerate();
                 }
+                if (targetMap.meshWrapper.mapMesh == null)
+                    Regenerate();
             }
             else
             {
@@ -189,9 +228,9 @@ public class MapGenerateHelper : EditorWindow
                     GameObject tunnel = new GameObject("Generated Tunnel");
                     tunnel.AddComponent<MeshFilter>();
                     tunnel.AddComponent<MeshRenderer>().material = targetMaterial;       
-                    tunnel.AddComponent<MeshWrapper>();
+                    tunnel.AddComponent<MapMeshWrapper>();
                     targetMap = tunnel.AddComponent<EditableMap>();
-                    targetMap.meshWrapper = targetMap.GetComponent<MeshWrapper>();
+                    targetMap.meshWrapper = targetMap.GetComponent<MapMeshWrapper>();
 
                     GenerateDefaultMapMesh();
                     targetMap.transform.localPosition = new Vector3(0, -targetMap.meshWrapper.curveRadius);
@@ -260,7 +299,67 @@ public class MapGenerateHelper : EditorWindow
         }
         targetMap.Generate();
     }
+
+    private void Regenerate()
+    {
+
+        targetMap.GetComponent<MeshRenderer>().material = targetMaterial;
+
+        targetMap.Generate();
+        targetMap.transform.localPosition = new Vector3(0, -targetMap.meshWrapper.curveRadius);
+        for (int i = 0; i < targetMap.prefabObjectEditInfos.Count; i++)
+        {
+            for (int j = 0; j < targetMap.prefabObjectEditInfos[i].spawnedObjectInfos.Count; j++)
+            {
+                EditableMap.ObjectEditInfo emoei = targetMap.prefabObjectEditInfos[i].spawnedObjectInfos[j];
+                targetMap.UpdateObject(new Vector2Int(i, j), emoei.percent, emoei.angle);
+                emoei.curveAngle = targetMap.meshWrapper.curveAngle;
+                emoei.curveRadius = targetMap.meshWrapper.curveRadius;
+            }
+        }
+    }
 #endregion
+
+    private void DrawObjectPrefab()
+    {
+        GUILayout.BeginArea(objectPrefabSection);
+        EditorGUILayout.BeginHorizontal();
+
+        float x = prefabFavoriteGap;
+        float y = 5;
+        for (int i = 0; i < targetMap.prefabObjectEditInfos.Count; i++)
+        {
+            EditableMap.PrefabObjectEditInfo prefabObjectEditInfo = targetMap.prefabObjectEditInfos[i];
+
+            GUIContent label = new GUIContent(prefabObjectEditInfo.itemPrefab.name);
+            GUIStyle style = GUI.skin.box;
+            style.alignment = TextAnchor.MiddleCenter;
+
+            Vector2 size = style.CalcSize(label);
+            if (x + size.x + prefabButtonSize > Screen.width)
+            {
+                x = prefabFavoriteGap;
+                y += 30;
+            }
+
+            EditorGUI.DrawRect(new Rect(x, y, size.x + prefabButtonSize, size.y), new Color(0.1f, 0.1f, 0.1f));
+            EditorGUI.LabelField(new Rect(x, y, size.x, size.y), label);
+        
+            if (GUI.Button(new Rect(x + size.x, y, prefabButtonSize, size.y), "+"))
+            {
+
+                selectedKeyIndex = targetMap.AddObject(prefabObjectEditInfo.itemPrefab, 0);
+
+                mouseIsDownOverKey = true;
+                needsRepaint = true;
+            }
+
+            x += size.x + prefabButtonSize + prefabFavoriteGap;
+        }
+
+        EditorGUILayout.EndHorizontal();
+        GUILayout.EndArea();
+    }
 
 
     private void DrawObjectSetting()
@@ -326,7 +425,6 @@ public class MapGenerateHelper : EditorWindow
         Rect infoRect = new Rect(previewBorderSize, mapPreviewRect.yMax + previewBorderSize * 2 + keyHeight, position.width - previewBorderSize * 2, objectSettingSection.height - (mapPreviewRect.height + previewBorderSize * 4 + keyHeight));
         GUILayout.BeginArea(infoRect);
 
-
         GUILayout.BeginHorizontal();
         GUILayout.Label("Position Percent", GUILayout.MaxWidth(100));
         float percent = EditorGUILayout.Slider(sedi.percent, 0, 1f, GUILayout.MaxWidth(200));
@@ -334,25 +432,36 @@ public class MapGenerateHelper : EditorWindow
         {
             targetMap.UpdateObject(selectedKeyIndex, percent, sedi.angle);
         }
+
+        if(sedi.ti is LongObstacle)
+        {
+            LongObstacle lo = (LongObstacle)sedi.ti;
+            GUILayout.Label("Size", GUILayout.MaxWidth(50));
+            float lo_size = EditorGUILayout.FloatField(lo.size, GUILayout.MaxWidth(30));
+            if (Mathf.Abs(lo_size - lo.size) > Mathf.Epsilon)
+            {
+                lo.size = lo_size;
+                targetMap.UpdateObject(selectedKeyIndex, percent, sedi.angle);
+            }
+        }
         GUILayout.EndHorizontal();
 
-        GUILayout.BeginHorizontal();
 
+
+        GUILayout.BeginHorizontal();
         GUILayout.BeginVertical();
-        GUILayout.Space(40);
-        GUILayout.Label("Object Rotation", GUILayout.MaxWidth(100));
+        GUILayout.Space(10);
+        GUILayout.Label("Object Rotation1", GUILayout.MaxWidth(100));
         float angle = EditorGUILayout.FloatField(sedi.angle, GUILayout.MaxWidth(100));
         if (Mathf.Abs(angle - sedi.angle) > Mathf.Epsilon)
         {
             targetMap.UpdateObject(selectedKeyIndex, sedi.percent, angle);
         }
         GUILayout.EndVertical();
-
-
         float sediAngle = -(angle);
 
         Vector2 size = new Vector2(10, 50);
-        Vector2 point = new Vector2(150, 50);// + Vector2.up * size.y / 2;
+        Vector2 point = new Vector2(130, 30);// + Vector2.up * size.y / 2;
         rotatePointCenter = point + size / 2f;
 
         float max = Mathf.Max(size.x, size.y);
@@ -364,17 +473,28 @@ public class MapGenerateHelper : EditorWindow
         EditorGUI.DrawRect(new Rect(point.x, point.y, size.x, size.y), targetMap.prefabObjectEditInfos[selectedKeyIndex.x].c);
 
         GUI.matrix = m;
+
+        if (sedi.ti is LongObstacle)
+        {
+            LongObstacle lo = (LongObstacle)sedi.ti;
+            GUILayout.BeginVertical();
+            GUILayout.Space(10);
+            GUILayout.Label("Object Rotation2", GUILayout.MaxWidth(100));
+            float _angle = EditorGUILayout.Slider(lo.angleInTunnel, -60, 60, GUILayout.MaxWidth(200));
+            if (Mathf.Abs(_angle - lo.angleInTunnel) > Mathf.Epsilon)
+            {
+                lo.angleInTunnel = _angle;
+                targetMap.UpdateObject(selectedKeyIndex, sedi.percent, sedi.angle);
+            }
+            GUILayout.EndVertical();
+        }
         GUILayout.EndHorizontal();
 
-        //float rotatePointSize = 14;
-        //rotatePointRect = new Rect(rotatePointCenter.x - rotatePointSize / 2 + (max / 2 + 15) * Mathf.Cos((sediAngle - 90) * Mathf.Deg2Rad),
-        //    rotatePointCenter.y - rotatePointSize / 2 + (max / 2 + 15) * Mathf.Sin((sediAngle - 90) * Mathf.Deg2Rad),
-        //    rotatePointSize, rotatePointSize);
-        //EditorGUI.DrawRect(rotatePointRect, sedi.c);
 
 
         GUILayout.EndArea();
         GUILayout.EndArea();
+
     }
 
     void HandleInput()
@@ -405,7 +525,7 @@ public class MapGenerateHelper : EditorWindow
             {
                 for (int i = 0; i < keyRects.Length; i++)
                 {
-                    Rect wolrdKeyRect = new Rect(keyRects[i].x, keyRects[i].y + headerHeight, keyRects[i].width, keyRects[i].height);
+                    Rect wolrdKeyRect = new Rect(keyRects[i].x, keyRects[i].y + headerHeight + objectPrefabSection.height, keyRects[i].width, keyRects[i].height);
                     if (wolrdKeyRect.Contains(guiEvent.mousePosition))
                     {
                         mouseIsDownOverKey = true;
@@ -417,7 +537,7 @@ public class MapGenerateHelper : EditorWindow
                 }
             }
 
-            Rect worldMapPreviewRect = new Rect(mapPreviewRect.x, mapPreviewRect.y + headerHeight, mapPreviewRect.width, mapPreviewRect.height);
+            Rect worldMapPreviewRect = new Rect(mapPreviewRect.x, mapPreviewRect.y + headerHeight + objectPrefabSection.height, mapPreviewRect.width, mapPreviewRect.height);
             if (!mouseIsDownOverKey && worldMapPreviewRect.Contains(guiEvent.mousePosition))
             {
                 objectPosPercent = Mathf.InverseLerp(mapPreviewRect.x, mapPreviewRect.xMax, guiEvent.mousePosition.x);
@@ -437,8 +557,6 @@ public class MapGenerateHelper : EditorWindow
             if (mouseIsDownOverKey)
             {
                 float percent = Mathf.InverseLerp(mapPreviewRect.x, mapPreviewRect.xMax, guiEvent.mousePosition.x);
-                //selectedKeyIndex = gradient.UpdateKeyTime(selectedKeyIndex, keyTime);
-                // Update Object Position
                 targetMap.UpdateObject(selectedKeyIndex, percent, targetMap.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos[selectedKeyIndex.y].angle);
                 needsRepaint = true;
             }
@@ -461,8 +579,17 @@ public class MapGenerateHelper : EditorWindow
     private void RotateObjectEvent(Event guiEvent)
     {
 
-        Vector2 wrpc = rotatePointCenter + new Vector2(previewBorderSize, headerHeight + previewBorderSize * 3 + keyHeight + mapPreviewRect.height);
-        Rect worldRotatePointRect = new Rect(rotatePointRect.x + previewBorderSize, rotatePointRect.y + headerHeight + previewBorderSize * 3 + keyHeight + mapPreviewRect.height, rotatePointRect.width, rotatePointRect.height);
+        Vector2 wrpc = rotatePointCenter + new Vector2(
+            previewBorderSize,
+            headerHeight + objectPrefabSection.height + previewBorderSize * 3 + keyHeight + mapPreviewRect.height
+            );
+        Rect worldRotatePointRect = new Rect(
+            rotatePointRect.x + previewBorderSize,
+            rotatePointRect.y + headerHeight + objectPrefabSection.height + previewBorderSize * 3 + keyHeight + mapPreviewRect.height,
+            rotatePointRect.width,
+            rotatePointRect.height
+            );
+
         if (worldRotatePointRect.Contains(guiEvent.mousePosition))
         {
             float angle = Mathf.Atan2((wrpc.x - guiEvent.mousePosition.x), (wrpc.y - guiEvent.mousePosition.y)) * Mathf.Rad2Deg;

@@ -4,65 +4,43 @@ using UnityEngine;
 
 [System.Serializable]
 public class TorusMesh : MapMesh
-{
-
+{ 
 
     [Header("Tunnel noise")]
     public float noiseStrength;
 
-    public override void Generate(MeshWrapper meshWrapper)
+    #region Type1
+
+    public override void Generate(MapMeshWrapper meshWrapper)
     {
         base.Generate(meshWrapper);
         meshWrapper.mesh.Clear();
         SetVertices(meshWrapper);
-        SetUV(meshWrapper);
+        //SetUV(meshWrapper);
         SetTriangles(meshWrapper);
         meshWrapper.mesh.normals = CaculateNormals();
     }
-    protected override void SetVertices(MeshWrapper meshWrapper)
+    protected override void SetVertices(MapMeshWrapper meshWrapper)
     {
-        vertices = new Vector3[roadSegmentCount * meshWrapper.curveSegmentCount * 4];
-        int iDelta = roadSegmentCount * 4;
+        vertices = new Vector3[roadSegmentCount * (meshWrapper.curveSegmentCount + 1)];
+        int iDelta = roadSegmentCount;
 
-        for (int u = 1, i = 0; u <= meshWrapper.curveSegmentCount; u++, i += iDelta)
+        int i = 0;
+
+        float vStep = (2f * Mathf.PI) / roadSegmentCount;
+        float uStep = ringDistance / meshWrapper.curveRadius;
+        for (int u = 0; u <= meshWrapper.curveSegmentCount; u++)
         {
-            CreateQuadRing(meshWrapper, u, i);
+            for (int v = 0; v < roadSegmentCount; v++, i++)
+            {
+                vertices[i] = GetPointOnSurface(meshWrapper, u * uStep, v * vStep, GetDistance(meshWrapper, (float)u / meshWrapper.curveSegmentCount, (float)v / roadSegmentCount));
+            }
         }
 
         meshWrapper.mesh.vertices = vertices;
     }
 
-    private void CreateQuadRing(MeshWrapper meshWrapper, float u, int i)
-    {
-        float vStep = (2f * Mathf.PI) / roadSegmentCount;
-        float uStep = ringDistance / meshWrapper.curveRadius;
-        int ringOffset = roadSegmentCount * 4;
-
-        Vector3 vertex = GetPointOnSurface(meshWrapper, u * uStep, 0f, GetDistance(meshWrapper, (float)u / meshWrapper.curveSegmentCount, 0));
-        Vector3 vertexB = GetPointOnSurface(meshWrapper, 0, 0f, GetDistance(meshWrapper,0, 0));
-        for (int v = 1; v <= roadSegmentCount; v++, i += 4)
-        {
-
-            // u - 1
-            if (i >= ringOffset)
-            {
-                vertices[i] = vertices[i - ringOffset + 2];
-                vertices[i + 1] = vertices[i - ringOffset + 3];
-            }
-            else
-            {
-                vertices[i] = vertexB;
-                vertices[i + 1] = vertexB = GetPointOnSurface(meshWrapper, 0, v * vStep, GetDistance(meshWrapper,0, (float)v / roadSegmentCount));
-            }
-
-            // u
-            vertices[i + 2] = vertex;
-            vertices[i + 3] = vertex = GetPointOnSurface(meshWrapper, u * uStep, v * vStep, GetDistance(meshWrapper,( float)u / meshWrapper.curveSegmentCount, (float)v / roadSegmentCount));
-
-        }
-    }
-
-    protected override void SetUV(MeshWrapper meshWrapper)
+    protected override void SetUV(MapMeshWrapper meshWrapper)
     {
         uv = new Vector2[vertices.Length];
         for (int i = 0; i < vertices.Length; i += 4)
@@ -75,25 +53,53 @@ public class TorusMesh : MapMesh
         meshWrapper.mesh.uv = uv;
     }
 
-    protected override void SetTriangles(MeshWrapper meshWrapper)
+    protected override void SetTriangles(MapMeshWrapper meshWrapper)
     {
-        triangles = new int[roadSegmentCount * meshWrapper.curveSegmentCount * 6];
-        for (int t = 0, i = 0; t < triangles.Length; t += 6, i += 4)
+        triangles = new int[(roadSegmentCount + 1) * (meshWrapper.curveSegmentCount  + 1)* 6];
+
+        int triIndex = 0;
+
+        for (int u = 0; u <= meshWrapper.curveSegmentCount; u++)
         {
-            triangles[t] = triangles[t + 5] = i;
-            triangles[t + 1] = i + 2;
-            triangles[t + 2] = triangles[t + 3] = i + 3;
-            triangles[t + 4] = i + 1;
+            for (int v = 0; v < roadSegmentCount; v++)
+            {
+                int i = v + u * roadSegmentCount;
+                if (u != meshWrapper.curveSegmentCount)
+                {
+                    if (v != roadSegmentCount - 1)
+                    {
+                        triangles[triIndex] = i;
+                        triangles[triIndex + 2] = i + roadSegmentCount + 1;
+                        triangles[triIndex + 1] = i + roadSegmentCount;
+
+                        triangles[triIndex + 3] = i;
+                        triangles[triIndex + 5] = i + 1;
+                        triangles[triIndex + 4] = i + roadSegmentCount + 1;
+                    }
+                    else
+                    {
+                        triangles[triIndex] = i;
+                        triangles[triIndex + 2] = u * roadSegmentCount + roadSegmentCount;
+                        triangles[triIndex + 1] = i + roadSegmentCount;
+
+                        triangles[triIndex + 3] = i;
+                        triangles[triIndex + 5] = u * roadSegmentCount;
+                        triangles[triIndex + 4] = u * roadSegmentCount + roadSegmentCount;
+                    }
+                    triIndex += 6;
+                }
+            }
         }
+
         meshWrapper.mesh.triangles = triangles;
     }
 
-    public override float GetDistance(MeshWrapper meshWrapper, float u, float v)
+    public override float GetDistance(MapMeshWrapper meshWrapper, float u, float v)
     {
         u = u * Mathf.PI * 2;
         v = v * Mathf.PI * 2 + meshWrapper.cumulativeRelativeRotation * Mathf.Deg2Rad;
 
-        float x = Mathf.Sin(v)* Mathf.Cos(u);
+        float x = Mathf.Sin(v) * Mathf.Cos(u);
         float y = Mathf.Sin(v) * Mathf.Sin(u);
         float z = Mathf.Cos(v);
 
@@ -108,7 +114,7 @@ public class TorusMesh : MapMesh
     /// <param name="v">tunnel angle (radian) </param>
     /// <param name="radius"> tunnel radius </param>
     /// <returns></returns>
-    public override Vector3 GetPointOnSurface(MeshWrapper meshWrapper, float u, float v, float radius)
+    public override Vector3 GetPointOnSurface(MapMeshWrapper meshWrapper, float u, float v, float radius)
     {
         Vector3 p;
         float r = (meshWrapper.curveRadius + radius * Mathf.Cos(v));
@@ -125,6 +131,7 @@ public class TorusMesh : MapMesh
 
         return noiseValue;
     }
+    #endregion
 
 
 }

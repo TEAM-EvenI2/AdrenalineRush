@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Define;
 
-public class MeshWrapper : MonoBehaviour
+public class MapMeshWrapper : MonoBehaviour
 {
 
     public Mesh mesh;
@@ -68,7 +68,7 @@ public class MeshWrapper : MonoBehaviour
         return _mapMesh.GetPointOnSurface(this, i, j, k);
     }
 
-    public void AlignWith(MeshWrapper meshWrapper)
+    public void AlignWith(MapMeshWrapper meshWrapper)
     {
         relativeRotation =
         Random.Range(0, curveSegmentCount) * 360f / _mapMesh.roadSegmentCount;

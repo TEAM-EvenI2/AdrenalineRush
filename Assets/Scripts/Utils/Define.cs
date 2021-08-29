@@ -34,5 +34,10 @@ public class Define
         public float percent;
         public float curveArc;
         public float angle;
+
+        // for Long Obstacle
+        public float angleInTunnel;
+        public float size;
+
     }
 }

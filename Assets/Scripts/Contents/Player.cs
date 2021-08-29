@@ -11,7 +11,7 @@ public class Player : MonoBehaviour
 	public float rotationVelocity;
 
 
-	private MeshWrapper currentPipe;
+	private MapMeshWrapper currentPipe;
 	private float distanceTraveled;
 	public float DistanceTraveled
     {
@@ -59,6 +59,7 @@ public class Player : MonoBehaviour
 
 		UpdateAvatarRotation();
 	}
+
 
 	private void SetupCurrentPipe()
 	{

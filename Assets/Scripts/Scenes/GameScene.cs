@@ -2,10 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class GameScene : BaseScene
 {
-
+    public Volume postProcessVolume;
     public Player player;
 
     protected override void Init()
