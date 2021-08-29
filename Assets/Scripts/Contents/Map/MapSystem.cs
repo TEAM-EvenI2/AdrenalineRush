@@ -170,7 +170,7 @@ public class MapSystem : MonoBehaviour
 		mw.angle = maps[maps.Length - 2].angle + (mw.transform.localEulerAngles - maps[maps.Length - 2].transform.localEulerAngles);
 
 		mw.GenerateMesh(true);
-		if (dontCreateItem) 
+		if (!dontCreateItem) 
 			GenerateItem(maps[maps.Length - 1], maps.Length - 1);
 
 		transform.localPosition = new Vector3(0f, -maps[1].curveRadius);
