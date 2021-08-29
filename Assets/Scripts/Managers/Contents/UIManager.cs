@@ -15,7 +15,7 @@ public class UIManager : MonoBehaviour
 {
     private List<Transform> uiPopupStack = new List<Transform>();
 
-    public LoadingWindow loadingWindow;
+    public LoadingWindow loadingWindow = null;
     public void Clear()
     {
         // Popup�̳� Tooltip�� ���� ���� �� esc������ �� ������, 
@@ -79,13 +79,19 @@ public class UIManager : MonoBehaviour
     #region Loading 
     public void OpenLoading(string message, bool clear = true)
     {
-        loadingWindow.gameObject.SetActive(true);
-        loadingWindow.Setting(message, clear);
+        if (loadingWindow)
+        {
+            loadingWindow.gameObject.SetActive(true);
+            loadingWindow.Setting(message, clear);
+        }
     }
 
     public void CloseLoading()
     {
-        loadingWindow.gameObject.SetActive(false);
+        if (loadingWindow)
+        {
+            loadingWindow.gameObject.SetActive(false);
+        }
     }
     #endregion
 

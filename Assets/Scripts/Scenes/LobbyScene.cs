@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class LobbyScene : BaseScene
 {
+    public GameObject GameCam;
+    private Animator animator;
+    void Start()
+    {
+        animator = GameCam.GetComponent<Animator>();
+    }
+
     protected override void Init()
     {
         base.Init();
@@ -21,7 +28,7 @@ public class LobbyScene : BaseScene
     
     public void MoveGameScene()
     {
-        Managers.Instance.Scene.LoadScene("Game", null, null);
+        Managers.Instance.Scene.LoadScene("Game", null, null, true);
     }
 
     public void MoveAchievementScene()
@@ -32,5 +39,13 @@ public class LobbyScene : BaseScene
     public void MoveOptionScene()
     {
         Managers.Instance.Scene.LoadScene("Option", null, null);
+    }
+
+    public void PresetScene()
+    {
+        // 로비 씬 내에서 처리
+        animator.SetBool("CameraMoveToPreset", !animator.GetBool("CameraMoveToPreset"));
+
+        // TODO: 이동이 끝나면 캔버스 UI 변경.
     }
 }
