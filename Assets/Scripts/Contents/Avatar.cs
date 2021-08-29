@@ -28,6 +28,7 @@ public class Avatar : MonoBehaviour
         //     player.earnedScore += collider.GetComponentInParent<ScoreItem>().point;
         //     Destroy(collider.gameObject);
         // }
+		player.GetComponentInChildren<PlayerGraphicManager>().Damaged();
     }
 
 	private void Update()
