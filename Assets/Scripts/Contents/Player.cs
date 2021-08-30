@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using static Define;
 public class Player : MonoBehaviour
 {
 
@@ -11,7 +11,7 @@ public class Player : MonoBehaviour
 	public float rotationVelocity;
 
 
-	private MeshWrapper currentPipe;
+	private MapMeshWrapper currentPipe;
 	private float distanceTraveled;
 	public float DistanceTraveled
     {
@@ -30,6 +30,12 @@ public class Player : MonoBehaviour
 	private float avatarRotation;
 
 	public int earnedScore;
+
+	public float health = 100;
+
+	public SmoothDampStruct<float> inputSmooth;
+	private float targetInput = 0;
+	private float curInput = 0;
 
 
 	private void Start()
@@ -58,7 +64,15 @@ public class Player : MonoBehaviour
 			Quaternion.Euler(0f, 0f, systemRotation);
 
 		UpdateAvatarRotation();
+
+		if(health < 100)
+        {
+			health += velocity * Time.deltaTime;
+			if (health > 100)
+				health = 100;
+        }
 	}
+
 
 	private void SetupCurrentPipe()
 	{
@@ -77,8 +91,11 @@ public class Player : MonoBehaviour
 
 	private void UpdateAvatarRotation()
 	{
+		SetInput();
+		curInput = Mathf.SmoothDamp(curInput, targetInput, ref inputSmooth.smoothVelocity, inputSmooth.smoothTime);
+
 		avatarRotation +=
-			rotationVelocity * Time.deltaTime * Input.GetAxis("Horizontal");
+			rotationVelocity * Time.deltaTime * curInput;
 		if (avatarRotation < 0f)
 		{
 			avatarRotation += 360f;
@@ -90,9 +107,36 @@ public class Player : MonoBehaviour
 		rotater.localRotation = Quaternion.Euler(avatarRotation, 0f, 0f);
 	}
 
-	public void Die()
+	private void SetInput()
+    {
+#if UNITY_EDITOR
+		targetInput = Input.GetAxisRaw("Horizontal");
+#else
+		if(Input.touchCount > 0)
+        {
+			Vector3 pos = Input.GetTouch(0).position;
+
+			if (pos.x > Screen.width / 2)
+				targetInput= 1;
+			else
+				targetInput= 0;
+        }
+
+		targetInput= 0;
+#endif
+
+	}
+
+	public void Hit()
 	{
-		
+
+		health -= 34;
+		if (health <= 0)
+			Die();
+	}
+
+	private void Die()
+	{
 		gameObject.SetActive(false);
 		Managers.Instance.GetUIManager<GameUIManager>().ActiveRe();
 	}

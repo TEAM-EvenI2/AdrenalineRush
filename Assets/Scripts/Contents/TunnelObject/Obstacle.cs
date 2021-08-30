@@ -8,7 +8,7 @@ public class Obstacle : MapItem
 
     public Transform[] deformableObjects;
 
-    public override void Setting(MeshWrapper mw, float curverPecent, float ringPercent, float distanceFromCenter)
+    public override void Setting(MapMeshWrapper mw, float curverPecent, float ringPercent, float distanceFromCenter)
     {
 
         base.Setting(mw, curverPecent, ringPercent, distanceFromCenter);

@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 [System.Serializable]
 public class StageInformation 
 {
+    public float enterPoint;
+    public VolumeProfile volumeProfile;
     public List<MapMeshDataWrapper> meshDataWrappers;
     public List<EditableMap> itemPlaces;
 

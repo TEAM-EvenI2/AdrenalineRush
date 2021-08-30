@@ -16,7 +16,7 @@ public abstract class MapMesh
 	public float mapSize; // tunnelRadius
 	public float ringDistance;
 
-	public void Init(MeshWrapper meshWrapper)
+	public void Init(MapMeshWrapper meshWrapper)
 	{
 		meshWrapper.curveRadius = Random.Range(minCurveRadius, maxCurveRadius);
 		meshWrapper.curveSegmentCount =
@@ -25,17 +25,17 @@ public abstract class MapMesh
 		meshWrapper.curveAngle = uStep * meshWrapper.curveSegmentCount * (360f / (2f * Mathf.PI));
 	}
 
-	public virtual void Generate(MeshWrapper meshWrapper)
+	public virtual void Generate(MapMeshWrapper meshWrapper)
     {
 		Init(meshWrapper);
 	}
 
-	protected abstract void SetVertices(MeshWrapper meshWrapper);
+	protected abstract void SetVertices(MapMeshWrapper meshWrapper);
 
-	protected abstract void SetUV(MeshWrapper meshWrapper);
-	protected abstract void SetTriangles(MeshWrapper meshWrapper);
+	protected abstract void SetUV(MapMeshWrapper meshWrapper);
+	protected abstract void SetTriangles(MapMeshWrapper meshWrapper);
 
-	public abstract Vector3 GetPointOnSurface(MeshWrapper meshWrapper, float i, float j, float k);
+	public abstract Vector3 GetPointOnSurface(MapMeshWrapper meshWrapper, float i, float j, float k);
 
 	/// <summary>
 	/// 
@@ -44,7 +44,7 @@ public abstract class MapMesh
 	/// <param name="i"> 0 ~ 1 percent</param>
 	/// <param name="j"> 0 ~ 1 percent</param>
 	/// <returns></returns>
-	public abstract float GetDistance(MeshWrapper meshWrapper, float i, float j);
+	public abstract float GetDistance(MapMeshWrapper meshWrapper, float i, float j);
 
 	protected Vector3[] CaculateNormals()
 	{
