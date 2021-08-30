@@ -615,6 +615,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rbc_base: {fileID: 2100000, guid: 3c9d6c373f5bb844c829e432aa41147b, type: 2}
   rbc_damaged: {fileID: 2100000, guid: 12f82d00b94ff6548b7abed0f5c289c9, type: 2}
+  p_rbc_damaged: {fileID: 19800006, guid: bcaff8fc36e95584bb27cc3cf7c6cb14, type: 3}
 --- !u!1 &522368358
 GameObject:
   m_ObjectHideFlags: 0
@@ -5858,7 +5859,7 @@ GameObject:
   - component: {fileID: 850285206}
   m_Layer: 0
   m_Name: Rotater
-  m_TagString: Untagged
+  m_TagString: PlayerRotator
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

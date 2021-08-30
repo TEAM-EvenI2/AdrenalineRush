@@ -2,10 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RBCMaterialManager : MonoBehaviour
+public class RBCGraphicManager : MonoBehaviour
 {
     public Material rbc_base;
     public Material rbc_damaged;
+
+    public ParticleSystem p_rbc_damaged;
+
+
     private Material material
     {
         get {return gameObject.GetComponent<Renderer>().material;}
@@ -65,6 +69,30 @@ public class RBCMaterialManager : MonoBehaviour
         {
             Debug.Log("AnimateDamageShader");
             // TODO: 셰이더 색상 동적으로 변환해서 데미지 받는 효과 주기
+        }
+    }
+
+    public static GameObject FindParentWithTag(GameObject childObject, string tag)
+    {
+        Transform t = childObject.transform;
+        while (t.parent != null)
+        {
+        if (t.parent.tag == tag)
+        {
+            return t.parent.gameObject;
+        }
+        t = t.parent.transform;
+        }
+        return null; // Could not find a parent with given tag.
+    }
+
+    public void RenderDamageParticle()
+    {
+        GameObject rotator = FindParentWithTag(gameObject, "PlayerRotator");
+        if (rotator)
+        {
+            ParticleSystem particle = Instantiate(p_rbc_damaged, gameObject.transform.position, rotator.transform.rotation);
+            p_rbc_damaged.Play();
         }
     }
 }
