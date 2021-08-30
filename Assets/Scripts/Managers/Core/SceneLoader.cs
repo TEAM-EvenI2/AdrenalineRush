@@ -107,5 +107,6 @@ public class SceneLoader : MonoBehaviour
     private void FadeOutImmediate()
     {
         canvasGroup.alpha = 0;
+        gameObject.SetActive(false);
     }
 }
