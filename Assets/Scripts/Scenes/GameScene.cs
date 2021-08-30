@@ -29,6 +29,11 @@ public class GameScene : BaseScene
         Managers.Instance.Scene.LoadScene(sceneName, null, null);
     }
 
+    public void GotoMain()
+    {
+        Managers.Instance.Scene.LoadScene("Lobby", null, null);
+    }
+
     public void Exit()
     {
         Application.Quit(0);
