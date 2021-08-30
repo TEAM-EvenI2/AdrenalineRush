@@ -11,6 +11,7 @@ public class LongObstacle : MeshObstacle
     public int radiusSegmentCount = 5;
     public int lengthSegmentCount = 1;
 	public float angleInTunnel;
+	public float middleSizePercent;
 
 
 	private Vector3[] vertices;
@@ -51,61 +52,49 @@ public class LongObstacle : MeshObstacle
 			{
 
 				int idx = i * radiusSegmentCount + j;
-				float fixedPercent = i > lengthSegmentCount / 2 ? ((lengthPercent - 0.5f) * 2) : ((0.5f - lengthPercent) * 2);
+				float fixedPercent = (lengthPercent - 0.5f) * 2;
+				float innerAngle = ((float)j / radiusSegmentCount) * 360 ;
+				if (i >= lengthSegmentCount / 2)
+				{
+					innerAngle += 180;
+					innerAngle *= -1;
+				}
+				innerAngle *= Mathf.Deg2Rad;
 
 				// angle + (wantedTunnelArc / tunnelRadius), wantedTunnelArc = cos(\theta) * size
-				float _angle = angle + Mathf.Cos(((float)j / radiusSegmentCount) * 360 * Mathf.Deg2Rad) * size * Mathf.Rad2Deg;
+				float _angle = angle + Mathf.Cos(innerAngle) * size * Mathf.Rad2Deg;
 				if (i > lengthSegmentCount / 2)
 				{
 					_angle += 180;
 				}
 				float arc = Mathf.Tan(angleInTunnel * Mathf.Deg2Rad) * mw.mapMesh.mapSize + size + enableArc * percent +
-					(Mathf.Sin(((float)j / radiusSegmentCount) * 360 * Mathf.Deg2Rad) * size) * fixedPercent +
-					Mathf.Tan(angleInTunnel * Mathf.Deg2Rad) * mw.mapMesh.mapSize * -(lengthPercent - 0.5f) * 2;
+					(Mathf.Sin(innerAngle) * size) * (Mathf.Abs(fixedPercent) < middleSizePercent ? middleSizePercent : Mathf.Abs(fixedPercent)) +
+					Mathf.Tan(angleInTunnel * Mathf.Deg2Rad) * mw.mapMesh.mapSize * fixedPercent;
 
 				_angle = _angle % 360;
 				if (_angle < 0)
 					_angle += 360;
 
-				float distance = mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360) * fixedPercent;
+				float distance = mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360) * Mathf.Abs(fixedPercent);
 
-				vertices[idx] = mw.mapMesh.GetPointOnSurface(mw, arc / mw.curveRadius, _angle * Mathf.Deg2Rad, distance);
+				vertices[idx] = mw.mapMesh.GetPointOnSurface(mw, arc / mw.curveRadius, _angle * Mathf.Deg2Rad, distance)
+					+ new Vector3(0, -Mathf.Sin(angle * Mathf.Deg2Rad), Mathf.Cos(angle * Mathf.Deg2Rad)) * middleSizePercent * (1 - Mathf.Abs(fixedPercent)) * -Mathf.Sign(fixedPercent) * size * Mathf.Cos(innerAngle);
 
 				if (i != lengthSegmentCount)
 				{
 					if (j != radiusSegmentCount - 1)
 					{
-						if (i > lengthSegmentCount / 2 - 1)
-						{
-							AddTriangle(triIndex, idx, idx + radiusSegmentCount + 1, idx + radiusSegmentCount);
-							triIndex += 3;
-							AddTriangle(triIndex, idx, idx + 1, idx + radiusSegmentCount + 1);
-							triIndex += 3;
-						}
-                        else
-                        {
 							AddTriangle(triIndex, idx, idx + radiusSegmentCount, idx + radiusSegmentCount + 1);
 							triIndex += 3;
 							AddTriangle(triIndex, idx, idx + radiusSegmentCount + 1, idx + 1);
 							triIndex += 3;
-						}
 					}
 					else
 					{
-						if (i  > lengthSegmentCount / 2 - 1)
-						{
-							AddTriangle(triIndex, idx, i * radiusSegmentCount + radiusSegmentCount, idx + radiusSegmentCount);
-							triIndex += 3;
-							AddTriangle(triIndex, idx, i * radiusSegmentCount, i * radiusSegmentCount + radiusSegmentCount);
-							triIndex += 3;
-						}
-						else
-						{
 							AddTriangle(triIndex, idx, idx + radiusSegmentCount, i * radiusSegmentCount + radiusSegmentCount);
 							triIndex += 3;
 							AddTriangle(triIndex, idx, i * radiusSegmentCount + radiusSegmentCount, i * radiusSegmentCount);
 							triIndex += 3;
-						}
 					}
 				}
 			}

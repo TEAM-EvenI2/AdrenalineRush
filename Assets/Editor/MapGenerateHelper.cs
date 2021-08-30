@@ -478,12 +478,18 @@ public class MapGenerateHelper : EditorWindow
         {
             LongObstacle lo = (LongObstacle)sedi.ti;
             GUILayout.BeginVertical();
-            GUILayout.Space(10);
             GUILayout.Label("Object Rotation2", GUILayout.MaxWidth(100));
             float _angle = EditorGUILayout.Slider(lo.angleInTunnel, -60, 60, GUILayout.MaxWidth(200));
             if (Mathf.Abs(_angle - lo.angleInTunnel) > Mathf.Epsilon)
             {
                 lo.angleInTunnel = _angle;
+                targetMap.UpdateObject(selectedKeyIndex, sedi.percent, sedi.angle);
+            }
+            GUILayout.Label("Middle Size Percent", GUILayout.MaxWidth(130));
+            float _middle_percent = EditorGUILayout.Slider(lo.middleSizePercent, 0, 1f, GUILayout.MaxWidth(200));
+            if (Mathf.Abs(_middle_percent - lo.middleSizePercent) > Mathf.Epsilon)
+            {
+                lo.middleSizePercent = _middle_percent;
                 targetMap.UpdateObject(selectedKeyIndex, sedi.percent, sedi.angle);
             }
             GUILayout.EndVertical();

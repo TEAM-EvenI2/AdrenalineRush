@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using static Define;
 public class Player : MonoBehaviour
 {
 
@@ -32,6 +32,10 @@ public class Player : MonoBehaviour
 	public int earnedScore;
 
 	public float health = 100;
+
+	public SmoothDampStruct<float> inputSmooth;
+	private float targetInput = 0;
+	private float curInput = 0;
 
 
 	private void Start()
@@ -87,8 +91,11 @@ public class Player : MonoBehaviour
 
 	private void UpdateAvatarRotation()
 	{
+		SetInput();
+		curInput = Mathf.SmoothDamp(curInput, targetInput, ref inputSmooth.smoothVelocity, inputSmooth.smoothTime);
+
 		avatarRotation +=
-			rotationVelocity * Time.deltaTime * Input.GetAxis("Horizontal");
+			rotationVelocity * Time.deltaTime * curInput;
 		if (avatarRotation < 0f)
 		{
 			avatarRotation += 360f;
@@ -98,6 +105,26 @@ public class Player : MonoBehaviour
 			avatarRotation -= 360f;
 		}
 		rotater.localRotation = Quaternion.Euler(avatarRotation, 0f, 0f);
+	}
+
+	private void SetInput()
+    {
+#if UNITY_EDITOR
+		targetInput = Input.GetAxisRaw("Horizontal");
+#else
+		if(Input.touchCount > 0)
+        {
+			Vector3 pos = Input.GetTouch(0).position;
+
+			if (pos.x > Screen.width / 2)
+				targetInput= 1;
+			else
+				targetInput= 0;
+        }
+
+		targetInput= 0;
+#endif
+
 	}
 
 	public void Hit()

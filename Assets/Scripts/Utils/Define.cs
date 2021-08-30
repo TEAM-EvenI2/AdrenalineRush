@@ -38,6 +38,7 @@ public class Define
         // for Long Obstacle
         public float angleInTunnel;
         public float size;
+        public float middleSizePercent;
 
     }
 }

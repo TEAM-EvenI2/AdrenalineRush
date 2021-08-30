@@ -1648,7 +1648,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1902255321
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1671,6 +1671,7 @@ MonoBehaviour:
   size: 0.3
   radiusSegmentCount: 10
   lengthSegmentCount: 10
+  minPercent: 1
   prefab: {fileID: 1112369461252272025, guid: 8e7bf7e1c0c81034d9bd61310b7d8b03, type: 3}
 --- !u!4 &1902255322
 Transform:

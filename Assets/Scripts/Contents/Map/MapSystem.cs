@@ -141,6 +141,7 @@ public class MapSystem : MonoBehaviour
 					LongObstacle lo = (LongObstacle)item;
 					lo.size = info.size;
 					lo.angleInTunnel = info.angleInTunnel;
+					lo.middleSizePercent = info.middleSizePercent;
                 }
 
 				item.Setting(mw, finishedArc / curArc, angle/ 360, distance);

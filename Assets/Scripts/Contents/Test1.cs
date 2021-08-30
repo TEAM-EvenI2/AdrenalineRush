@@ -16,6 +16,7 @@ public class Test1 : MonoBehaviour
     public float size =1;
     public int radiusSegmentCount=1;
     public int lengthSegmentCount=5;
+    public float minPercent;
 
     public LongObstacle prefab;
 
@@ -55,24 +56,32 @@ public class Test1 : MonoBehaviour
             {
                 int idx = i * radiusSegmentCount + j;
                 Transform t = transform.GetChild(idx);
-                float fixedPercent = i > lengthSegmentCount / 2?((lengthPercent - 0.5f) * 2): ((0.5f - lengthPercent) * 2);
+                float fixedPercent = (lengthPercent - 0.5f) * 2;
+                float innerAngle = ((float)j / radiusSegmentCount) * 360;
+                if (i >= lengthSegmentCount / 2)
+                {
+                    innerAngle += 180;
+                    innerAngle *= -1;
+                }
+                innerAngle *= Mathf.Deg2Rad;
 
                 // angle + (wantedTunnelArc / tunnelRadius), wantedTunnelArc = cos(\theta) * size
-                float _angle = angle1 + Mathf.Cos(((float)j / radiusSegmentCount) * 360 * Mathf.Deg2Rad) * size * Mathf.Rad2Deg;
+                float _angle = angle1 + Mathf.Cos(innerAngle) * size * Mathf.Rad2Deg;
                 if(i > lengthSegmentCount / 2)
                 {
                     _angle += 180;
                 }
                 float arc = Mathf.Tan(angle2 * Mathf.Deg2Rad) * mw.mapMesh.mapSize + size + enableArc * percent +
-                    (Mathf.Sin(((float)j / radiusSegmentCount) * 360 * Mathf.Deg2Rad) * size) * fixedPercent +
-                    Mathf.Tan(angle2 * Mathf.Deg2Rad) * mw.mapMesh.mapSize * -(lengthPercent - 0.5f) * 2;
+                    (Mathf.Sin(innerAngle) * size) * (Mathf.Abs(fixedPercent) < minPercent ? minPercent : Mathf.Abs(fixedPercent) )+
+                    Mathf.Tan(angle2 * Mathf.Deg2Rad) * mw.mapMesh.mapSize * fixedPercent;
 
                 _angle = _angle % 360;
                 if (_angle < 0)
                     _angle += 360;
 
-                float distance = mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360) * fixedPercent ;
-                Vector3 point1 = mw.mapMesh.GetPointOnSurface(mw, arc / mw.curveRadius, _angle * Mathf.Deg2Rad, distance);
+                float distance = mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360) * Mathf.Abs(fixedPercent) ;
+                Vector3 point1 = mw.mapMesh.GetPointOnSurface(mw, arc / mw.curveRadius, _angle * Mathf.Deg2Rad, distance) 
+                    + new Vector3(0, -Mathf.Sin(angle1 * Mathf.Deg2Rad), Mathf.Cos(angle1 * Mathf.Deg2Rad)) * minPercent * (1 - Mathf.Abs(fixedPercent)) * -Mathf.Sign(fixedPercent) * size * Mathf.Cos(innerAngle);
 
 
                 t.position = point1;

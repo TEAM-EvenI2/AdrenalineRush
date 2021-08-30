@@ -135,6 +135,7 @@ public class EditableMap : MonoBehaviour
 				LongObstacle lo = (LongObstacle)l[i].Value.ti;
 				migi.size = lo.size;
 				migi.angleInTunnel = lo.angleInTunnel;
+				migi.middleSizePercent = lo.middleSizePercent;
             }
 			infos.Add(migi);
 
