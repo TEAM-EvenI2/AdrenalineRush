@@ -129,7 +129,7 @@ public class Player : MonoBehaviour
 
 	public void Hit()
 	{
-
+		gameObject.GetComponentInChildren<PlayerGraphicManager>().Damaged();
 		health -= 34;
 		if (health <= 0)
 			Die();

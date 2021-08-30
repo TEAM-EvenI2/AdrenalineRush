@@ -91,7 +91,7 @@ public class RBCGraphicManager : MonoBehaviour
         GameObject rotator = FindParentWithTag(gameObject, "PlayerRotator");
         if (rotator)
         {
-            ParticleSystem particle = Instantiate(p_rbc_damaged, gameObject.transform.position, rotator.transform.rotation);
+            ParticleSystem particle = Instantiate(p_rbc_damaged, gameObject.transform.position, rotator.transform.localRotation);
             p_rbc_damaged.Play();
         }
     }
