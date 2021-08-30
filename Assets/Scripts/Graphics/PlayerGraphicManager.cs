@@ -13,12 +13,15 @@ public class PlayerGraphicManager : MonoBehaviour
 
     public void Damaged()
     {
-        if (!graphicManager.checkMaterialName("RBC_Base (Instance)") && !(graphicManager.checkMaterialName("RBC_Base(Clone)")))
-        {
-            graphicManager.ChangeToNormalMat();
-        }
+        StartCoroutine(CoDamaged());
+    }
+
+    IEnumerator CoDamaged()
+    {
         graphicManager.ChangeToDamageMat();
-        graphicManager.AnimateDamageShader(); // TODO: 몇 초 동안 지속 후 다시 원래 매터리얼로 돌아오게 만들기
+        graphicManager.AnimateDamageShader();
         graphicManager.RenderDamageParticle();
+        yield return new WaitForSeconds(1f);
+        graphicManager.ChangeToNormalMat();
     }
 }

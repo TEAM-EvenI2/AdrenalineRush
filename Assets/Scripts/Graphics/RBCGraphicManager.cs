@@ -37,7 +37,7 @@ public class RBCGraphicManager : MonoBehaviour
 
     public void ChangeToDamageMat()
     {
-        if (material.name == "RBC_Base (Instance)" || material.name == "RBC_Base(Clone)")
+        if (material.name.Substring(0,8) == "RBC_Base")
         {
             material = Instantiate(rbc_damaged);
         }
@@ -51,7 +51,7 @@ public class RBCGraphicManager : MonoBehaviour
 
     public void ChangeToNormalMat()
     {
-        if (material.name == "RBC_Damaged (Instance)" || material.name == "RBC_Damaged(Clone)")
+        if (material.name.Substring(0,11) == "RBC_Damaged")
         {
             material = Instantiate(rbc_base);
         }
@@ -65,10 +65,9 @@ public class RBCGraphicManager : MonoBehaviour
 
     public void AnimateDamageShader()
     {
-        if (material.name == "RBC_Damaged (Instance)" || material.name == "RBC_Damaged(Clone)")
+        if (material.name.Substring(0,11) == "RBC_Damaged")
         {
             Debug.Log("AnimateDamageShader");
-            // TODO: 셰이더 색상 동적으로 변환해서 데미지 받는 효과 주기
         }
     }
 
