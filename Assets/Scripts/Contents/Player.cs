@@ -117,12 +117,12 @@ public class Player : MonoBehaviour
 			Vector3 pos = Input.GetTouch(0).position;
 
 			if (pos.x > Screen.width / 2)
-				targetInput= 1;
+				targetInput = 1;
 			else
-				targetInput= 0;
+				targetInput = -1;
         }
-
-		targetInput= 0;
+		else
+			targetInput= 0;
 #endif
 
 	}
