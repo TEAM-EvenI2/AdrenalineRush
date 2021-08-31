@@ -12,6 +12,8 @@ public class LongObstacle : MeshObstacle
     public int lengthSegmentCount = 1;
 	public float angleInTunnel;
 	public float middleSizePercent;
+	public float noiseStrength = 0;
+	public AnimationCurve curve = AnimationCurve.Linear(0, 0, 1, 1);
 
 
 	private Vector3[] vertices;
@@ -45,6 +47,7 @@ public class LongObstacle : MeshObstacle
 		float curArc = mw.curveAngle * Mathf.Deg2Rad * mw.curveRadius;
 		float enableArc = curArc - (size + Mathf.Tan(angleInTunnel * Mathf.Deg2Rad) * mw.mapMesh.mapSize) * 2;
 
+		Noise noise = new Noise();
 		for (int i = 0; i < lengthSegmentCount + 1; i++)
 		{
 			float lengthPercent = (float)i / lengthSegmentCount;
@@ -61,14 +64,22 @@ public class LongObstacle : MeshObstacle
 				}
 				innerAngle *= Mathf.Deg2Rad;
 
+				float x = Mathf.Sin(((float)j / radiusSegmentCount) * 360 * Mathf.Deg2Rad) * Mathf.Cos(lengthPercent * 360 * Mathf.Deg2Rad);
+				float y = Mathf.Sin(((float)j / radiusSegmentCount) * 360 * Mathf.Deg2Rad) * Mathf.Sin(lengthPercent * 360 * Mathf.Deg2Rad);
+				float z = Mathf.Cos(((float)j / radiusSegmentCount) * 360 * Mathf.Deg2Rad);
+
+				float noiseValue = noise.Evaluate(new Vector3(x, y, z)) * noiseStrength;
+				float _size = size * (1 + noiseValue);
 				// angle + (wantedTunnelArc / tunnelRadius), wantedTunnelArc = cos(\theta) * size
-				float _angle = angle + Mathf.Cos(innerAngle) * size * Mathf.Rad2Deg;
+				float _angle = angle + Mathf.Cos(innerAngle) * _size * Mathf.Rad2Deg;
 				if (i > lengthSegmentCount / 2)
-				{
+				{	
 					_angle += 180;
 				}
+
+				float absPercent = curve.Evaluate(Mathf.Abs(fixedPercent));
 				float arc = Mathf.Tan(angleInTunnel * Mathf.Deg2Rad) * mw.mapMesh.mapSize + size + enableArc * percent +
-					(Mathf.Sin(innerAngle) * size) * (Mathf.Abs(fixedPercent) < middleSizePercent ? middleSizePercent : Mathf.Abs(fixedPercent)) +
+					(Mathf.Sin(innerAngle) * _size) * (absPercent < middleSizePercent ? middleSizePercent : absPercent) +
 					Mathf.Tan(angleInTunnel * Mathf.Deg2Rad) * mw.mapMesh.mapSize * fixedPercent;
 
 				_angle = _angle % 360;
@@ -77,8 +88,9 @@ public class LongObstacle : MeshObstacle
 
 				float distance = mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360) * Mathf.Abs(fixedPercent);
 
+				float new_percent = ((absPercent < middleSizePercent ? middleSizePercent : absPercent) - Mathf.Abs(fixedPercent)) / (middleSizePercent + 0.001f);
 				vertices[idx] = mw.mapMesh.GetPointOnSurface(mw, arc / mw.curveRadius, _angle * Mathf.Deg2Rad, distance)
-					+ new Vector3(0, -Mathf.Sin(angle * Mathf.Deg2Rad), Mathf.Cos(angle * Mathf.Deg2Rad)) * middleSizePercent * (1 - Mathf.Abs(fixedPercent)) * -Mathf.Sign(fixedPercent) * size * Mathf.Cos(innerAngle);
+					+ new Vector3(0, -Mathf.Sin(angle * Mathf.Deg2Rad), Mathf.Cos(angle * Mathf.Deg2Rad)) * middleSizePercent * new_percent * -Mathf.Sign(fixedPercent) * _size * Mathf.Cos(innerAngle);
 
 				if (i != lengthSegmentCount)
 				{

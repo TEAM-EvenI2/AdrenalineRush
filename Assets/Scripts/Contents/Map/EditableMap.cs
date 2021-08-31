@@ -197,6 +197,9 @@ public class EditableMap : MonoBehaviour
 					LongObstacle lo = (LongObstacle)mi;
 					lo.size = ((LongObstacle)preMi).size;
 					lo.angleInTunnel = ((LongObstacle)preMi).angleInTunnel;
+					lo.curve = new AnimationCurve(((LongObstacle)preMi).curve.keys);
+					lo.noiseStrength = ((LongObstacle)preMi).noiseStrength;
+
 
 				}
 

@@ -8,6 +8,7 @@ public class Test1 : MonoBehaviour
     public int c;
     public int p;
 
+    [Range(0, 1f)]
     public float percent = 0;
     public float angle1 = 0;
     public float angle2 = 0;
@@ -16,9 +17,13 @@ public class Test1 : MonoBehaviour
     public float size =1;
     public int radiusSegmentCount=1;
     public int lengthSegmentCount=5;
+    [Range(.06f, 1f)]
     public float minPercent;
 
     public LongObstacle prefab;
+
+    public AnimationCurve curve ;
+    public float noiseStrength;
 
     void Start()
     {
@@ -26,8 +31,9 @@ public class Test1 : MonoBehaviour
         {
             GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
             go.transform.SetParent(transform);
-            go.transform.localScale = Vector3.one * 0.1f;
+            go.transform.localScale = Vector3.one * 0.05f;
         }
+        curve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     }
 
 
@@ -49,6 +55,8 @@ public class Test1 : MonoBehaviour
 
         float curArc = mw.curveAngle * Mathf.Deg2Rad * mw.curveRadius ;
         float enableArc = curArc - (size + Mathf.Tan(angle2 * Mathf.Deg2Rad) * mw.mapMesh.mapSize) * 2;
+
+        Noise noise = new Noise();
         for (int i = 0; i < lengthSegmentCount + 1; i++)
         {
             float lengthPercent = (float)i / lengthSegmentCount;
@@ -64,15 +72,23 @@ public class Test1 : MonoBehaviour
                     innerAngle *= -1;
                 }
                 innerAngle *= Mathf.Deg2Rad;
+                float x = Mathf.Sin(((float)j / radiusSegmentCount) * 360 * Mathf.Deg2Rad) * Mathf.Cos(lengthPercent * 360 * Mathf.Deg2Rad);
+                float y = Mathf.Sin(((float)j / radiusSegmentCount) * 360 * Mathf.Deg2Rad) * Mathf.Sin(lengthPercent * 360 * Mathf.Deg2Rad);
+                float z = Mathf.Cos(((float)j / radiusSegmentCount) * 360 * Mathf.Deg2Rad);
+
+                float noiseValue = noise.Evaluate(new Vector3(x, y, z)) * noiseStrength;
+                float _size = size * (1 + noiseValue);
 
                 // angle + (wantedTunnelArc / tunnelRadius), wantedTunnelArc = cos(\theta) * size
-                float _angle = angle1 + Mathf.Cos(innerAngle) * size * Mathf.Rad2Deg;
+                float _angle = angle1 + Mathf.Cos(innerAngle) * _size * Mathf.Rad2Deg;
                 if(i > lengthSegmentCount / 2)
                 {
                     _angle += 180;
                 }
+
+                float absPercent = curve.Evaluate(Mathf.Abs(fixedPercent));
                 float arc = Mathf.Tan(angle2 * Mathf.Deg2Rad) * mw.mapMesh.mapSize + size + enableArc * percent +
-                    (Mathf.Sin(innerAngle) * size) * (Mathf.Abs(fixedPercent) < minPercent ? minPercent : Mathf.Abs(fixedPercent) )+
+                    (Mathf.Sin(innerAngle) * _size) * (absPercent < minPercent ? minPercent : absPercent) +
                     Mathf.Tan(angle2 * Mathf.Deg2Rad) * mw.mapMesh.mapSize * fixedPercent;
 
                 _angle = _angle % 360;
@@ -80,8 +96,10 @@ public class Test1 : MonoBehaviour
                     _angle += 360;
 
                 float distance = mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360) * Mathf.Abs(fixedPercent) ;
+
+                float new_percent = ((absPercent < minPercent ? minPercent : absPercent) - Mathf.Abs(fixedPercent)) / ( minPercent + 0.001f);
                 Vector3 point1 = mw.mapMesh.GetPointOnSurface(mw, arc / mw.curveRadius, _angle * Mathf.Deg2Rad, distance) 
-                    + new Vector3(0, -Mathf.Sin(angle1 * Mathf.Deg2Rad), Mathf.Cos(angle1 * Mathf.Deg2Rad)) * minPercent * (1 - Mathf.Abs(fixedPercent)) * -Mathf.Sign(fixedPercent) * size * Mathf.Cos(innerAngle);
+                    + new Vector3(0, -Mathf.Sin(angle1 * Mathf.Deg2Rad), Mathf.Cos(angle1 * Mathf.Deg2Rad)) * minPercent * new_percent * -Mathf.Sign(fixedPercent) * _size * Mathf.Cos(innerAngle);
 
 
                 t.position = point1;

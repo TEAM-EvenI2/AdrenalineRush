@@ -426,8 +426,7 @@ public class MapGenerateHelper : EditorWindow
         GUILayout.BeginArea(infoRect);
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label("Position Percent", GUILayout.MaxWidth(100));
-        float percent = EditorGUILayout.Slider(sedi.percent, 0, 1f, GUILayout.MaxWidth(200));
+        float percent = EditorGUILayout.Slider("Position Percent", sedi.percent, 0, 1f, GUILayout.MaxWidth(200));
         if (Mathf.Abs(percent - sedi.percent) > Mathf.Epsilon)
         {
             targetMap.UpdateObject(selectedKeyIndex, percent, sedi.angle);
@@ -436,8 +435,8 @@ public class MapGenerateHelper : EditorWindow
         if(sedi.ti is LongObstacle)
         {
             LongObstacle lo = (LongObstacle)sedi.ti;
-            GUILayout.Label("Size", GUILayout.MaxWidth(50));
-            float lo_size = EditorGUILayout.FloatField(lo.size, GUILayout.MaxWidth(30));
+            float lo_size = EditorGUILayout.FloatField("Size", lo.size, GUILayout.MaxWidth(200));
+            
             if (Mathf.Abs(lo_size - lo.size) > Mathf.Epsilon)
             {
                 lo.size = lo_size;
@@ -478,21 +477,16 @@ public class MapGenerateHelper : EditorWindow
         {
             LongObstacle lo = (LongObstacle)sedi.ti;
             GUILayout.BeginVertical();
-            GUILayout.Label("Object Rotation2", GUILayout.MaxWidth(100));
-            float _angle = EditorGUILayout.Slider(lo.angleInTunnel, -60, 60, GUILayout.MaxWidth(200));
-            if (Mathf.Abs(_angle - lo.angleInTunnel) > Mathf.Epsilon)
-            {
-                lo.angleInTunnel = _angle;
-                targetMap.UpdateObject(selectedKeyIndex, sedi.percent, sedi.angle);
-            }
-            GUILayout.Label("Middle Size Percent", GUILayout.MaxWidth(130));
-            float _middle_percent = EditorGUILayout.Slider(lo.middleSizePercent, 0, 1f, GUILayout.MaxWidth(200));
-            if (Mathf.Abs(_middle_percent - lo.middleSizePercent) > Mathf.Epsilon)
-            {
-                lo.middleSizePercent = _middle_percent;
-                targetMap.UpdateObject(selectedKeyIndex, sedi.percent, sedi.angle);
-            }
+            lo.angleInTunnel = EditorGUILayout.Slider("Object Rotation2", lo.angleInTunnel, -60, 60, GUILayout.ExpandWidth(false));
+            lo.middleSizePercent = EditorGUILayout.Slider("Middle Size Percent", lo.middleSizePercent, .06f, 1f, GUILayout.ExpandWidth(false));
+            lo.curve = EditorGUILayout.CurveField("Curve", lo.curve, GUILayout.ExpandWidth(false));
+            lo.noiseStrength = EditorGUILayout.FloatField("Noise", lo.noiseStrength, GUILayout.ExpandWidth(false));
             GUILayout.EndVertical();
+
+            if (GUI.changed)
+            {
+                targetMap.UpdateObject(selectedKeyIndex, sedi.percent, sedi.angle);
+            }
         }
         GUILayout.EndHorizontal();
 

@@ -111,8 +111,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   angle: 0
   mesh: {fileID: 0}
-  size: 0.3
-  radiusSegmentCount: 10
-  lengthSegmentCount: 10
+  size: 0.34
+  radiusSegmentCount: 40
+  lengthSegmentCount: 40
   angleInTunnel: 0
-  middleSizePercent: 0.4
+  middleSizePercent: 0.22
+  noiseStrength: 0.32
+  curve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.98985356
+      value: 0.9714578
+      inSlope: 3.2201781
+      outSlope: 3.2201781
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.04167842
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
