@@ -11,18 +11,26 @@ public class Avatar : MonoBehaviour
 	private float smoothRoatation = 0f;
 	public float accelRotationSpeed = 1.2f;
 	public float balanceRotationSpeed = 0.3f;
+	private CameraController cameraController;
 
 	private void Awake()
 	{
 		player = transform.root.GetComponent<Player>();
 	}
 
+	private void Start()
+	{
+		cameraController = player.gameCam.GetComponent<CameraController>();
+	}
 
 	private void OnTriggerEnter(Collider collider)
 	{
         if (collider.tag.Equals("Obstacle"))
+		{
             player.Hit();
-        else if (collider.tag.Equals("Item"))
+			cameraController.ShakeCam(cameraController.playerCollisionShakeDuration, cameraController.playerCollisionShakePower);
+		}
+		else if (collider.tag.Equals("Item"))
         {
 
             player.earnedScore += collider.GetComponentInParent<ScoreItem>().point;

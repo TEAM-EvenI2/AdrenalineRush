@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
 	public float velocity;
 	public float rotationVelocity;
 
-
+	public Camera gameCam;
 	private MapMeshWrapper currentPipe;
 	private float distanceTraveled;
 	public float DistanceTraveled
@@ -129,14 +129,16 @@ public class Player : MonoBehaviour
 
 	public void Hit()
 	{
-		gameObject.GetComponentInChildren<PlayerGraphicManager>().Damaged();
 		health -= 34;
 		if (health <= 0)
 			Die();
+		else
+			gameObject.GetComponentInChildren<PlayerGraphicManager>().Damaged();
 	}
 
 	private void Die()
 	{
+		gameObject.GetComponentInChildren<PlayerGraphicManager>().Die();
 		gameObject.SetActive(false);
 		Managers.Instance.GetUIManager<GameUIManager>().ActiveRe();
 	}

@@ -16,11 +16,25 @@ public class PlayerGraphicManager : MonoBehaviour
         StartCoroutine(CoDamaged());
     }
 
+    public void Die()
+    {
+        StartCoroutine(CoDie());
+    }
+
     IEnumerator CoDamaged()
     {
         graphicManager.ChangeToDamageMat();
         graphicManager.AnimateDamageShader();
         graphicManager.RenderDamageParticle();
+        yield return new WaitForSeconds(1f);
+        graphicManager.ChangeToNormalMat();
+    }
+
+    IEnumerator CoDie()
+    {
+        graphicManager.ChangeToDamageMat();
+        graphicManager.AnimateDamageShader();
+        graphicManager.RenderDieParticle();
         yield return new WaitForSeconds(1f);
         graphicManager.ChangeToNormalMat();
     }

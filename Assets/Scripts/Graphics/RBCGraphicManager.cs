@@ -6,7 +6,7 @@ public class RBCGraphicManager : MonoBehaviour
 {
     public Material rbc_base;
     public Material rbc_damaged;
-
+    public ParticleSystem p_rbc_die;
     public ParticleSystem p_rbc_damaged;
 
 
@@ -23,7 +23,6 @@ public class RBCGraphicManager : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(material.name);
     }
 
     public bool checkMaterialName(string matName)
@@ -92,6 +91,16 @@ public class RBCGraphicManager : MonoBehaviour
         {
             ParticleSystem particle = Instantiate(p_rbc_damaged, gameObject.transform.position, rotator.transform.localRotation);
             p_rbc_damaged.Play();
+        }
+    }
+
+    public void RenderDieParticle()
+    {
+        GameObject rotator = FindParentWithTag(gameObject, "PlayerRotator");
+        if (rotator)
+        {
+            ParticleSystem particle = Instantiate(p_rbc_die, gameObject.transform.position, rotator.transform.localRotation);
+            p_rbc_die.Play();
         }
     }
 }
