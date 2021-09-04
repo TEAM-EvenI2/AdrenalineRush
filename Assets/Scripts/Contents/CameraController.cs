@@ -29,7 +29,6 @@ public class CameraController : MonoBehaviour
         {
             transform.localPosition = Random.insideUnitSphere * currentShakePower + camInitLocalPos;
             currentShakeTime -= Time.deltaTime;
-            Debug.Log(currentShakeTime);
         }
         else
         {

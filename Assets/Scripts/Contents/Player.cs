@@ -8,6 +8,10 @@ public class Player : MonoBehaviour
 	public MapSystem mapSystem;
 
 	public float velocity;
+	public float acceleration = 1f;
+	public const float defaultVelocity = 7f;
+	public const float maxVelocity = 10f;
+	public float decreaseVelWhenCollided = 4f;
 	public float rotationVelocity;
 
 	public Camera gameCam;
@@ -48,6 +52,12 @@ public class Player : MonoBehaviour
 
 	private void Update()
 	{
+		if (velocity < defaultVelocity)
+		{
+			velocity += acceleration * Time.deltaTime;
+		}
+		velocity = Mathf.Clamp(velocity, 0.1f, maxVelocity-0.1f);
+
 		float delta = velocity * Time.deltaTime;
 		distanceTraveled += delta;
 		systemRotation += delta * deltaToRotation;
@@ -130,16 +140,22 @@ public class Player : MonoBehaviour
 	public void Hit()
 	{
 		health -= 34;
+		velocity -= decreaseVelWhenCollided;
 		if (health <= 0)
 			Die();
 		else
-			gameObject.GetComponentInChildren<PlayerGraphicManager>().Damaged();
+			gameObject.GetComponentInChildren<GraphicManager>().Damaged();
 	}
 
 	private void Die()
 	{
-		gameObject.GetComponentInChildren<PlayerGraphicManager>().Die();
+		gameObject.GetComponentInChildren<GraphicManager>().Die();
 		gameObject.SetActive(false);
 		Managers.Instance.GetUIManager<GameUIManager>().ActiveRe();
+	}
+
+	public void CollideItem(GameObject item)
+	{
+		gameObject.GetComponentInChildren<GraphicManager>().CollideItem(item);
 	}
 }
