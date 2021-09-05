@@ -92,8 +92,9 @@ public class MapSystem : MonoBehaviour
 			if (i > emptyPipeCount)
 				GenerateItem(maps[i]);
 		}
-        SetupNextPipe();
-    }
+		Managers.Instance.GetScene<GameScene>().player.SetupNetStage();
+
+	}
 
 
     private void GenerateItem(MapMeshWrapper mw)

@@ -9,6 +9,8 @@ public class GameScene : BaseScene
     public Volume postProcessVolume;
     public Player player;
 
+    public bool isPause = false;
+
     protected override void Init()
     {
         base.Init();
@@ -22,6 +24,11 @@ public class GameScene : BaseScene
     public override void Clear()
     {
 
+    }
+
+    public void Pause()
+    {
+        isPause = !isPause;
     }
 
     public void Re(string sceneName)

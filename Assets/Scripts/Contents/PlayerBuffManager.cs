@@ -17,8 +17,10 @@ public class PlayerBuffManager : MonoBehaviour
 
     private void Update()
     {
-        
-        for(int i = buffList.Count - 1; i >= 0 ; i--)
+        if (Managers.Instance.GetScene<GameScene>().isPause)
+            return;
+
+        for (int i = buffList.Count - 1; i >= 0 ; i--)
         {
             HandleBuff(buffList[i]);
 

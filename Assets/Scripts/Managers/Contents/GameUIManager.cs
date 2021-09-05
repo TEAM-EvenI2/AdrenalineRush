@@ -14,7 +14,8 @@ public class GameUIManager : UIManager
 
     public void ActiveRe()
     {
-        re.SetActive(true);
+        re.SetActive(!re.gameObject.activeSelf);
+        Managers.Instance.GetScene<GameScene>().Pause();
     }
 
     private void Update()
@@ -30,6 +31,15 @@ public class GameUIManager : UIManager
 
         float percent = Managers.Instance.GetScene<GameScene>().player.health / 100;
         healthBar.sizeDelta = new Vector2(800 * percent, healthBar.sizeDelta.y);
+
+        if (Application.platform == RuntimePlatform.Android)
+        {
+
+            if (Input.GetKey(KeyCode.Escape))
+            {
+                ActiveRe();
+            }
+        }
     }
 
     public void DoMagnet()

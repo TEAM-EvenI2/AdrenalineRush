@@ -55,6 +55,9 @@ public class Player : MonoBehaviour
 
 	private void Update()
 	{
+		if (Managers.Instance.GetScene<GameScene>().isPause)
+			return;
+
 		if (velocity < defaultVelocity)
 		{
 			velocity += acceleration * Time.deltaTime;
@@ -84,6 +87,13 @@ public class Player : MonoBehaviour
 			if (health > 100)
 				health = 100;
         }
+	}
+
+	public void SetupNetStage()
+	{
+		currentPipe = mapSystem.SetupNextPipe();
+		SetupCurrentPipe();
+		systemRotation =0;
 	}
 
 
