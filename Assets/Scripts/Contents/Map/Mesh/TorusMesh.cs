@@ -55,7 +55,7 @@ public class TorusMesh : MapMesh
 
     protected override void SetTriangles(MapMeshWrapper meshWrapper)
     {
-        triangles = new int[(roadSegmentCount + 1) * (meshWrapper.curveSegmentCount  + 1)* 6];
+        triangles = new int[(roadSegmentCount ) * (meshWrapper.curveSegmentCount  + 1)* 6];
 
         int triIndex = 0;
 

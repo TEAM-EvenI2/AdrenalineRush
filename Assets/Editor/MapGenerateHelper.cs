@@ -476,7 +476,7 @@ public class MapGenerateHelper : EditorWindow
         if (sedi.ti is LongObstacle)
         {
             LongObstacle lo = (LongObstacle)sedi.ti;
-            GUILayout.BeginVertical();
+            GUILayout.BeginVertical(GUILayout.MinWidth(300));
             lo.angleInTunnel = EditorGUILayout.Slider("Object Rotation2", lo.angleInTunnel, -60, 60, GUILayout.ExpandWidth(false));
             lo.middleSizePercent = EditorGUILayout.Slider("Middle Size Percent", lo.middleSizePercent, .06f, 1f, GUILayout.ExpandWidth(false));
             lo.curve = EditorGUILayout.CurveField("Curve", lo.curve, GUILayout.ExpandWidth(false));

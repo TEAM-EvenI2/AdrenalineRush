@@ -34,9 +34,68 @@ public class MapMeshWrapper : MonoBehaviour
     public Vector3 position;
     public Vector3 angle;
 
+    // About Item spawn
+    private List<MapItemGenerateInfo> _infos;
+    private int _infoIndex = 0;
+    float finishedArc = 0;
+
     private void Awake()
     {
         GetComponent<MeshFilter>().mesh = mesh = new Mesh();
+    }
+
+    public void ResetGenerateItem()
+    {
+        if (_infos == null)
+            _infos = new List<MapItemGenerateInfo>();
+        else
+            _infos.Clear();
+        _infoIndex = 0;
+        finishedArc = 0;
+    }
+
+    public void AddGenerateItem(MapItemGenerateInfo info)
+    {
+        _infos.Add(info);
+    }
+
+    public void SpawnItem()
+    {
+        StartCoroutine(CoSpawnItem());
+    }
+
+    private IEnumerator CoSpawnItem()
+    {
+        if (mapMesh != null)
+        {
+            while (_infos != null && _infos.Count > _infoIndex)
+            {
+                float curArc = curveRadius * curveAngle * Mathf.Deg2Rad;
+                MapItemGenerateInfo info = _infos[_infoIndex];
+                finishedArc += info.curveArc;
+
+
+                MapItem item = Instantiate(info.prefab);
+                float angle = info.angle - cumulativeRelativeRotation;
+                if (angle < 0)
+                    angle += 360;
+
+                float distance = mapMesh.GetDistance(this, finishedArc / curArc, angle / 360);
+                if (item is ScoreItem)
+                    distance = mapMesh.mapSize;
+                else if (item is LongObstacle)
+                {
+                    LongObstacle lo = (LongObstacle)item;
+                    lo.size = info.size;
+                    lo.angleInTunnel = info.angleInTunnel;
+                    lo.middleSizePercent = info.middleSizePercent;
+                }
+
+                item.Setting(this, finishedArc / curArc, angle / 360, distance);
+                _infoIndex++;
+                yield return null;
+            }
+        }
     }
 
     public void Init(MapMesh mapMesh, MapMeshType type)
@@ -55,11 +114,16 @@ public class MapMeshWrapper : MonoBehaviour
     {
         _mapMesh.Generate(this);
 
-        if(destoryChild)
-            for (int i = 0; i < transform.childCount; i++)
-            {
-                Destroy(transform.GetChild(i).gameObject);
-            }
+        if (destoryChild)
+            DestoryChild();
+    }
+
+    public void DestoryChild()
+    {
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Destroy(transform.GetChild(i).gameObject);
+        }
     }
 
 

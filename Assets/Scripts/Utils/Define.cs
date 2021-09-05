@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Define 
+public partial class Define 
 {
 
     public enum Scene
@@ -12,6 +12,7 @@ public class Define
         Lobby,
         Game,
     }
+
 
     public enum MapMeshType
     {
@@ -25,6 +26,13 @@ public class Define
     {
         public float smoothTime;
         [HideInInspector]public T smoothVelocity;
+    }
+
+    [System.Serializable]
+    public class PlayerInfo
+    {
+        public float velocity;
+        public float rotateVelocity;
     }
 
     public class MapItemGenerateInfo

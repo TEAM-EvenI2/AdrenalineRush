@@ -29,6 +29,11 @@ public class Avatar : MonoBehaviour
 		{
             player.Hit();
 			cameraController.ShakeCam(cameraController.playerCollisionShakeDuration, cameraController.playerCollisionShakePower);
+
+			if(collider.GetComponentInParent<ScoreItem>() != null)
+            {
+				Destroy(collider.GetComponentInParent<ScoreItem>().gameObject);
+            }
 		}
 		else if (collider.tag.Equals("Item"))
         {

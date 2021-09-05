@@ -9,10 +9,10 @@ public class Player : MonoBehaviour
 
 	public float velocity;
 	public float acceleration = 1f;
-	public const float defaultVelocity = 7f;
+	private float defaultVelocity;
 	public const float maxVelocity = 10f;
 	public float decreaseVelWhenCollided = 4f;
-	public float rotationVelocity;
+	private float rotationVelocity;
 
 	public Camera gameCam;
 	private MapMeshWrapper currentPipe;
@@ -48,6 +48,9 @@ public class Player : MonoBehaviour
 		rotater = transform.GetChild(0);
 		currentPipe = mapSystem.SetupFirstPipe();
 		SetupCurrentPipe();
+
+		defaultVelocity = Managers.Instance.Config.playerInfo.velocity;
+		rotationVelocity = Managers.Instance.Config.playerInfo.rotateVelocity;
 	}
 
 	private void Update()

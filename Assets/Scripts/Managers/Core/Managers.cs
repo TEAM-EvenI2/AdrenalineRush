@@ -22,6 +22,7 @@ public class Managers : MonoBehaviour
                 s_instance = go.GetComponent<Managers>();
 
                 s_instance.Scene.Init();
+                s_instance.Config.Init();
             }
             return s_instance;
         }
@@ -30,6 +31,8 @@ public class Managers : MonoBehaviour
     #region Contents
     public ResourceManager Resource { get; } = new ResourceManager();
     public CustomSceneManager Scene { get; } = new CustomSceneManager();
+
+    public ConfigDataManager Config { get; } = new ConfigDataManager();
 
     public BaseScene scene { get; private set; }
     #endregion

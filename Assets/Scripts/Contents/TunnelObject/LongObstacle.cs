@@ -34,7 +34,7 @@ public class LongObstacle : MeshObstacle
 		mesh.Clear();
 		SetVertices(mw, percent, angle);
 		//SetUV();
-        mesh.normals = CaculateNormals();
+        mesh.normals = CaculateNormals(vertices, triangles);
     }
 
     private void SetVertices(MapMeshWrapper mw, float percent, float angle)
@@ -96,16 +96,16 @@ public class LongObstacle : MeshObstacle
 				{
 					if (j != radiusSegmentCount - 1)
 					{
-							AddTriangle(triIndex, idx, idx + radiusSegmentCount, idx + radiusSegmentCount + 1);
+							AddTriangle(triangles, triIndex, idx, idx + radiusSegmentCount, idx + radiusSegmentCount + 1);
 							triIndex += 3;
-							AddTriangle(triIndex, idx, idx + radiusSegmentCount + 1, idx + 1);
+							AddTriangle(triangles, triIndex, idx, idx + radiusSegmentCount + 1, idx + 1);
 							triIndex += 3;
 					}
 					else
 					{
-							AddTriangle(triIndex, idx, idx + radiusSegmentCount, i * radiusSegmentCount + radiusSegmentCount);
+							AddTriangle(triangles, triIndex, idx, idx + radiusSegmentCount, i * radiusSegmentCount + radiusSegmentCount);
 							triIndex += 3;
-							AddTriangle(triIndex, idx, i * radiusSegmentCount + radiusSegmentCount, i * radiusSegmentCount);
+							AddTriangle(triangles, triIndex, idx, i * radiusSegmentCount + radiusSegmentCount, i * radiusSegmentCount);
 							triIndex += 3;
 					}
 				}
@@ -116,50 +116,5 @@ public class LongObstacle : MeshObstacle
 		mesh.triangles = triangles;
 	}
 
-	private void AddTriangle(int triIndex, int a, int b, int c)
-    {
-		triangles[triIndex] = a;
-		triangles[triIndex + 1] = b;
-		triangles[triIndex + 2] = c;
-    }
-
-
-	private Vector3[] CaculateNormals()
-	{
-		Vector3[] vertexNormals = new Vector3[vertices.Length];
-		int triangleCount = triangles.Length / 3;
-		for (int i = 0; i < triangleCount; i++)
-		{
-			int normalTriangleIndex = i * 3;
-			int vertextIndexA = triangles[normalTriangleIndex];
-			int vertextIndexB = triangles[normalTriangleIndex + 1];
-			int vertextIndexC = triangles[normalTriangleIndex + 2];
-
-			Vector3 triangleNormal = SurfaceNormalFromIndices(vertextIndexA, vertextIndexB, vertextIndexC);
-
-			vertexNormals[vertextIndexA] += triangleNormal;
-			vertexNormals[vertextIndexB] += triangleNormal;
-			vertexNormals[vertextIndexC] += triangleNormal;
-		}
-
-		for (int i = 0; i < vertexNormals.Length; i++)
-		{
-			vertexNormals[i].Normalize();
-		}
-
-		return vertexNormals;
-
-	}
-
-	private Vector3 SurfaceNormalFromIndices(int indexA, int indexB, int indexC)
-	{
-		Vector3 pointA = vertices[indexA];
-		Vector3 pointB = vertices[indexB];
-		Vector3 pointC = vertices[indexC];
-
-		Vector3 sideAB = pointB - pointA;
-		Vector3 sideAC = pointC - pointA;
-		return Vector3.Cross(sideAB, sideAC).normalized;
-	}
 
 }

@@ -10,8 +10,6 @@ public class GameUIManager : UIManager
     public GameObject re;
     public CanvasGroup cg;
 
-    public float a = 0;
-
     public RectTransform healthBar;
 
     public void ActiveRe()
@@ -23,15 +21,24 @@ public class GameUIManager : UIManager
     {
         scoreText.text = Managers.Instance.GetScene<GameScene>().GetScore().ToString();
 
-        if(a > 0)
+        if(cg.alpha > 0)
         {
-            a -= Time.deltaTime;
-            cg.alpha = a;
+            cg.alpha -= Time.deltaTime;
+            if (cg.alpha <= 0)
+                cg.gameObject.SetActive(false);
         }
 
         float percent = Managers.Instance.GetScene<GameScene>().player.health / 100;
         healthBar.sizeDelta = new Vector2(800 * percent, healthBar.sizeDelta.y);
     }
 
+    public void DoMagnet()
+    {
+        Managers.Instance.GetScene<GameScene>().player.GetComponent<PlayerBuffManager>().AddMagnetBuff(20,.7f, 7);
+    }
 
+    public void DoSize()
+    {
+        Managers.Instance.GetScene<GameScene>().player.GetComponent<PlayerBuffManager>().AddSizeBuff(5, .5f);
+    }
 }

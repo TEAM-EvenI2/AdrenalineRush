@@ -35,6 +35,13 @@ public abstract class MapMesh
 	protected abstract void SetUV(MapMeshWrapper meshWrapper);
 	protected abstract void SetTriangles(MapMeshWrapper meshWrapper);
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="u">curve angle (radian) </param>
+	/// <param name="v">tunnel angle (radian) </param>
+	/// <param name="radius"> tunnel radius </param>
+	/// <returns></returns>
 	public abstract Vector3 GetPointOnSurface(MapMeshWrapper meshWrapper, float i, float j, float k);
 
 	/// <summary>

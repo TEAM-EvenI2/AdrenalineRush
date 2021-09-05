@@ -194,13 +194,15 @@ public class EditableMap : MonoBehaviour
 
 				if(spoei.itemPrefab is LongObstacle)
                 {
-					LongObstacle lo = (LongObstacle)mi;
-					lo.size = ((LongObstacle)preMi).size;
-					lo.angleInTunnel = ((LongObstacle)preMi).angleInTunnel;
-					lo.curve = new AnimationCurve(((LongObstacle)preMi).curve.keys);
-					lo.noiseStrength = ((LongObstacle)preMi).noiseStrength;
-
-
+					if (preMi as LongObstacle != null)
+					{
+						LongObstacle lo = (LongObstacle)mi;
+						lo.size = ((LongObstacle)preMi).size;
+						lo.angleInTunnel = ((LongObstacle)preMi).angleInTunnel;
+						lo.curve = new AnimationCurve(((LongObstacle)preMi).curve.keys);
+						lo.noiseStrength = ((LongObstacle)preMi).noiseStrength;
+						lo.middleSizePercent = ((LongObstacle)preMi).middleSizePercent;
+					}
 				}
 
 				UpdateObject(new Vector2Int(i, j),

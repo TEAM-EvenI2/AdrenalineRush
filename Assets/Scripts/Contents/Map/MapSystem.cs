@@ -18,6 +18,7 @@ public class MapSystem : MonoBehaviour
 
 	public MapMeshWrapper[] maps;
 	private List<MapItemGenerateInfo> itemInfos;
+	private int _infoIndex = 0;
 
 	private void Awake()
 	{
@@ -41,7 +42,7 @@ public class MapSystem : MonoBehaviour
 			}
 			if (i > emptyPipeCount)
 			{
-				GenerateItem(mw, i);
+				GenerateItem(mw);
 			}
 
             mw.position = mw.transform.localPosition;
@@ -71,7 +72,8 @@ public class MapSystem : MonoBehaviour
 				// TODO Update Stage
 				ChangeStage();
 
-				Managers.Instance.GetUIManager<GameUIManager>().a = 1;
+				Managers.Instance.GetUIManager<GameUIManager>().cg.gameObject.SetActive(true);
+				Managers.Instance.GetUIManager<GameUIManager>().cg.alpha = 1;
 
 			}
 		}
@@ -86,15 +88,15 @@ public class MapSystem : MonoBehaviour
 
 		for (int i = 0; i < mapCount ; i++)
 		{
-			if(i < emptyPipeCount)
-				SetupNextPipe(true);
-			else
-				SetupNextPipe();
+			maps[i].DestoryChild();
+			if (i > emptyPipeCount)
+				GenerateItem(maps[i]);
 		}
-	}
+        SetupNextPipe();
+    }
 
 
-    private void GenerateItem(MapMeshWrapper mw, int i)
+    private void GenerateItem(MapMeshWrapper mw)
 	{
 
 		MapMeshDataWrapper mmdw = stageInfo[currentStage].meshDataWrappers[currentMap];
@@ -103,14 +105,18 @@ public class MapSystem : MonoBehaviour
 
 		float curArc = mw.curveRadius * mw.curveAngle * Mathf.Deg2Rad;
 
+		mw.ResetGenerateItem();
+
 		while (true)
 		{
-			if (itemInfos.Count == 0)
+			if (itemInfos.Count == _infoIndex)
 			{
 				EditableMap itemPlace = stageInfo[currentStage].GetRandomItemPlace();
 				if (itemPlace == null)
 					break;
+
 				itemPlace.AddItemToInfos(itemInfos);
+				_infoIndex = 0;
 
 				if (itemInfos.Count == 0)
 					break;
@@ -118,7 +124,7 @@ public class MapSystem : MonoBehaviour
 				finishedArc += minDistanceEachPreset;
 			}
 
-			MapItemGenerateInfo info = itemInfos[0];
+			MapItemGenerateInfo info = itemInfos[_infoIndex];
 			if (finishedArc + info.curveArc > curArc)
 			{
 				info.curveArc -= curArc - finishedArc;
@@ -128,25 +134,8 @@ public class MapSystem : MonoBehaviour
 			{
 				finishedArc += info.curveArc;
 
-				MapItem item = Instantiate(info.prefab);
-				float angle = info.angle + (i > 0 ? -mw.cumulativeRelativeRotation : 0);
-				if (angle < 0)
-					angle += 360;
-
-				float distance = mmdw.GetMesh().GetDistance(mw, finishedArc / curArc, angle / 360);
-				if (item is ScoreItem)
-					distance = mmdw.GetMesh().mapSize;
-				else if(item is LongObstacle)
-                {
-					LongObstacle lo = (LongObstacle)item;
-					lo.size = info.size;
-					lo.angleInTunnel = info.angleInTunnel;
-					lo.middleSizePercent = info.middleSizePercent;
-                }
-
-				item.Setting(mw, finishedArc / curArc, angle/ 360, distance);
-
-				itemInfos.RemoveAt(0);
+				mw.AddGenerateItem(info);
+				_infoIndex++;
 			}
 		}
 
@@ -175,7 +164,7 @@ public class MapSystem : MonoBehaviour
 
 		mw.GenerateMesh(true);
 		if (!dontCreateItem) 
-			GenerateItem(maps[maps.Length - 1], maps.Length - 1);
+			GenerateItem(maps[maps.Length - 1]);
 
 		transform.localPosition = new Vector3(0f, -maps[1].curveRadius);
 
@@ -186,6 +175,8 @@ public class MapSystem : MonoBehaviour
 
 			}
         }
+
+		maps[2].SpawnItem();
 
 		return maps[1];
 	}
