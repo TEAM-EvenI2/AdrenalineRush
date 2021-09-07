@@ -10,6 +10,7 @@ public class EditableMap : MonoBehaviour
     {
 		public MapItem itemPrefab;
 		public Color c;
+		public bool toggle = true;
 
 		public List<ObjectEditInfo> spawnedObjectInfos = new List<ObjectEditInfo>();
 
@@ -365,24 +366,6 @@ public class EditableMap : MonoBehaviour
 				index.x = prefabObjectEditInfos.Count - 1;
         }
 	}
-
-	public Vector2Int GetInfoIndex(int index)
-    {
-		Vector2Int vIndex = Vector2Int.zero;
-		for (int  i = 0; i < prefabObjectEditInfos.Count; i++)
-        {
-			if (index >= prefabObjectEditInfos[i].spawnedObjectInfos.Count)
-			{
-				vIndex.x++;
-				index -= prefabObjectEditInfos[i].spawnedObjectInfos.Count;
-			}
-			else
-				break;
-		}
-		vIndex.y = index;
-
-		return vIndex;
-    }
 
 
 	#endregion

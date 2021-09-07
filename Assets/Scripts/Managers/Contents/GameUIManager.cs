@@ -18,9 +18,20 @@ public class GameUIManager : UIManager
         Managers.Instance.GetScene<GameScene>().Pause();
     }
 
+    private void reachedThousandPoints()
+    {
+        // TODO : 부스트?
+        Debug.Log("1000");
+    }
+
     private void Update()
     {
-        scoreText.text = Managers.Instance.GetScene<GameScene>().GetScore().ToString();
+        float score = Managers.Instance.GetScene<GameScene>().GetScore();
+        scoreText.text = score.ToString();
+        if (score > 0 && score % 1000 == 0)
+        {
+            reachedThousandPoints();
+        }
 
         if(cg.alpha > 0)
         {
