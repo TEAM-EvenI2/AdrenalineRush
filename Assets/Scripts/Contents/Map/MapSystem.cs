@@ -65,7 +65,7 @@ public class MapSystem : MonoBehaviour
 		if (currentStage < stageInfo.Count - 1)
 		{
 
-			float score = Managers.Instance.GetScene<GameScene>().player.earnedScore;
+			float score = Managers.Instance.GetScene<GameScene>().player.earnedItem;
 
 			if(score >= stageInfo[currentStage + 1].enterPoint)
             {
@@ -100,7 +100,6 @@ public class MapSystem : MonoBehaviour
     private void GenerateItem(MapMeshWrapper mw)
 	{
 
-		MapMeshDataWrapper mmdw = stageInfo[currentStage].meshDataWrappers[currentMap];
 		// Generate Item
 		float finishedArc = 0;
 

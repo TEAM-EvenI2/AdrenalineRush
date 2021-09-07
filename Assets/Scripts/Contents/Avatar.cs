@@ -38,7 +38,7 @@ public class Avatar : MonoBehaviour
 		else if (collider.tag.Equals("Item"))
         {
 			player.CollideItem(collider.gameObject);
-            player.earnedScore += collider.GetComponentInParent<ScoreItem>().point;
+			player.earnedItem++;
         }
         //player.GetComponentInChildren<PlayerGraphicManager>().Damaged();
     }

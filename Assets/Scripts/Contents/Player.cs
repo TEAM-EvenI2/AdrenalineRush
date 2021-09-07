@@ -33,7 +33,7 @@ public class Player : MonoBehaviour
 	private float worldRotation;
 	private float avatarRotation;
 
-	public int earnedScore;
+	public int earnedItem;
 
 	public float health = 100;
 
