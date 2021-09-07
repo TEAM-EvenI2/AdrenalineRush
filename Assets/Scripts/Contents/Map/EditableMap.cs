@@ -10,6 +10,7 @@ public class EditableMap : MonoBehaviour
     {
 		public MapItem itemPrefab;
 		public Color c;
+		public bool toggle = true;
 
 		public List<ObjectEditInfo> spawnedObjectInfos = new List<ObjectEditInfo>();
 
@@ -136,11 +137,30 @@ public class EditableMap : MonoBehaviour
 				migi.size = lo.size;
 				migi.angleInTunnel = lo.angleInTunnel;
 				migi.middleSizePercent = lo.middleSizePercent;
+				migi.curve = lo.curve;
+				migi.noise = lo.noiseStrength;
             }
+			else if(l[i].Key is SurfaceObstacle)
+			{
+				SurfaceObstacle so = (SurfaceObstacle)l[i].Value.ti;
+				migi.sizePercent = so.sizePercent;
+				migi.roadWidth = so.roadWidth;
+				migi.curveLength = so.curveLength;
+				migi.curve = so.curve;
+				migi.noise = so.noiseStrength;
+			}
 			infos.Add(migi);
 
 			previewPos = curArc;
 		}
+
+		float _curArc = l[l.Count - 1].Value.curveRadius * l[l.Count - 1].Value.curveAngle * Mathf.Deg2Rad;
+		infos.Add(new MapItemGenerateInfo()
+		{
+			percent = 1,
+			curveArc = _curArc - previewPos,
+			angle = l[l.Count - 1].Value.curveAngle
+		});
 
 	}
 
@@ -202,6 +222,18 @@ public class EditableMap : MonoBehaviour
 						lo.curve = new AnimationCurve(((LongObstacle)preMi).curve.keys);
 						lo.noiseStrength = ((LongObstacle)preMi).noiseStrength;
 						lo.middleSizePercent = ((LongObstacle)preMi).middleSizePercent;
+					}
+				}
+				else if(spoei.itemPrefab is SurfaceObstacle)
+				{
+					if (preMi as SurfaceObstacle != null)
+					{
+						SurfaceObstacle so = (SurfaceObstacle)mi;
+						so.sizePercent = ((SurfaceObstacle)preMi).sizePercent;
+						so.roadWidth = ((SurfaceObstacle)preMi).roadWidth;
+						so.curve = new AnimationCurve(((SurfaceObstacle)preMi).curve.keys);
+						so.noiseStrength = ((SurfaceObstacle)preMi).noiseStrength;
+						so.curveLength = ((SurfaceObstacle)preMi).curveLength;
 					}
 				}
 
@@ -334,24 +366,6 @@ public class EditableMap : MonoBehaviour
 				index.x = prefabObjectEditInfos.Count - 1;
         }
 	}
-
-	public Vector2Int GetInfoIndex(int index)
-    {
-		Vector2Int vIndex = Vector2Int.zero;
-		for (int  i = 0; i < prefabObjectEditInfos.Count; i++)
-        {
-			if (index >= prefabObjectEditInfos[i].spawnedObjectInfos.Count)
-			{
-				vIndex.x++;
-				index -= prefabObjectEditInfos[i].spawnedObjectInfos.Count;
-			}
-			else
-				break;
-		}
-		vIndex.y = index;
-
-		return vIndex;
-    }
 
 
 	#endregion

@@ -74,24 +74,39 @@ public class MapMeshWrapper : MonoBehaviour
                 MapItemGenerateInfo info = _infos[_infoIndex];
                 finishedArc += info.curveArc;
 
-
-                MapItem item = Instantiate(info.prefab);
-                float angle = info.angle - cumulativeRelativeRotation;
-                if (angle < 0)
-                    angle += 360;
-
-                float distance = mapMesh.GetDistance(this, finishedArc / curArc, angle / 360);
-                if (item is ScoreItem)
-                    distance = mapMesh.mapSize;
-                else if (item is LongObstacle)
+                if (info.prefab != null)
                 {
-                    LongObstacle lo = (LongObstacle)item;
-                    lo.size = info.size;
-                    lo.angleInTunnel = info.angleInTunnel;
-                    lo.middleSizePercent = info.middleSizePercent;
-                }
 
-                item.Setting(this, finishedArc / curArc, angle / 360, distance);
+                    MapItem item = Instantiate(info.prefab);
+                    float angle = info.angle - cumulativeRelativeRotation;
+                    angle = angle % 360;
+                    if (angle < 0)
+                        angle += 360;
+
+                    float distance = mapMesh.GetDistance(this, info.percent, angle / 360);
+                    if (item is ScoreItem)
+                        distance = mapMesh.mapSize;
+                    else if (item is LongObstacle)
+                    {
+                        LongObstacle lo = (LongObstacle)item;
+                        lo.size = info.size;
+                        lo.angleInTunnel = info.angleInTunnel;
+                        lo.middleSizePercent = info.middleSizePercent;
+                        lo.curve = new AnimationCurve(info.curve.keys);
+                        lo.noiseStrength = info.noise;
+                    }
+                    else if (item is SurfaceObstacle)
+                    {
+                        SurfaceObstacle so = (SurfaceObstacle)item;
+                        so.sizePercent = info.sizePercent;
+                        so.roadWidth = info.roadWidth;
+                        so.curveLength = info.curveLength;
+                        so.curve = new AnimationCurve(info.curve.keys);
+                        so.noiseStrength = info.noise;
+                    }
+
+                    item.Setting(this, info.percent, angle / 360, distance);
+                }
                 _infoIndex++;
                 yield return null;
             }
