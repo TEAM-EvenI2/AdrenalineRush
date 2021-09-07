@@ -35,7 +35,7 @@ public class MapGenerateHelper : EditorWindow
 
     Rect rotatePointRect;
     Vector2 rotatePointCenter;
-    Rect[] keyRects;
+    List<KeyValuePair<Vector2Int, Rect>> keyRects;
     bool mouseIsDownOverKey;
     Vector2Int selectedKeyIndex;
     bool needsRepaint;
@@ -110,11 +110,11 @@ public class MapGenerateHelper : EditorWindow
                 GUIStyle style = GUI.skin.box;
                 style.alignment = TextAnchor.MiddleCenter;
                 Vector2 size = style.CalcSize(label);
-                tWidth += size.x + prefabButtonSize + prefabFavoriteGap;
+                tWidth += size.x + prefabButtonSize + 20 + prefabFavoriteGap;
 
                 if(tWidth > Screen.width)
                 {
-                    tWidth = size.x + prefabButtonSize + prefabFavoriteGap;
+                    tWidth = size.x + prefabButtonSize + 20 + prefabFavoriteGap;
                     prefabSectionHeight += 30;
                 }
             }
@@ -336,16 +336,19 @@ public class MapGenerateHelper : EditorWindow
             style.alignment = TextAnchor.MiddleCenter;
 
             Vector2 size = style.CalcSize(label);
-            if (x + size.x + prefabButtonSize > Screen.width)
+            if (x + size.x + prefabButtonSize + 20 > Screen.width)
             {
                 x = prefabFavoriteGap;
                 y += 30;
             }
 
-            EditorGUI.DrawRect(new Rect(x, y, size.x + prefabButtonSize, size.y), new Color(0.1f, 0.1f, 0.1f));
-            EditorGUI.LabelField(new Rect(x, y, size.x, size.y), label);
-        
-            if (GUI.Button(new Rect(x + size.x, y, prefabButtonSize, size.y), "+"))
+            EditorGUI.DrawRect(new Rect(x, y, size.x + prefabButtonSize + 20, size.y), new Color(0.1f, 0.1f, 0.1f));
+            EditorGUI.DrawRect(new Rect(x + size.x + 15, y + 2, 5, size.y - 4), prefabObjectEditInfo.c);
+             EditorGUI.LabelField(new Rect(x, y, size.x, size.y), label);
+
+            prefabObjectEditInfo.toggle = EditorGUI.Toggle(new Rect(x + size.x, y, prefabButtonSize, size.y), prefabObjectEditInfo.toggle);
+
+            if (GUI.Button(new Rect(x + size.x + 20, y, prefabButtonSize, size.y), "+"))
             {
 
                 selectedKeyIndex = targetMap.AddObject(prefabObjectEditInfo.itemPrefab, 0);
@@ -354,7 +357,7 @@ public class MapGenerateHelper : EditorWindow
                 needsRepaint = true;
             }
 
-            x += size.x + prefabButtonSize + prefabFavoriteGap;
+            x += size.x + prefabButtonSize + prefabFavoriteGap + 20;
         }
 
         EditorGUILayout.EndHorizontal();
@@ -397,10 +400,11 @@ public class MapGenerateHelper : EditorWindow
             keyCount += targetMap.prefabObjectEditInfos[i].spawnedObjectInfos.Count;
         }
 
-        keyRects = new Rect[keyCount];
-        int _i = 0;
+        keyRects = new List<KeyValuePair<Vector2Int, Rect>>();// new Rect[keyCount];
         for (int i = 0; i < targetMap.prefabObjectEditInfos.Count; i++)
         {
+            if (!targetMap.prefabObjectEditInfos[i].toggle)
+                continue;
             for (int j = 0; j < targetMap.prefabObjectEditInfos[i].spawnedObjectInfos.Count; j++)
             {
                 Vector2Int vIndex = new Vector2Int(i, j);
@@ -417,8 +421,7 @@ public class MapGenerateHelper : EditorWindow
                 }
                 EditorGUI.DrawRect(keyRect, targetMap.prefabObjectEditInfos[i].c);
                 EditorGUI.DrawRect(new Rect(mapPreviewRect.x + mapPreviewRect.width * (edi.percent) - keyWidth / 4f, previewBorderSize, keyWidth / 2, 40), targetMap.prefabObjectEditInfos[i].c);
-                keyRects[_i] = keyRect;
-                _i++;
+                keyRects.Add(new KeyValuePair<Vector2Int, Rect>(new Vector2Int(i, j), keyRect ));
             }
         }
         EditableMap.ObjectEditInfo sedi = targetMap.prefabObjectEditInfos[selectedKeyIndex.x].GetObject(selectedKeyIndex.y);
@@ -550,13 +553,13 @@ public class MapGenerateHelper : EditorWindow
         {
             if (keyRects != null)
             {
-                for (int i = 0; i < keyRects.Length; i++)
+                for (int i = 0; i < keyRects.Count; i++)
                 {
-                    Rect wolrdKeyRect = new Rect(keyRects[i].x, keyRects[i].y + headerHeight + objectPrefabSection.height, keyRects[i].width, keyRects[i].height);
+                    Rect wolrdKeyRect = new Rect(keyRects[i].Value.x, keyRects[i].Value.y + headerHeight + objectPrefabSection.height, keyRects[i].Value.width, keyRects[i].Value.height);
                     if (wolrdKeyRect.Contains(guiEvent.mousePosition))
                     {
                         mouseIsDownOverKey = true;
-                        selectedKeyIndex = targetMap.GetInfoIndex(i);
+                        selectedKeyIndex = keyRects[i].Key;
                         needsRepaint = true;
                         GUI.FocusControl(null);
                         break;
