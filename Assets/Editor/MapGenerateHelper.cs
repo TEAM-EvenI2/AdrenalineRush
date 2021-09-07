@@ -401,27 +401,36 @@ public class MapGenerateHelper : EditorWindow
         }
 
         keyRects = new List<KeyValuePair<Vector2Int, Rect>>();// new Rect[keyCount];
-        for (int i = 0; i < targetMap.prefabObjectEditInfos.Count; i++)
+        for (int o = 0; o < 2; o++)
         {
-            if (!targetMap.prefabObjectEditInfos[i].toggle)
-                continue;
-            for (int j = 0; j < targetMap.prefabObjectEditInfos[i].spawnedObjectInfos.Count; j++)
+            for (int i = 0; i < targetMap.prefabObjectEditInfos.Count; i++)
             {
-                Vector2Int vIndex = new Vector2Int(i, j);
-                EditableMap.ObjectEditInfo edi = targetMap.prefabObjectEditInfos[i].GetObject(j);
-                if (edi.percent < 0)
-                    targetMap.UpdateObject(vIndex, 0, edi.angle);
-                else if (edi.percent > 1)
-                    targetMap.UpdateObject(vIndex, 1, edi.angle);
-
-                Rect keyRect = new Rect(mapPreviewRect.x + mapPreviewRect.width * (edi.percent) - keyWidth / 2f, mapPreviewRect.yMax + previewBorderSize, keyWidth, keyHeight);
-                if (vIndex == selectedKeyIndex)
+                if ((o == 0 && targetMap.prefabObjectEditInfos[i].toggle) ||
+                    (o == 1 && !targetMap.prefabObjectEditInfos[i].toggle))
+                    continue;
+                for (int j = 0; j < targetMap.prefabObjectEditInfos[i].spawnedObjectInfos.Count; j++)
                 {
-                    EditorGUI.DrawRect(new Rect(keyRect.x - 2, keyRect.y - 2, keyRect.width + 4, keyRect.height + 4), new Color(0.1f, 0.1f, 0.1f));
+                    Vector2Int vIndex = new Vector2Int(i, j);
+                    EditableMap.ObjectEditInfo edi = targetMap.prefabObjectEditInfos[i].GetObject(j);
+                    if (edi.percent < 0)
+                        targetMap.UpdateObject(vIndex, 0, edi.angle);
+                    else if (edi.percent > 1)
+                        targetMap.UpdateObject(vIndex, 1, edi.angle);
+
+                    Rect keyRect = new Rect(mapPreviewRect.x + mapPreviewRect.width * (edi.percent) - keyWidth / 2f, mapPreviewRect.yMax + previewBorderSize, keyWidth, keyHeight);
+                    if (vIndex == selectedKeyIndex)
+                    {
+                        EditorGUI.DrawRect(new Rect(keyRect.x - 2, keyRect.y - 2, keyRect.width + 4, keyRect.height + 4), new Color(0.1f, 0.1f, 0.1f));
+                    }
+
+                    Color c = targetMap.prefabObjectEditInfos[i].c;
+                    if (!targetMap.prefabObjectEditInfos[i].toggle)
+                        c.a = 0.2f;
+
+                    EditorGUI.DrawRect(keyRect, c);
+                    EditorGUI.DrawRect(new Rect(mapPreviewRect.x + mapPreviewRect.width * (edi.percent) - keyWidth / 4f, previewBorderSize, keyWidth / 2, 40), c);
+                    keyRects.Add(new KeyValuePair<Vector2Int, Rect>(new Vector2Int(i, j), keyRect));
                 }
-                EditorGUI.DrawRect(keyRect, targetMap.prefabObjectEditInfos[i].c);
-                EditorGUI.DrawRect(new Rect(mapPreviewRect.x + mapPreviewRect.width * (edi.percent) - keyWidth / 4f, previewBorderSize, keyWidth / 2, 40), targetMap.prefabObjectEditInfos[i].c);
-                keyRects.Add(new KeyValuePair<Vector2Int, Rect>(new Vector2Int(i, j), keyRect ));
             }
         }
         EditableMap.ObjectEditInfo sedi = targetMap.prefabObjectEditInfos[selectedKeyIndex.x].GetObject(selectedKeyIndex.y);
@@ -555,6 +564,9 @@ public class MapGenerateHelper : EditorWindow
             {
                 for (int i = 0; i < keyRects.Count; i++)
                 {
+                    if (!targetMap.prefabObjectEditInfos[keyRects[i].Key.x].toggle)
+                        continue;
+
                     Rect wolrdKeyRect = new Rect(keyRects[i].Value.x, keyRects[i].Value.y + headerHeight + objectPrefabSection.height, keyRects[i].Value.width, keyRects[i].Value.height);
                     if (wolrdKeyRect.Contains(guiEvent.mousePosition))
                     {
