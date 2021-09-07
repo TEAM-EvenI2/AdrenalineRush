@@ -443,6 +443,18 @@ public class MapGenerateHelper : EditorWindow
                 targetMap.UpdateObject(selectedKeyIndex, percent, sedi.angle);
             }
         }
+        else if(sedi.ti is SurfaceObstacle)
+        {
+            SurfaceObstacle so = (SurfaceObstacle)sedi.ti;
+            float so_size_percent = EditorGUILayout.Slider("Size Percent", so.sizePercent, 0.1f, 0.7f);
+
+            if (Mathf.Abs(so_size_percent - so.sizePercent) > Mathf.Epsilon)
+            {
+                so.sizePercent = so_size_percent;
+                targetMap.UpdateObject(selectedKeyIndex, percent, sedi.angle);
+            }
+
+        }
         GUILayout.EndHorizontal();
 
 
@@ -487,6 +499,21 @@ public class MapGenerateHelper : EditorWindow
             {
                 targetMap.UpdateObject(selectedKeyIndex, sedi.percent, sedi.angle);
             }
+        }
+        else if(sedi.ti is SurfaceObstacle)
+        {
+            SurfaceObstacle so = (SurfaceObstacle)sedi.ti;
+            GUILayout.BeginVertical(GUILayout.MinWidth(300));
+            so.curveLength = EditorGUILayout.FloatField("Curve Length", so.curveLength, GUILayout.ExpandWidth(false));
+            so.roadWidth = EditorGUILayout.FloatField("Road Width", so.roadWidth, GUILayout.ExpandWidth(false));
+            so.curve = EditorGUILayout.CurveField("Path", so.curve, GUILayout.ExpandWidth(false));
+            so.noiseStrength = EditorGUILayout.FloatField("Noise", so.noiseStrength, GUILayout.ExpandWidth(false));
+            GUILayout.EndVertical();
+            if (GUI.changed)
+            {
+                targetMap.UpdateObject(selectedKeyIndex, sedi.percent, sedi.angle);
+            }
+
         }
         GUILayout.EndHorizontal();
 

@@ -8,20 +8,17 @@ public class SurfaceObstacle : MeshObstacle
 
 	public Mesh mesh;
 
-	public AnimationCurve[] curves;
+	public AnimationCurve curve;
 	public int curveSegmentCount = 5;
 	public int radiusSegmentCount = 5;
 
 
-	public float loadWidth = 1;
+	public float roadWidth = 1;
 	public float curveLength;
 
 	public float sizePercent = 1f;
+	public float noiseStrength = 1f;
 
-
-	private Vector3[] vertices;
-	private Vector2[] uv;
-	private int[] triangles;
 
 	public override void Generate(MapMeshWrapper mw, float percent, float angle)
 	{
@@ -34,18 +31,6 @@ public class SurfaceObstacle : MeshObstacle
 			GetComponent<MeshCollider>().sharedMesh = mesh;
 			mesh.name = "Surface Obstacle";
 		}
-		if(transform.childCount == 0)
-        {
-			for(int i = 0; i < curves.Length + 1; i++)
-            {
-				GameObject go = new GameObject();
-				go.transform.SetParent(transform);
-				go.transform.localPosition = go.transform.localEulerAngles = Vector3.zero;
-				go.name = "Test Mesh " + i;
-				go.AddComponent<MeshFilter>().mesh = new Mesh();
-                go.AddComponent<MeshRenderer>().material = GetComponent<MeshRenderer>().sharedMaterial;
-            }
-        }
 
 		mesh.Clear();
 		SetVertices(mw, percent, angle);
@@ -55,13 +40,408 @@ public class SurfaceObstacle : MeshObstacle
 
 	private void SetVertices(MapMeshWrapper mw, float percent, float angle)
 	{
+		List<Vector3> vertices = new List<Vector3>();
+		List<int> triangles = new List<int>();
+		// [width, splited_mesh_count, start-end]
+		int[,,] verticesStartEndCount = new int[curveSegmentCount + 1, 2, 2];
 
-        AddDefaultSurface(mw, percent, angle);
-        for (int i = 0; i < curves.Length; i++)
+		float width = curveLength;
+		float height = 2 * Mathf.PI * mw.mapMesh.mapSize;
+
+		Vector2 forwardVec = GetForwardVector();
+		Vector2 left = new Vector2(-forwardVec.y / width, forwardVec.x / height) * roadWidth;
+
+		System.Func<float, float> leftFunc = (float x) => { return (curve.Evaluate(x - left.x) + left.y); };
+		System.Func<float, float> rightFunc = (float x) => { return (curve.Evaluate(x + left.x) - left.y); }; ;
+
+		float curArc = mw.curveRadius * mw.curveAngle * Mathf.Deg2Rad;
+		float enableArc = curArc - (curveLength);
+
+		Noise noise = new Noise();
+		// ---------------------------- Set Vertices ----------------------------
+		for (int i = 0; i < curveSegmentCount + 1; i++)
+		{
+			float u = (float)i / (curveSegmentCount);
+			float l_u = leftFunc(u) * ((float)(radiusSegmentCount - 1) / radiusSegmentCount);
+			float r_u = rightFunc(u) * ((float)(radiusSegmentCount - 1) / radiusSegmentCount);
+
+			bool enterRoad = false;
+				verticesStartEndCount[i, 0, 0] = verticesStartEndCount[i, 0, 1] = -1;
+				verticesStartEndCount[i, 1, 0] = verticesStartEndCount[i, 1, 1] = -1;
+
+			for (int j = 0; j < radiusSegmentCount; j++)
+			{
+				float v = (float)j / radiusSegmentCount;
+
+
+				float x = Mathf.Sin(v* 360 * Mathf.Deg2Rad) * Mathf.Cos(u * 360 * Mathf.Deg2Rad);
+				float y = Mathf.Sin(v * 360 * Mathf.Deg2Rad) * Mathf.Sin(u * 360 * Mathf.Deg2Rad);
+				float z = Mathf.Cos(v * 360 * Mathf.Deg2Rad);
+
+				float noiseValue = noise.Evaluate(new Vector3(x, y, z)) * noiseStrength;
+
+				float _sizePercent = (1 - sizePercent * ( 1 + noiseValue)) ;
+
+				float arc = u * curveLength + enableArc * percent;
+				float _angle = v * 360 + angle;
+				if (_angle < 0)
+					_angle += 360;
+
+				if (v > l_u )
+				{
+					// 위쪽에 있는 mesh에서 첫번째 vertices index
+					verticesStartEndCount[i, 1, 1] = vertices.Count;
+				}
+				else if (v < r_u )
+				{
+					// 아래쪽에 있는 mesh에서 첫번째 vertex index
+					if (verticesStartEndCount[i, 0, 0] == -1)
+						verticesStartEndCount[i, 0, 0] = vertices.Count;
+				}
+				else
+				{
+					// 아래쪽이랑 위쪽 mesh에서 격자에 안 맞는 위치에 대한 할당
+					// 격자에 맞지 않는 위치라서 따로 설정해줘야 함.
+					if (!enterRoad)
+					{
+						if (r_u >= 0)
+						{
+							_angle = (r_u * 360 + angle) / 360;
+							_angle = _angle % 360;
+							if (_angle < 0)
+								_angle += 360;
+							verticesStartEndCount[i, 0, 1] = vertices.Count;
+							vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, (r_u * 360 + angle) * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360) * _sizePercent) );
+						}
+						if (l_u <= 1)
+						{
+							_angle = (l_u * 360 + angle) / 360;
+							_angle = _angle % 360;
+							if (_angle < 0)
+								_angle += 360;
+							verticesStartEndCount[i, 1, 0] = vertices.Count;
+							vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, (l_u * 360 + angle) * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360) * _sizePercent) );
+						}
+					}
+					enterRoad = true;
+
+					continue;
+				}
+
+				Vector3 point = mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360) * _sizePercent);
+				vertices.Add(point);
+			}
+
+			if(enterRoad == false)
+            {
+				Debug.LogError("Curve graph is wrong, can't find path");
+            }
+		}
+
+		int mainVertexCount = vertices.Count;
+
+		// Start, End wall
+		for (int u = 0; u < 2; u++)
+		{
+			float l_u = leftFunc(u) * ((float)(radiusSegmentCount - 1) / radiusSegmentCount);
+			float r_u = rightFunc(u) * ((float)(radiusSegmentCount - 1) / radiusSegmentCount);
+
+			bool enterRoad = false;
+
+			for (int j = 0; j < radiusSegmentCount; j++)
+			{
+				float v = (float)j / radiusSegmentCount;
+
+				float x = Mathf.Sin(v * 360 * Mathf.Deg2Rad) * Mathf.Cos(u * 360 * Mathf.Deg2Rad);
+				float y = Mathf.Sin(v * 360 * Mathf.Deg2Rad) * Mathf.Sin(u * 360 * Mathf.Deg2Rad);
+				float z = Mathf.Cos(v * 360 * Mathf.Deg2Rad);
+
+				float noiseValue = noise.Evaluate(new Vector3(x, y, z)) * noiseStrength;
+
+				float arc = u * curveLength + enableArc * percent;
+				float _angle = v * 360 + angle;
+				_angle = _angle % 360;
+				if (_angle < 0)
+					_angle += 360;
+
+				if (v >= r_u && v <= l_u)
+				{
+					// 아래쪽이랑 위쪽 mesh에서 격자에 안 맞는 위치에 대한 할당
+					// 격자에 맞지 않는 위치라서 따로 설정해줘야 함.
+					if (!enterRoad)
+					{
+						if (r_u >= 0)
+						{
+							_angle = (r_u * 360 + angle) / 360;
+							_angle = _angle % 360;
+							if (_angle < 0)
+								_angle += 360;
+							vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, (r_u * 360 + angle) * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360)));
+						}
+						if (l_u <= 1)
+						{
+							_angle = (l_u * 360 + angle) / 360;
+							_angle = _angle % 360;
+							if (_angle < 0)
+								_angle += 360;
+							vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, (l_u * 360 + angle) * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360)));
+						}
+					}
+					enterRoad = true;
+
+					continue;
+				}
+
+				Vector3 point = mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360));
+				vertices.Add(point);
+			}
+		}
+
+		// 
+		for (int i = 1; i < curveSegmentCount; i++)
+		{
+			float u = (float)i / (curveSegmentCount);
+			float l_u = leftFunc(u) * ((float)(radiusSegmentCount - 1) / radiusSegmentCount);
+			float r_u = rightFunc(u) * ((float)(radiusSegmentCount - 1) / radiusSegmentCount);
+
+			float arc = u * curveLength + enableArc * percent;
+			
+			if (r_u >= 0)
+			{
+				float _angle = (l_u * 360 + angle) / 360;
+				_angle = _angle % 360;
+				if (_angle < 0)
+					_angle += 360;
+				vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, (r_u * 360 + angle) * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc/ curArc, _angle / 360)));
+			}
+			if (l_u <= 1)
+			{
+				float _angle = (l_u * 360 + angle) / 360;
+				_angle = _angle % 360;
+				if (_angle < 0)
+					_angle += 360;
+				vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, (l_u * 360 + angle) * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360)));
+			}
+		}
+
+
+
+		// ---------------------------- Set Triangles --------------------------------------------------
+		for (int i = 0; i < curveSegmentCount; i++)
+		{ 
+			for(int k = 0; k < 2; k++)
+			{
+				int st = verticesStartEndCount[i, k, 0];
+				int ed = verticesStartEndCount[i, k, 1];
+				int nSt = verticesStartEndCount[i + 1, k, 0];
+				int nEd = verticesStartEndCount[i + 1, k, 1];
+                //print("[" + i + ", " + k + "]: " + st + ", " + ed + ", " + nSt + ", " + nEd);
+                if (st != -1 && ed != -1 && nSt != -1 && nEd != -1)
+				{
+					int nextHeight = nEd - nSt + 1;
+					int curHeight = ed - st + 1;
+					int gap = curHeight - nextHeight;
+					if (gap < 0)
+						gap = 0;
+					for (int idx = 0; idx < curHeight; idx++)
+					{
+						if ( idx >= gap)
+						{
+							if (nSt + (idx- gap) + 1 <= nEd)
+							{
+								triangles.Add(st + idx);
+								triangles.Add(nSt + idx - gap);
+								triangles.Add(nSt + idx - gap + 1);
+								if (st + idx + 1 <= ed)
+								{
+                                    triangles.Add(st + idx);
+                                    triangles.Add(nSt + idx - gap + 1);
+                                    triangles.Add(st + idx + 1);
+                                }
+                            }
+                            else
+                            {
+								if(k == 1)
+								{
+									int lSt = verticesStartEndCount[i, 0, 0];
+									int nLSt = verticesStartEndCount[i + 1, 0, 0];
+
+									if(lSt != -1 && nLSt != -1)
+                                    {
+                                        triangles.Add(st + idx);
+                                        triangles.Add(nSt + idx - gap);
+                                        triangles.Add(nLSt);
+
+                                        triangles.Add(st + idx);
+                                        triangles.Add(nLSt);
+                                        triangles.Add(lSt);
+                                    }
+								}
+                            }
+						}
+                        else
+                        {
+							if(gap - idx == 1)
+                            {
+                                triangles.Add(st + idx);
+                                triangles.Add(nSt + idx - gap + 1);
+                                triangles.Add(st + idx + 1);
+                            }
+                        }
+					}
+				}
+			}
+		}
+
+		int wallVertex = 0;
+		// For start and end wall
+		for (int u = 0; u <2; u++)
+		{
+			int i = u * curveSegmentCount;
+			for (int k = 0; k < 2; k++)
+			{
+				int st = verticesStartEndCount[i, k, 0];
+				int ed = verticesStartEndCount[i, k, 1];
+				if (st != -1 && ed != -1 )
+				{
+					int curHeight = ed - st + 1;
+					for (int idx = 0; idx < curHeight; idx++)
+					{
+
+						if(st + idx + 1 <= ed)
+                        {
+							AddTriangle(triangles,st + idx, mainVertexCount + wallVertex + idx + 1, mainVertexCount + wallVertex + idx, u == 1);
+							AddTriangle(triangles,st + idx, st + idx + 1, mainVertexCount + wallVertex + idx + 1, u == 1);
+						}
+                        else
+                        {
+							if (k == 1)
+							{
+								int lSt = verticesStartEndCount[i, 0, 0];
+								int lEd = verticesStartEndCount[i, 0, 1];
+
+								if (lSt != -1)
+								{
+									AddTriangle(triangles, st + idx, mainVertexCount + wallVertex - (lEd - lSt + 1), mainVertexCount + wallVertex + idx, u == 1);
+									AddTriangle(triangles, st + idx, lSt, mainVertexCount + wallVertex - (lEd - lSt + 1), u == 1);
+								}
+							}
+                        }
+					}
+					wallVertex += curHeight;
+				}
+			}
+		}
+        //----
+
+        // For middle wall----
+        for (int k = 0; k < 2; k++)
         {
-			AddRoadSurface(mw, percent, angle, i);
+            int p = verticesStartEndCount[0, k, 1 - k];
+            int np = verticesStartEndCount[1, k, 1 - k];
+            if (p != -1 && np != -1)
+            {
+                AddTriangle(triangles, p, mainVertexCount + wallVertex + k, mainVertexCount + p, k == 1);
+                AddTriangle(triangles, p, np, mainVertexCount + wallVertex + k, k == 1);
+
+            }
         }
-		//Substarction();
+        for (int i = 1; i < curveSegmentCount - 1; i++)
+        {
+            for (int k = 0; k < 2; k++)
+            {
+                int p = verticesStartEndCount[i, k, 1 - k];
+                int np = verticesStartEndCount[i + 1, k, 1 - k];
+                if (p != -1 && np != -1)
+                {
+                    AddTriangle(triangles, p, mainVertexCount + wallVertex + 2 + k, mainVertexCount + wallVertex + k, k == 1);
+                    AddTriangle(triangles, p, np, mainVertexCount + wallVertex + 2 + k, k == 1);
+
+                }
+            }
+            wallVertex += 2;
+
+        }
+
+        int stCount = 0;
+        for (int k = 0; k < 2; k++)
+        {
+            int st = verticesStartEndCount[0, k, 0];
+            int ed = verticesStartEndCount[0, k, 1];
+            if (st != -1 && ed != -1)
+                stCount += ed - st + 1;
+        }
+
+        for (int k = 0; k < 2; k++)
+        {
+            int p = verticesStartEndCount[curveSegmentCount - 1, k, 1 - k];
+            int np = verticesStartEndCount[curveSegmentCount, k, 1 - k];
+
+            if (p != -1 && np != -1)
+            {
+                int v = verticesStartEndCount[curveSegmentCount - 1, 0, 1] - verticesStartEndCount[curveSegmentCount - 1, 0, 0];
+                AddTriangle(triangles, p, mainVertexCount + stCount + v + k, mainVertexCount + wallVertex + k, k == 1);
+                AddTriangle(triangles, p, np, mainVertexCount + stCount + v + k, k == 1);
+            }
+        }
+
+        //----
+
+        mesh.vertices = vertices.ToArray();
+		mesh.triangles = triangles.ToArray();
+	}
+
+	private void AddTriangle(List<int> triangles, int a, int b, int c, bool flip = false)
+    {
+
+		triangles.Add(a);
+		if (flip)
+		{
+
+			triangles.Add(c);
+			triangles.Add(b);
+		}
+		else
+		{
+			triangles.Add(b);
+			triangles.Add(c);
+		}
+	}
+
+	private Vector2 GetForwardVector()
+	{
+		// Least-Square
+		float a = 0, b;
+
+		float mean_u = 0;
+		float mean_f_u = 0;
+		for (int i = 0; i < curveSegmentCount + 1; i++)
+		{
+			float u = (float)i / (curveSegmentCount);
+			float f_u = curve.Evaluate(u);
+			mean_u += u;
+			mean_f_u += f_u;
+		}
+		mean_u /= curveSegmentCount + 1;
+		mean_f_u /= curveSegmentCount + 1;
+
+		float p = 0;
+		for (int i = 0; i < curveSegmentCount + 1; i++)
+		{
+			float u = (float)i / (curveSegmentCount);
+			float f_u = curve.Evaluate(u);
+			a += (u - mean_u) * (f_u - mean_f_u);
+			p += (u - mean_u) * (u - mean_u);
+		}
+		a = a / p;
+		b = mean_f_u - mean_u * a;
+
+		Vector2 pointA = new Vector2(0, b);
+		Vector2 pointB = new Vector2(1, a + b);
+
+		Vector2 vecAB = pointB - pointA;
+
+		return vecAB.normalized;
 	}
 
 	private void AddDefaultSurface(MapMeshWrapper mw, float percent, float angle)
@@ -147,69 +527,6 @@ public class SurfaceObstacle : MeshObstacle
 		mesh.triangles = triangles;
 
 		mesh.normals = CaculateNormals(vertices, triangles);
-	}
-
-	private void AddRoadSurface(MapMeshWrapper mw, float percent, float angle, int curveIndex)
-	{
-
-		Vector3[] vertices = new Vector3[2 * (curveSegmentCount + 1)];
-		int[] triangles = new int[(curveSegmentCount) * 6];
-
-		float curArc = mw.curveRadius * mw.curveAngle * Mathf.Deg2Rad;
-		float enableArc = curArc - (curveLength);
-
-		int verticesIndex = 0;
-		int triIndex = 0;
-		for (int i = 0; i < curveSegmentCount + 1; i++)
-		{
-			float u = (float)i / (curveSegmentCount);
-			Vector2 point = new Vector2(u, curves[curveIndex].Evaluate(u));
-
-			Vector2 forward = Vector2.zero;
-			if (i < curveSegmentCount)
-			{
-				float _u = (float)(i + 1) / (curveSegmentCount);
-				forward += new Vector2(_u, curves[curveIndex].Evaluate(_u)) - point;
-			}
-
-			if (i > 0)
-			{
-				float _u = (float)(i - 1) / (curveSegmentCount);
-				forward += point - new Vector2(_u, curves[curveIndex].Evaluate(_u));
-			}
-			forward.Normalize();
-
-			Vector2 left = new Vector2(-forward.y, forward.x);
-
-			float arcLeft = point.x * curveLength + left.x * loadWidth / 2 + enableArc * percent;
-			float angleLeft = point.y * 360 + left.y * (loadWidth / 2) / mw.mapMesh.mapSize * Mathf.Rad2Deg + angle;
-			float arcRight = point.x * curveLength - left.x * loadWidth / 2 + enableArc * percent;
-			float angleRight = point.y * 360 - left.y * (loadWidth / 2) / mw.mapMesh.mapSize * Mathf.Rad2Deg + angle;
-
-			vertices[verticesIndex] = mw.mapMesh.GetPointOnSurface(mw,
-				(arcLeft) / mw.curveRadius,
-				(angleLeft) * Mathf.Deg2Rad,
-				mw.mapMesh.GetDistance(mw, point.x + (left.x * loadWidth / 2) / curveLength, point.y + ((left.y * (loadWidth / 2) / mw.mapMesh.mapSize) * Mathf.Rad2Deg) / 360) * (1-sizePercent));
-			vertices[verticesIndex + 1] = mw.mapMesh.GetPointOnSurface(mw,
-				(arcRight) / mw.curveRadius,
-				(angleRight) * Mathf.Deg2Rad,
-				mw.mapMesh.GetDistance(mw, point.x + (-left.x * loadWidth / 2) / curveLength, point.y + ((-left.y * (loadWidth / 2) / mw.mapMesh.mapSize) * Mathf.Rad2Deg) / 360) * (1 - sizePercent));
-
-			if (i < curveSegmentCount)
-			{
-				AddTriangle(triangles, triIndex, verticesIndex, verticesIndex + 1, verticesIndex + 2);
-				triIndex += 3;
-				AddTriangle(triangles, triIndex, verticesIndex + 1, verticesIndex + 3, verticesIndex + 2);
-				triIndex += 3;
-			}
-			verticesIndex += 2;
-		}
-
-		Mesh mesh = transform.GetChild(curveIndex + 1).GetComponent<MeshFilter>().sharedMesh;
-		mesh.Clear();
-		mesh.vertices = vertices;
-		mesh.triangles = triangles;
-
 	}
 
 }

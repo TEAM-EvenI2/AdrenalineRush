@@ -39,9 +39,7 @@ public class Test1 : MonoBehaviour
         public int radiusSegmentCount = 5;
         public AnimationCurve curve;
 
-        public float width = 5;
-        public float height = 5;
-
+        public SurfaceObstacle prefab;
         public float loadWidth = 1;
     }
 
@@ -64,73 +62,69 @@ public class Test1 : MonoBehaviour
             go.transform.localScale = Vector3.one * 0.05f;
             go.GetComponent<MeshRenderer>().material.color = Color.black;
         }
-        for (int i = 0; i <  (mot.curveSegmentCount + 1); i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                go.transform.SetParent(transform);
-                go.transform.localScale = Vector3.one * 0.05f;
-                go.GetComponent<MeshRenderer>().material.color = Color.white;
-            }
-        }
         
-    }
-
-    private Vector2 GetForwardVector()
-    {
-        // Least-Square
-        float a = 0, b;
-
-        float mean_u = 0;
-        float mean_f_u = 0;
-        for (int i = 0; i < mot.curveSegmentCount + 1; i++)
-        {
-            float u = (float)i / (mot.curveSegmentCount);
-            float f_u = mot.curve.Evaluate(u);
-            mean_u += u;
-            mean_f_u += f_u;
         }
-        mean_u /= mot.curveSegmentCount + 1;
-        mean_f_u /= mot.curveSegmentCount + 1;
 
-        float p = 0;
-        for (int i = 0; i < mot.curveSegmentCount + 1; i++)
+        private Vector2 GetForwardVector()
         {
-            float u = (float)i / (mot.curveSegmentCount);
-            float f_u = mot.curve.Evaluate(u);
-            a += (u - mean_u) * (f_u - mean_f_u);
-            p += (u - mean_u) * (u - mean_u);
+            // Least-Square
+            float a = 0, b;
+
+            float mean_u = 0;
+            float mean_f_u = 0;
+            for (int i = 0; i < mot.curveSegmentCount + 1; i++)
+            {
+                float u = (float)i / (mot.curveSegmentCount);
+                float f_u = mot.curve.Evaluate(u);
+                mean_u += u;
+                mean_f_u += f_u;
+            }
+            mean_u /= mot.curveSegmentCount + 1;
+            mean_f_u /= mot.curveSegmentCount + 1;
+
+            float p = 0;
+            for (int i = 0; i < mot.curveSegmentCount + 1; i++)
+            {
+                float u = (float)i / (mot.curveSegmentCount);
+                float f_u = mot.curve.Evaluate(u);
+                a += (u - mean_u) * (f_u - mean_f_u);
+                p += (u - mean_u) * (u - mean_u);
+            }
+            a = a / p;
+            b = mean_f_u - mean_u * a;
+
+            Vector2 pointA = new Vector2(0, b);
+            Vector2 pointB = new Vector2(1, a + b);
+
+            Vector2 vecAB = pointB - pointA;
+
+            return vecAB.normalized;
         }
-        a = a / p;
-        b = mean_f_u - mean_u * a;
-
-        Vector2 pointA = new Vector2(0, b);
-        Vector2 pointB = new Vector2(1, a + b);
-
-        Vector2 vecAB = pointB - pointA;
-
-        return vecAB.normalized;
-    }
 
     private void Update()
     {
         if (mot.index < 0 || mot.index >= mapSystem.maps.Length)
             return;
 
-
         MapMeshWrapper mw = mapSystem.maps[mot.index];
         mw.transform.position = Vector3.zero;
         mw.transform.eulerAngles = Vector3.zero;
 
-        Vector2 forwardVec = GetForwardVector();
-        Vector2 left = new Vector2(-forwardVec.y, forwardVec.x) * mot.loadWidth / mot.width;
 
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+
+            Instantiate(mot.prefab).Setting(mw, 0, 0, 0);
+        }
+
+        float width = mot.curveLength;
+        float height = 2 * Mathf.PI * mw.mapMesh.mapSize;
+
+        Vector2 forwardVec = GetForwardVector();
+        Vector2 left = new Vector2(-forwardVec.y / width, forwardVec.x / height) * mot.loadWidth ;
 
         System.Func<float, float> leftFunc = (float x) => { return (mot.curve.Evaluate(x - left.x) + left.y) ; };
         System.Func<float, float> rightFunc = (float x) => { return (mot.curve.Evaluate(x + left.x) - left.y); };
-        print(left);
-
 
         float curArc = mw.curveRadius * mw.curveAngle * Mathf.Deg2Rad;
         float enableArc = curArc - (mot.curveLength);
@@ -138,38 +132,43 @@ public class Test1 : MonoBehaviour
         for (int i = 0; i < mot.curveSegmentCount + 1; i++)
         {
             float u = (float)i / (mot.curveSegmentCount);
-            float o_u = mot.curve.Evaluate(u);
-            float l_u = leftFunc(u);
-            float r_u = rightFunc(u);
+            float o_u = mot.curve.Evaluate(u) * ((float)(mot.radiusSegmentCount - 1) / mot.radiusSegmentCount);
+            float l_u = leftFunc(u) * ((float)(mot.radiusSegmentCount - 1) / mot.radiusSegmentCount);
+            float r_u = rightFunc(u) * ((float)(mot.radiusSegmentCount - 1) / mot.radiusSegmentCount);
             //Debug.DrawLine(forwardVec * u * mot.width, forwardVec * u * mot.width + left, Color.yellow);
             //Debug.DrawLine(forwardVec * u * mot.width, forwardVec * u * mot.width - left, Color.green);
             //Debug.DrawLine(forwardVec * u * mot.width, forwardVec * (u + 1 / (float)(mot.curveSegmentCount)) * mot.width, Color.blue);
 
-            Debug.DrawLine(new Vector3(u, o_u) * mot.width, new Vector3((u + 1 / (float)(mot.curveSegmentCount)), mot.curve.Evaluate((u + 1 / (float)(mot.curveSegmentCount)))) * mot.width, Color.white);
-            Debug.DrawLine(new Vector3(u, l_u) * mot.width, new Vector3((u + 1 / (float)(mot.curveSegmentCount)), leftFunc((u + 1 / (float)(mot.curveSegmentCount)))) * mot.width, Color.yellow);
-            Debug.DrawLine(new Vector3(u, r_u) * mot.width, new Vector3((u + 1 / (float)(mot.curveSegmentCount)), rightFunc((u + 1 / (float)(mot.curveSegmentCount)))) * mot.width, Color.green);
+            Debug.DrawLine(new Vector3(u * width, o_u * height) , new Vector3((u + 1 / (float)(mot.curveSegmentCount)) * width, mot.curve.Evaluate((u + 1 / (float)(mot.curveSegmentCount))) * ((float)(mot.radiusSegmentCount - 1) / mot.radiusSegmentCount) * height), Color.white);
+            Debug.DrawLine(new Vector3(u * width, l_u * height) , new Vector3((u + 1 / (float)(mot.curveSegmentCount)) * width, leftFunc((u + 1 / (float)(mot.curveSegmentCount))) * ((float)(mot.radiusSegmentCount - 1) / mot.radiusSegmentCount) * height), Color.yellow);
+            Debug.DrawLine(new Vector3(u * width, r_u * height) , new Vector3((u + 1 / (float)(mot.curveSegmentCount)) * width, rightFunc((u + 1 / (float)(mot.curveSegmentCount))) * ((float)(mot.radiusSegmentCount - 1) / mot.radiusSegmentCount) * height), Color.green);
 
             for (int j = 0; j < mot.radiusSegmentCount; j++)
             {
                 int idx = i * mot.radiusSegmentCount + j;
                 Transform t = transform.GetChild(idx);
-                float v = (float)j / (mot.radiusSegmentCount - 1);
+                float v  = (float)j / mot.radiusSegmentCount ;
 
                 t.GetComponent<MeshRenderer>().material.color = Color.black;
-                if (v > l_u)
+                if (v > l_u )
                 {
-                    t.GetComponent<MeshRenderer>().material.color = Color.blue;
+                    t.GetComponent<MeshRenderer>().material.color = new Color(0, u, v);
                 }
-                if (v < r_u)
+                else if (v < r_u )
                 {
-                    t.GetComponent<MeshRenderer>().material.color = Color.red;
+                    t.GetComponent<MeshRenderer>().material.color = new Color(v, u, 0);
+                }
+                else
+                {
+                    //t.position = Vector3.one * -1f;
+                   continue;
                 }
 
                 float arc = u * mot.curveLength + enableArc * mot.percent;
                 float angle = v * 360 + mot.angle1;
 
-                //Vector3 point = mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, u, v));
-                Vector3 point = new Vector2(u * mot.width, v * mot.height);
+                Vector3 point = mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, u, v));
+                //Vector3 point = new Vector2(u * width, v * height);
                 t.position = point;
             }
         }

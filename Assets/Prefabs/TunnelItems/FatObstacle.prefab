@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3049930134493011734}
   m_Layer: 0
   m_Name: FatObstacle
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 04ef6f3057648a949b6571f330bc886c, type: 2}
+  - {fileID: 2100000, guid: d2e015f4cbb4c074cbdc878a1a7a5247, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -111,12 +111,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   angle: 0
   mesh: {fileID: 0}
-  curves:
-  - serializedVersion: 2
+  curve:
+    serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 0
+      time: -0.0024375916
+      value: 0.24431762
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -124,19 +124,20 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 2
-      outSlope: 2
+      time: 0.9975586
+      value: 0.83671033
+      inSlope: 0
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 0
-  curveSegmentCount: 20
-  radiusSegmentCount: 20
-  loadWidth: 1
-  curveLength: 5
-  sizePercent: 0.3
+    m_RotationOrder: 4
+  curveSegmentCount: 21
+  radiusSegmentCount: 21
+  roadWidth: 0.5
+  curveLength: 9
+  sizePercent: 0.306
+  noiseStrength: 0.64
