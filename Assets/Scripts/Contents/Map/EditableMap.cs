@@ -215,36 +215,41 @@ public class EditableMap : MonoBehaviour
 				float angle = oei.angle;
 				oei.ti = mi;
 
-				if(spoei.itemPrefab is LongObstacle)
-                {
-					if (preMi as LongObstacle != null)
-					{
-						LongObstacle lo = (LongObstacle)mi;
-						lo.size = ((LongObstacle)preMi).size;
-						lo.angleInTunnel = ((LongObstacle)preMi).angleInTunnel;
-						lo.curve = new AnimationCurve(((LongObstacle)preMi).curve.keys);
-						lo.noiseStrength = ((LongObstacle)preMi).noiseStrength;
-						lo.middleSizePercent = ((LongObstacle)preMi).middleSizePercent;
-					}
-				}
-				else if(spoei.itemPrefab is SurfaceObstacle)
-				{
-					if (preMi as SurfaceObstacle != null)
-					{
-						SurfaceObstacle so = (SurfaceObstacle)mi;
-						so.sizePercent = ((SurfaceObstacle)preMi).sizePercent;
-						so.roadWidth = ((SurfaceObstacle)preMi).roadWidth;
-						so.curve = new AnimationCurve(((SurfaceObstacle)preMi).curve.keys);
-						so.noiseStrength = ((SurfaceObstacle)preMi).noiseStrength;
-						so.curveLength = ((SurfaceObstacle)preMi).curveLength;
-					}
-				}
+				DuplicateSetting(mi, preMi);
 
 				UpdateObject(new Vector2Int(i, j),
 					oei.percent,
 					angle);
 
 				DestroyImmediate(preMi);
+			}
+		}
+	}
+
+	public void DuplicateSetting(MapItem to, MapItem from)
+	{
+		if (to is LongObstacle)
+		{
+			if (from as LongObstacle != null)
+			{
+				LongObstacle lo = (LongObstacle)to;
+				lo.size = ((LongObstacle)from).size;
+				lo.angleInTunnel = ((LongObstacle)from).angleInTunnel;
+				lo.curve = new AnimationCurve(((LongObstacle)from).curve.keys);
+				lo.noiseStrength = ((LongObstacle)from).noiseStrength;
+				lo.middleSizePercent = ((LongObstacle)from).middleSizePercent;
+			}
+		}
+		else if (to is SurfaceObstacle)
+		{
+			if (from as SurfaceObstacle != null)
+			{
+				SurfaceObstacle so = (SurfaceObstacle)to;
+				so.sizePercent = ((SurfaceObstacle)from).sizePercent;
+				so.roadWidth = ((SurfaceObstacle)from).roadWidth;
+				so.curve = new AnimationCurve(((SurfaceObstacle)from).curve.keys);
+				so.noiseStrength = ((SurfaceObstacle)from).noiseStrength;
+				so.curveLength = ((SurfaceObstacle)from).curveLength;
 			}
 		}
 	}

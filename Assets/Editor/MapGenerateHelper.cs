@@ -37,7 +37,7 @@ public class MapGenerateHelper : EditorWindow
     Vector2 rotatePointCenter;
     List<KeyValuePair<Vector2Int, Rect>> keyRects;
     bool mouseIsDownOverKey;
-    Vector2Int selectedKeyIndex;
+    List<Vector2Int> selectedKeyIndexs;
     bool needsRepaint;
 
     int currentPickerWindow = -1;
@@ -46,6 +46,13 @@ public class MapGenerateHelper : EditorWindow
     static TorusMesh torusMesh;
 
     MapMeshType meshType;
+
+
+    private bool downShift = false;
+    private bool downCtrl = false;
+     Vector2 dragOn;
+    bool drawBox = false;
+
 
     [MenuItem("Window/Map Generate Helper")]
     static void Init()
@@ -58,6 +65,7 @@ public class MapGenerateHelper : EditorWindow
     private void OnEnable()
     {
         torusMesh = new TorusMesh();
+        selectedKeyIndexs = new List<Vector2Int>();
     }
 
     private void OnGUI()
@@ -350,8 +358,9 @@ public class MapGenerateHelper : EditorWindow
 
             if (GUI.Button(new Rect(x + size.x + 20, y, prefabButtonSize, size.y), "+"))
             {
+                selectedKeyIndexs.Clear();
 
-                selectedKeyIndex = targetMap.AddObject(prefabObjectEditInfo.itemPrefab, 0);
+                selectedKeyIndexs.Add(targetMap.AddObject(prefabObjectEditInfo.itemPrefab, 0));
 
                 mouseIsDownOverKey = true;
                 needsRepaint = true;
@@ -372,27 +381,31 @@ public class MapGenerateHelper : EditorWindow
         mapPreviewRect = new Rect(previewBorderSize, previewBorderSize, position.width - previewBorderSize * 2, 40);
         EditorGUI.DrawRect(mapPreviewRect, new Color(0.2f, 0.2f, 0.2f));
 
-
-        if(selectedKeyIndex.x >= targetMap.prefabObjectEditInfos.Count)
-        {
-            selectedKeyIndex.x = targetMap.prefabObjectEditInfos.Count - 1;
-        }
-        if (selectedKeyIndex.x < 0)
-            selectedKeyIndex.x = 0;
-        if (targetMap.prefabObjectEditInfos.Count <= 0)
-        {
-            GUILayout.EndArea();
-            return;
-        }
+        if (selectedKeyIndexs.Count <= 0)
+            selectedKeyIndexs.Add(new Vector2Int(0, 0));
 
 
-        if (selectedKeyIndex.y >= targetMap.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos.Count)
-        {
-            selectedKeyIndex.y = targetMap.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos.Count - 1;
-        }
-        if (selectedKeyIndex.y < 0)
-            selectedKeyIndex.y = 0;
+            Vector2Int selectedKeyIndex = selectedKeyIndexs[0];
+        
+            if(selectedKeyIndex.x >= targetMap.prefabObjectEditInfos.Count)
+            {
+                selectedKeyIndex.x = targetMap.prefabObjectEditInfos.Count - 1;
+            }
+            if (selectedKeyIndex.x < 0)
+                selectedKeyIndex.x = 0;
+            if (targetMap.prefabObjectEditInfos.Count <= 0)
+            {
+                GUILayout.EndArea();
+                return;
+            }
 
+
+            if (selectedKeyIndex.y >= targetMap.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos.Count)
+            {
+                selectedKeyIndex.y = targetMap.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos.Count - 1;
+            }
+            if (selectedKeyIndex.y < 0)
+                selectedKeyIndex.y = 0;
 
         int keyCount = 0;
         for(int i = 0; i < targetMap.prefabObjectEditInfos.Count; i++)
@@ -418,7 +431,16 @@ public class MapGenerateHelper : EditorWindow
                         targetMap.UpdateObject(vIndex, 1, edi.angle);
 
                     Rect keyRect = new Rect(mapPreviewRect.x + mapPreviewRect.width * (edi.percent) - keyWidth / 2f, mapPreviewRect.yMax + previewBorderSize, keyWidth, keyHeight);
-                    if (vIndex == selectedKeyIndex)
+                    bool inSelected = false;
+                    for(int k = 0; k < selectedKeyIndexs.Count; k++)
+                    {
+                        if(selectedKeyIndexs[k] == vIndex)
+                        {
+                            inSelected = true;
+                            break;
+                        }
+                    }
+                    if (inSelected)
                     {
                         EditorGUI.DrawRect(new Rect(keyRect.x - 2, keyRect.y - 2, keyRect.width + 4, keyRect.height + 4), new Color(0.1f, 0.1f, 0.1f));
                     }
@@ -433,6 +455,13 @@ public class MapGenerateHelper : EditorWindow
                 }
             }
         }
+        if(selectedKeyIndexs.Count > 1)
+        {
+            
+            GUILayout.EndArea();
+            return;
+        }
+
         EditableMap.ObjectEditInfo sedi = targetMap.prefabObjectEditInfos[selectedKeyIndex.x].GetObject(selectedKeyIndex.y);
         Rect infoRect = new Rect(previewBorderSize, mapPreviewRect.yMax + previewBorderSize * 2 + keyHeight, position.width - previewBorderSize * 2, objectSettingSection.height - (mapPreviewRect.height + previewBorderSize * 4 + keyHeight));
         GUILayout.BeginArea(infoRect);
@@ -468,7 +497,6 @@ public class MapGenerateHelper : EditorWindow
 
         }
         GUILayout.EndHorizontal();
-
 
 
         GUILayout.BeginHorizontal();
@@ -548,8 +576,9 @@ public class MapGenerateHelper : EditorWindow
             MapItem tiPrefab = (EditorGUIUtility.GetObjectPickerObject() as GameObject)?.GetComponent<MapItem>();
             if (tiPrefab == null)
                 return;
+            selectedKeyIndexs.Clear();
 
-            selectedKeyIndex = targetMap.AddObject(tiPrefab, objectPosPercent);
+            selectedKeyIndexs.Add(targetMap.AddObject(tiPrefab, objectPosPercent));
 
             mouseIsDownOverKey = true;
             needsRepaint = true;
@@ -574,7 +603,20 @@ public class MapGenerateHelper : EditorWindow
                     if (wolrdKeyRect.Contains(guiEvent.mousePosition))
                     {
                         mouseIsDownOverKey = true;
-                        selectedKeyIndex = keyRects[i].Key;
+
+                        if(!downShift)
+                            selectedKeyIndexs.Clear();
+                        bool isIn = false;
+                        for (int k = 0; k < selectedKeyIndexs.Count; k++)
+                        {
+                            if (selectedKeyIndexs[k] == keyRects[i].Key)
+                            {
+                                isIn = true;
+                            }
+                        }
+                        if(!isIn)
+                            selectedKeyIndexs.Add(keyRects[i].Key);
+
                         needsRepaint = true;
                         GUI.FocusControl(null);
                         break;
@@ -591,55 +633,263 @@ public class MapGenerateHelper : EditorWindow
             }
             RotateObjectEvent(guiEvent);
 
+            dragOn = guiEvent.mousePosition;
+            if(!mouseIsDownOverKey)
+                drawBox = true;
         }
+
+
         if (guiEvent.type == EventType.MouseUp && guiEvent.button == 0)
         {
+            drawBox = false;
+            if (mouseIsDownOverKey == false)
+            {
+                Vector2 st = dragOn;
+                Vector2 ed = guiEvent.mousePosition;
+                float width = ed.x - st.x;
+                float height = ed.y - st.y;
+
+                if (width < 0)
+                {
+                    st.x += width;
+                    width *= -1;
+                }
+                if (height < 0)
+                {
+                    st.y += height;
+                    height *= -1;
+                }
+
+                Rect boundBox = new Rect(st.x, st.y, width, height);
+
+                bool clear = false;
+                if (keyRects != null)
+                {
+                    for (int i = 0; i < keyRects.Count; i++)
+                    {
+                        if (keyRects[i].Key.x >= targetMap.prefabObjectEditInfos.Count)
+                            continue;
+
+                        if (!targetMap.prefabObjectEditInfos[keyRects[i].Key.x].toggle)
+                            continue;
+
+                        Rect wolrdKeyRect = new Rect(keyRects[i].Value.x, keyRects[i].Value.y + headerHeight + objectPrefabSection.height, keyRects[i].Value.width, keyRects[i].Value.height);
+                        if (boundBox.Contains(wolrdKeyRect.center))
+                        {
+                            if (!clear)
+                            {
+
+                                selectedKeyIndexs.Clear();
+                                clear = true;
+                            }
+                            selectedKeyIndexs.Add(keyRects[i].Key);
+                        }
+                    }
+                }
+                if(selectedKeyIndexs.Count > 0)
+                {
+                    needsRepaint = true;
+                    GUI.FocusControl(null);
+                }
+            }
             mouseIsDownOverKey = false;
         }
 
-        if (guiEvent.type == EventType.MouseDrag && guiEvent.button == 0)
+        if (guiEvent.type == EventType.MouseDrag )
         {
-            if (mouseIsDownOverKey)
+            if (guiEvent.button == 0)
             {
-                float percent = Mathf.InverseLerp(mapPreviewRect.x, mapPreviewRect.xMax, guiEvent.mousePosition.x);
-                targetMap.UpdateObject(selectedKeyIndex, percent, targetMap.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos[selectedKeyIndex.y].angle);
-                needsRepaint = true;
+                if (mouseIsDownOverKey)
+                {
+                    if (selectedKeyIndexs.Count == 1)
+                    {
+                        Vector2Int selectedKeyIndex = selectedKeyIndexs[0];
+                        float percent = Mathf.InverseLerp(mapPreviewRect.x, mapPreviewRect.xMax, guiEvent.mousePosition.x);
+                        targetMap.UpdateObject(selectedKeyIndex, percent, targetMap.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos[selectedKeyIndex.y].angle);
+                        needsRepaint = true;
+                    }
+                }
+                RotateObjectEvent(guiEvent);
             }
-            RotateObjectEvent(guiEvent);
+            else if (guiEvent.button == 1)
+            {
+                if (keyRects != null)
+                {
+                    Vector2Int mainkeyIndex = Vector2Int.zero;
+                    float min = 1000;
+                    for (int i = 0; i < keyRects.Count; i++)
+                    {
 
+                        bool isSelected = false;
+                        for (int j = 0; j < selectedKeyIndexs.Count; j++)
+                        {
+                            if (selectedKeyIndexs[j] == keyRects[i].Key)
+                            {
+                                isSelected = true;
+                                break;
+                            }
+                        }
+
+                        if (!isSelected)
+                            continue;
+
+                        Rect wolrdKeyRect = new Rect(keyRects[i].Value.x, keyRects[i].Value.y + headerHeight + objectPrefabSection.height, keyRects[i].Value.width, keyRects[i].Value.height);
+                        if (Vector2.Distance(wolrdKeyRect.center, guiEvent.mousePosition) < min)
+                        {
+                            mainkeyIndex = keyRects[i].Key;
+                            min = Vector2.Distance(wolrdKeyRect.center, guiEvent.mousePosition);
+                        }
+                    }
+                    float percent = Mathf.InverseLerp(mapPreviewRect.x, mapPreviewRect.xMax, guiEvent.mousePosition.x);
+                    float added = percent - targetMap.prefabObjectEditInfos[mainkeyIndex.x].spawnedObjectInfos[mainkeyIndex.y].percent;
+
+                    for (int i = 0; i < selectedKeyIndexs.Count; i++)
+                    {
+                        Vector2Int selectedKeyIndex = selectedKeyIndexs[i];
+                        if (!targetMap.prefabObjectEditInfos[selectedKeyIndexs[i].x].toggle)
+                            continue;
+                        targetMap.UpdateObject(selectedKeyIndex,
+                            targetMap.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos[selectedKeyIndex.y].percent + added,
+                            targetMap.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos[selectedKeyIndex.y].angle);
+                    }
+                    needsRepaint = true;
+                }
+            }
 
         }
 
-        if (guiEvent.keyCode == KeyCode.Backspace  && guiEvent.type == EventType.KeyDown)
+        if (drawBox)
         {
-            if (selectedKeyIndex.x >= 0 && selectedKeyIndex.y >= 0)
+            Vector2 st = dragOn;
+            Vector2 ed = guiEvent.mousePosition;
+            float width = ed.x - st.x;
+            float height = ed.y - st.y;
+
+            if (width < 0)
             {
-                targetMap.RemoveObject(ref selectedKeyIndex);
-                needsRepaint = true;
+                st.x += width;
+                width *= -1;
+            }
+            if (height < 0)
+            {
+                st.y += height;
+                height *= -1;
+            }
+
+            EditorGUI.DrawRect(new Rect(st.x, st.y, width, height), new Color(0.1764705f, 0.5313722f, 0.6509804f, 0.5f));
+            needsRepaint = true;
+        }
+
+        if (guiEvent.keyCode == KeyCode.Backspace && guiEvent.type == EventType.KeyDown)
+        {
+            selectedKeyIndexs.Sort(delegate (Vector2Int x1, Vector2Int x2)
+            {
+                if (x1.x < x2.x)
+                    return 1;
+                else if (x1.x > x2.x)
+                    return -1;
+                else
+                {
+                    if (x1.y < x2.y)
+                        return 1;
+                    else if (x1.y> x2.y)
+                        return -1;
+                }
+                return 0;
+            });
+
+            for (int i = 0; i < selectedKeyIndexs.Count; i++)
+            {
+                if (selectedKeyIndexs[i].x >= 0 && selectedKeyIndexs[i].y >= 0)
+                {
+                    Vector2Int ski = selectedKeyIndexs[i];
+                    targetMap.RemoveObject(ref ski);
+                    selectedKeyIndexs[i] = ski;
+                    needsRepaint = true;
+                }
             }
         }
 
+        if (guiEvent.type == EventType.KeyDown)
+        {
+            if (guiEvent.keyCode == KeyCode.LeftShift)
+            {
+                downShift = true;
+            }
+            if (guiEvent.keyCode == KeyCode.LeftControl)
+            {
+                downCtrl = true;
+            }
+
+            if (downCtrl && guiEvent.keyCode == KeyCode.D)
+            {
+                List<Vector2Int> tmp = new List<Vector2Int>();
+                for(int i  = 0; i < selectedKeyIndexs.Count; i++)
+                {
+                    tmp.Add(selectedKeyIndexs[i]);
+                }
+                selectedKeyIndexs.Clear();
+
+                for (int i = 0; i < tmp.Count; i++)
+                {
+                    if (tmp[i].x >= targetMap.prefabObjectEditInfos.Count)
+                        continue;
+                    EditableMap.PrefabObjectEditInfo prefabObjectEditInfo = targetMap.prefabObjectEditInfos[tmp[i].x];
+                    if (tmp[i].y >= prefabObjectEditInfo.spawnedObjectInfos.Count)
+                        continue;
+                    EditableMap.ObjectEditInfo oei = prefabObjectEditInfo.spawnedObjectInfos[tmp[i].y];
+                    Vector2Int target = targetMap.AddObject(prefabObjectEditInfo.itemPrefab, 1);
+                    selectedKeyIndexs.Add(target);
+
+                    targetMap.DuplicateSetting(
+                        prefabObjectEditInfo.spawnedObjectInfos[prefabObjectEditInfo.spawnedObjectInfos.Count - 1].ti,
+                        prefabObjectEditInfo.spawnedObjectInfos[tmp[i].y].ti);
+
+
+                    targetMap.UpdateObject(new Vector2Int(target.x, target.y),
+                        oei.percent,
+                        oei.angle);
+                }
+                needsRepaint = true;
+            }
+        }
+        else if (guiEvent.type == EventType.KeyUp)
+        {
+            if (guiEvent.keyCode == KeyCode.LeftShift)
+            {
+                downShift = false;
+            }
+            if (guiEvent.keyCode == KeyCode.LeftControl)
+            {
+                downCtrl = false;
+            }
+
+        }
     }
 
     private void RotateObjectEvent(Event guiEvent)
     {
+        if (selectedKeyIndexs.Count == 1)
+        {
+            Vector2Int selectedKeyIndex = selectedKeyIndexs[0];
 
-        Vector2 wrpc = rotatePointCenter + new Vector2(
+            Vector2 wrpc = rotatePointCenter + new Vector2(
             previewBorderSize,
             headerHeight + objectPrefabSection.height + previewBorderSize * 3 + keyHeight + mapPreviewRect.height
             );
-        Rect worldRotatePointRect = new Rect(
-            rotatePointRect.x + previewBorderSize,
-            rotatePointRect.y + headerHeight + objectPrefabSection.height + previewBorderSize * 3 + keyHeight + mapPreviewRect.height,
-            rotatePointRect.width,
-            rotatePointRect.height
-            );
+            Rect worldRotatePointRect = new Rect(
+                rotatePointRect.x + previewBorderSize,
+                rotatePointRect.y + headerHeight + objectPrefabSection.height + previewBorderSize * 3 + keyHeight + mapPreviewRect.height,
+                rotatePointRect.width,
+                rotatePointRect.height
+                );
 
-        if (worldRotatePointRect.Contains(guiEvent.mousePosition))
-        {
-            float angle = Mathf.Atan2((wrpc.x - guiEvent.mousePosition.x), (wrpc.y - guiEvent.mousePosition.y)) * Mathf.Rad2Deg;
-            targetMap.UpdateObject(selectedKeyIndex, targetMap.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos[selectedKeyIndex.y].percent, angle);
-            needsRepaint = true;
+            if (worldRotatePointRect.Contains(guiEvent.mousePosition))
+            {
+                float angle = Mathf.Atan2((wrpc.x - guiEvent.mousePosition.x), (wrpc.y - guiEvent.mousePosition.y)) * Mathf.Rad2Deg;
+                targetMap.UpdateObject(selectedKeyIndex, targetMap.prefabObjectEditInfos[selectedKeyIndex.x].spawnedObjectInfos[selectedKeyIndex.y].percent, angle);
+                needsRepaint = true;
+            }
         }
     }
 
