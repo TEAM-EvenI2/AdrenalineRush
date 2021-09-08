@@ -10,6 +10,23 @@ public class PlayerBuffManager : MonoBehaviour
     public Player player;
     public LayerMask itemLayer;
 
+    private Dictionary<BuffType, System.Action<BuffStruct>> handleBuffDict = new Dictionary<BuffType, System.Action<BuffStruct>>();
+    private Dictionary<BuffType, System.Action<BuffStruct>> handleEndBuffDict = new Dictionary<BuffType, System.Action<BuffStruct>>();
+
+    public float sizeChangeTime = 0.4f;
+    public float speedChangeTime = 1f;
+
+    private void Awake()
+    {
+        handleBuffDict.Add(BuffType.Magnet, MagnetBuff);
+        handleBuffDict.Add(BuffType.Size, SizeBuff);
+        handleBuffDict.Add(BuffType.Speed, SpeedBuff);
+
+        handleEndBuffDict.Add(BuffType.Magnet, EndMagnetBuff);
+        handleEndBuffDict.Add(BuffType.Size, EndSizeBuff);
+        handleEndBuffDict.Add(BuffType.Speed, EndSpeedBuff);
+    }
+
     private void Start()
     {
         player = GetComponent<Player>();
@@ -22,22 +39,18 @@ public class PlayerBuffManager : MonoBehaviour
 
         for (int i = buffList.Count - 1; i >= 0 ; i--)
         {
-            HandleBuff(buffList[i]);
-
-            buffList[i].time -= Time.deltaTime;
-
-            if(buffList[i].time <= 0)
+            if(!HandleBuff(buffList[i]))
             {
                 buffList.RemoveAt(i);
             }
         }
     }
 
-    public void AddSizeBuff(float time, float sizeFactor)
+    public void AddSizeBuff(int id, float time, float sizeFactor)
     {
         for (int i = 0; i < buffList.Count; i++)
         {
-            if (buffList[i].type == BuffType.Size)
+            if (buffList[i].id == id)
             {
                 SizeBuffStruct sbs = buffList[i] as SizeBuffStruct;
                 sbs.time = time;
@@ -46,13 +59,14 @@ public class PlayerBuffManager : MonoBehaviour
             }
         }
         Transform avatar = player.transform.GetChild(0).GetChild(0);
-        buffList.Add(new SizeBuffStruct(time, sizeFactor, avatar.localScale));
+        buffList.Add(new SizeBuffStruct(id, time, sizeFactor, avatar.localScale));
     }
-    public void AddSpeedBuff(float time, float distance)
+
+    public void AddSpeedBuff(int id, float time, float distance)
     {
         for (int i = 0; i < buffList.Count; i++)
         {
-            if (buffList[i].type == BuffType.Speed)
+            if (buffList[i].id == id)
             {
                 SpeedBuffStruct sbs = buffList[i] as SpeedBuffStruct;
                 sbs.time = time;
@@ -60,13 +74,15 @@ public class PlayerBuffManager : MonoBehaviour
                 return;
             }
         }
-        buffList.Add(new SpeedBuffStruct(time, distance));
+        buffList.Add(new SpeedBuffStruct(id, time, distance, Managers.Instance.Config.playerInfo.velocity));
     }
-    public void AddMagnetBuff(float time, float range, float power)
+
+    public void AddMagnetBuff(int id, float time, float range, float power)
     {
 
-        for (int i = 0; i <buffList.Count; i++){
-            if(buffList[i].type == BuffType.Magnet)
+        for (int i = 0; i <buffList.Count; i++)
+        {
+            if (buffList[i].id == id)
             {
                 MagnetBuffStruct mbs = buffList[i] as MagnetBuffStruct;
                 mbs.time = time;
@@ -75,23 +91,28 @@ public class PlayerBuffManager : MonoBehaviour
                 return;
             }
         }
-        buffList.Add(new MagnetBuffStruct(time, range, power));
+        buffList.Add(new MagnetBuffStruct(id, time, range, power));
     }
 
-    private void HandleBuff(BuffStruct bs)
+    private bool HandleBuff(BuffStruct bs)
     {
-        switch (bs.type)
+        System.Action<BuffStruct> action = null;
+        if (handleBuffDict.TryGetValue(bs.type, out action))
         {
-            case BuffType.Magnet:
-                MagnetBuff(bs);
-                break;
-            case BuffType.Size:
-                SizeBuff(bs);
-                break;
-            case BuffType.Speed:
-                SpeedBuff(bs);
-                break;
+            action.Invoke(bs);
         }
+
+        bs.time -= Time.deltaTime;
+        if (bs.time <= 0)
+        {
+            System.Action<BuffStruct> endAction = null;
+            if(handleEndBuffDict.TryGetValue(bs.type, out endAction))
+            {
+                endAction.Invoke(bs);
+            }
+            return false;
+        }
+        return true;
     }
 
     private void MagnetBuff(BuffStruct bs)
@@ -121,15 +142,62 @@ public class PlayerBuffManager : MonoBehaviour
         SizeBuffStruct sbs = bs as SizeBuffStruct;
         Transform avatar = player.transform.GetChild(0).GetChild(0);
 
-
-        if (sbs.time - Time.deltaTime > 0)
-            avatar.localScale = sbs.originalSize * sbs.sizeFactor;
+        if (sbs.originTime - sbs.time <= sizeChangeTime)
+        {
+            avatar.localScale = Vector3.Lerp(sbs.originalSize, sbs.originalSize * sbs.sizeFactor, Utils.Easing.Exponential.Out((sbs.originTime - sbs.time)/ sizeChangeTime));
+        }
+        else if( sbs.time <= sizeChangeTime)
+        {
+            avatar.localScale = Vector3.Lerp(sbs.originalSize, sbs.originalSize * sbs.sizeFactor, Utils.Easing.Exponential.Out((sbs.time) / sizeChangeTime));
+        }
         else
-            avatar.localScale = sbs.originalSize;
+        {
+            avatar.localScale = sbs.originalSize * sbs.sizeFactor;
+        }
 
     }
+
     private void SpeedBuff(BuffStruct bs)
     {
         SpeedBuffStruct sbs = bs as SpeedBuffStruct;
+        player.invincible = true;
+
+        float vel = sbs.distance / sbs.originTime;
+        float _vel;
+
+        if (sbs.originTime - sbs.time <= speedChangeTime)
+        {
+            _vel = Mathf.Lerp(sbs.originSpeed, vel, Utils.Easing.Exponential.Out((sbs.originTime - sbs.time) / speedChangeTime));
+        }
+        else if (sbs.time <= speedChangeTime)
+        {
+            _vel = Mathf.Lerp(sbs.originSpeed, vel , Utils.Easing.Exponential.In((sbs.time) / speedChangeTime));
+        }
+        else
+        {
+            _vel = vel;
+        }
+        player.maxVelocity = player.curVelocity = _vel;
+    }
+
+    private void EndMagnetBuff(BuffStruct bs)
+    {
+
+    }
+
+    private void EndSizeBuff(BuffStruct bs)
+    {
+        SizeBuffStruct sbs = bs as SizeBuffStruct;
+        Transform avatar = player.transform.GetChild(0).GetChild(0);
+
+        avatar.localScale = sbs.originalSize;
+    }
+
+    private void EndSpeedBuff(BuffStruct bs)
+    {
+        SpeedBuffStruct sbs = bs as SpeedBuffStruct;
+
+        player.invincible = false;
+        player.maxVelocity = player.curVelocity = sbs.originSpeed;
     }
 }

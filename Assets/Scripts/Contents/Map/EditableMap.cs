@@ -155,12 +155,15 @@ public class EditableMap : MonoBehaviour
 		}
 
 		float _curArc = l[l.Count - 1].Value.curveRadius * l[l.Count - 1].Value.curveAngle * Mathf.Deg2Rad;
-		infos.Add(new MapItemGenerateInfo()
+		if (_curArc > 0)
 		{
-			percent = 1,
-			curveArc = _curArc - previewPos,
-			angle = l[l.Count - 1].Value.curveAngle
-		});
+			infos.Add(new MapItemGenerateInfo()
+			{
+				percent = 1,
+				curveArc = _curArc - previewPos,
+				angle = l[l.Count - 1].Value.curveAngle
+			});
+		}
 
 	}
 

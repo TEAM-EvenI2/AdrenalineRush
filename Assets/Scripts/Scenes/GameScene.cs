@@ -49,7 +49,7 @@ public class GameScene : BaseScene
     public int GetScore()
     {
 
-        return (int)player.DistanceTraveled + player.earnedItem;
+        return (int)player.DistanceTraveled + player.earnedScore;
     }
 
 }
