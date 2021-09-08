@@ -201,9 +201,33 @@ public class MapGenerateHelper : EditorWindow
         GUILayout.BeginArea(new Rect(10, headerHeight - _h, 100, _h));
 
         if (targetMap != null)
-            if (GUILayout.Button("Refresh", GUILayout.MaxWidth(250)))
         {
+            if (GUILayout.Button("Refresh", GUILayout.MaxWidth(250)))
+            {
                 targetMap.Refresh();
+            }
+            if (GUILayout.Button("Find Selected", GUILayout.MaxWidth(250)))
+            {
+                bool finded = false;
+                for (int i = 0; i < targetMap.prefabObjectEditInfos.Count; i++) {
+
+                    EditableMap.PrefabObjectEditInfo spoei = targetMap.prefabObjectEditInfos[i];
+                    for (int j = 0; j < spoei.spawnedObjectInfos.Count; j++)
+                    {
+                        EditableMap.ObjectEditInfo oei = spoei.spawnedObjectInfos[j];
+
+                        if(oei.ti.gameObject == Selection.activeGameObject)
+                        {
+                            selectedKeyIndexs.Clear();
+                            selectedKeyIndexs.Add(new Vector2Int(i, j));
+                            finded = true;
+                            break;
+                        }
+                    }
+                    if (finded)
+                        break;
+                }
+            }
         }
             GUILayout.EndArea();
         GUILayout.BeginArea(new Rect((Screen.width / 2) - 50, headerHeight - _h, 100, _h));
