@@ -564,6 +564,9 @@ public class MapGenerateHelper : EditorWindow
             {
                 for (int i = 0; i < keyRects.Count; i++)
                 {
+                    if (keyRects[i].Key.x >= targetMap.prefabObjectEditInfos.Count)
+                        continue;
+
                     if (!targetMap.prefabObjectEditInfos[keyRects[i].Key.x].toggle)
                         continue;
 
