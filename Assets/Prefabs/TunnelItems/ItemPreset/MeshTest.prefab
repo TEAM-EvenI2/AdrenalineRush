@@ -1862,11 +1862,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   angle: 280.7843
   mesh: {fileID: 0}
-  size: 0.4
+  size: 0.44
   radiusSegmentCount: 40
   lengthSegmentCount: 40
   angleInTunnel: 18.7
-  middleSizePercent: 0.39
+  middleSizePercent: 1
   noiseStrength: 0.3
   curve:
     serializedVersion: 2
@@ -2406,8 +2406,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7867889908591085585}
-  m_LocalRotation: {x: 0.73441297, y: 0.18905497, z: -0.030516686, w: 0.6511256}
-  m_LocalPosition: {x: 38.07, y: -3000, z: -134.71}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -3000, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 9002790748126436235}
@@ -2429,7 +2429,7 @@ Transform:
   - {fileID: 1144687229071404847}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 75.45, y: 126.72, z: 108.71}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7867889908591085589
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -2525,6 +2525,7 @@ MonoBehaviour:
   prefabObjectEditInfos:
   - itemPrefab: {fileID: 1112369461252272025, guid: 8e7bf7e1c0c81034d9bd61310b7d8b03, type: 3}
     c: {r: 0.002583027, g: 0.92318296, b: 0.5557932, a: 1}
+    toggle: 1
     spawnedObjectInfos:
     - ti: {fileID: 4510534464222625312}
       curveAngle: 0.40107042
@@ -2564,6 +2565,7 @@ MonoBehaviour:
       percent: 0
   - itemPrefab: {fileID: 6553706658921896217, guid: 4b1f8e2986701e445b3498a80de1e8ea, type: 3}
     c: {r: 0.8260591, g: 0.6526463, b: 0.4164031, a: 1}
+    toggle: 0
     spawnedObjectInfos:
     - ti: {fileID: 7134732844358366974}
       curveAngle: 0.40107042
@@ -2595,6 +2597,7 @@ MonoBehaviour:
       percent: 0.21766561
   - itemPrefab: {fileID: 6553706658921896217, guid: 92f04d692bfe63e45a274853515e2306, type: 3}
     c: {r: 0.38704163, g: 0.23323691, b: 0.46273655, a: 1}
+    toggle: 0
     spawnedObjectInfos:
     - ti: {fileID: 7153982542446966464}
       curveAngle: 0.40107042

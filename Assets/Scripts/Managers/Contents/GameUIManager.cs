@@ -8,9 +8,12 @@ public class GameUIManager : UIManager
     public TextMeshProUGUI scoreText;
 
     public GameObject re;
-    public CanvasGroup cg;
+    public CanvasGroup stageChangeView;
 
     public RectTransform healthBar;
+
+    [Header("Item Count")]
+    public TextMeshProUGUI[] itemCountTexts;
 
     public void ActiveRe()
     {
@@ -27,17 +30,24 @@ public class GameUIManager : UIManager
     private void Update()
     {
         float score = Managers.Instance.GetScene<GameScene>().GetScore();
-        scoreText.text = score.ToString();
+        scoreText.text = ((int)Managers.Instance.GetScene<GameScene>().player.DistanceTraveled).ToString() + " m";
         if (score > 0 && score % 1000 == 0)
         {
             reachedThousandPoints();
         }
 
-        if(cg.alpha > 0)
+        // About earned item count
+        for(int i = 0; i < Managers.Instance.GetScene<GameScene>().player.earnedItems.Length; i++)
         {
-            cg.alpha -= Time.deltaTime;
-            if (cg.alpha <= 0)
-                cg.gameObject.SetActive(false);
+            itemCountTexts[i].text = Managers.Instance.GetScene<GameScene>().player.earnedItems[i].ToString();
+        }
+
+        // About Stage Change
+        if(stageChangeView.alpha > 0)
+        {
+            stageChangeView.alpha -= Time.deltaTime;
+            if (stageChangeView.alpha <= 0)
+                stageChangeView.gameObject.SetActive(false);
         }
 
         float percent = Managers.Instance.GetScene<GameScene>().player.health / 100;
@@ -45,7 +55,6 @@ public class GameUIManager : UIManager
 
         if (Application.platform == RuntimePlatform.Android)
         {
-
             if (Input.GetKey(KeyCode.Escape))
             {
                 ActiveRe();
@@ -55,11 +64,15 @@ public class GameUIManager : UIManager
 
     public void DoMagnet()
     {
-        Managers.Instance.GetScene<GameScene>().player.GetComponent<PlayerBuffManager>().AddMagnetBuff(20,.7f, 7);
+        Managers.Instance.GetScene<GameScene>().player.GetComponent<PlayerBuffManager>().AddMagnetBuff(0, 5,.7f, 7);
     }
 
     public void DoSize()
     {
-        Managers.Instance.GetScene<GameScene>().player.GetComponent<PlayerBuffManager>().AddSizeBuff(5, .5f);
+        Managers.Instance.GetScene<GameScene>().player.GetComponent<PlayerBuffManager>().AddSizeBuff(1, 5, .5f);
+    }
+    public void DoSpeed()
+    {
+        Managers.Instance.GetScene<GameScene>().player.GetComponent<PlayerBuffManager>().AddSpeedBuff(2, 5, 100);
     }
 }

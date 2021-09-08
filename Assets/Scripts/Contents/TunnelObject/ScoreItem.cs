@@ -4,6 +4,6 @@ using UnityEngine;
 
 public class ScoreItem : MapItem
 {
-
+    public int id;
     public int point;
 }

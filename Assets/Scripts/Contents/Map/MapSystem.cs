@@ -65,15 +65,19 @@ public class MapSystem : MonoBehaviour
 		if (currentStage < stageInfo.Count - 1)
 		{
 
-			float score = Managers.Instance.GetScene<GameScene>().player.earnedItem;
+			float score = 0;
+			for (int i = 0; i < Managers.Instance.GetScene<GameScene>().player.earnedItems.Length; i++)
+			{
+				score += Managers.Instance.GetScene<GameScene>().player.earnedItems[i];
+			}
 
 			if(score >= stageInfo[currentStage + 1].enterPoint)
             {
 				// TODO Update Stage
 				ChangeStage();
 
-				Managers.Instance.GetUIManager<GameUIManager>().cg.gameObject.SetActive(true);
-				Managers.Instance.GetUIManager<GameUIManager>().cg.alpha = 1;
+				Managers.Instance.GetUIManager<GameUIManager>().stageChangeView.gameObject.SetActive(true);
+				Managers.Instance.GetUIManager<GameUIManager>().stageChangeView.alpha = 1;
 
 			}
 		}
@@ -121,7 +125,6 @@ public class MapSystem : MonoBehaviour
 				if (itemInfos.Count == 0)
 					break;
 
-				finishedArc += minDistanceEachPreset;
 			}
 
 			MapItemGenerateInfo info = itemInfos[_infoIndex];
