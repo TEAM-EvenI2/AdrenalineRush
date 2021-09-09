@@ -89,10 +89,7 @@ public class MapGenerateHelper : EditorWindow
 
     private void DrawLayouts()
     {
-        if (PrefabStageUtility.GetCurrentPrefabStage() != null)
             headerHeight = 120;
-        else
-            headerHeight = 90;
         switch (meshType)
         {
             case MapMeshType.Tunnel:
@@ -151,7 +148,9 @@ public class MapGenerateHelper : EditorWindow
         if (PrefabStageUtility.GetCurrentPrefabStage() != null)
         {
             if (targetMap == null)
+            {
                 targetMap = StageUtility.GetCurrentStageHandle().FindComponentOfType<EditableMap>();
+            }
 
         }
 
@@ -197,7 +196,7 @@ public class MapGenerateHelper : EditorWindow
 
         }
 
-        int _h = PrefabStageUtility.GetCurrentPrefabStage() != null ? 50 : 25;
+        int _h = 50 ;
         GUILayout.BeginArea(new Rect(10, headerHeight - _h, 100, _h));
 
         if (targetMap != null)
@@ -520,6 +519,18 @@ public class MapGenerateHelper : EditorWindow
             }
 
         }
+        else if (sedi.ti is SurfacePartialObstacle)
+        {
+            SurfacePartialObstacle so = (SurfacePartialObstacle)sedi.ti;
+            float so_size_percent = EditorGUILayout.Slider("Size Percent", so.sizePercent, 0.1f, 0.7f);
+
+            if (Mathf.Abs(so_size_percent - so.sizePercent) > Mathf.Epsilon)
+            {
+                so.sizePercent = so_size_percent;
+                targetMap.UpdateObject(selectedKeyIndex, percent, sedi.angle);
+            }
+
+        }
         GUILayout.EndHorizontal();
 
 
@@ -579,6 +590,21 @@ public class MapGenerateHelper : EditorWindow
             }
 
         }
+        else if (sedi.ti is SurfacePartialObstacle)
+        {
+            SurfacePartialObstacle so = (SurfacePartialObstacle)sedi.ti;
+            GUILayout.BeginVertical(GUILayout.MinWidth(300));
+            so.curveLength = EditorGUILayout.FloatField("Curve Length", so.curveLength, GUILayout.ExpandWidth(false));
+            so.anglePercent = EditorGUILayout.Slider("Angle Percent", so.anglePercent, 0.1f, 1f, GUILayout.ExpandWidth(false));
+            so.noiseStrength = EditorGUILayout.FloatField("Noise", so.noiseStrength, GUILayout.ExpandWidth(false));
+            so.sideNoiseStrength = EditorGUILayout.FloatField("sideNoise", so.sideNoiseStrength, GUILayout.ExpandWidth(false));
+            GUILayout.EndVertical();
+            if (GUI.changed)
+            {
+                targetMap.UpdateObject(selectedKeyIndex, sedi.percent, sedi.angle);
+            }
+
+        }
         GUILayout.EndHorizontal();
 
 
@@ -597,6 +623,7 @@ public class MapGenerateHelper : EditorWindow
 
         if (guiEvent.commandName.Equals("ObjectSelectorClosed") && currentPickerWindow == EditorGUIUtility.GetObjectPickerControlID())
         {
+            Debug.Log("Hello!");
             MapItem tiPrefab = (EditorGUIUtility.GetObjectPickerObject() as GameObject)?.GetComponent<MapItem>();
             if (tiPrefab == null)
                 return;
@@ -662,7 +689,6 @@ public class MapGenerateHelper : EditorWindow
                 drawBox = true;
         }
 
-
         if (guiEvent.type == EventType.MouseUp && guiEvent.button == 0)
         {
             drawBox = false;
@@ -710,7 +736,7 @@ public class MapGenerateHelper : EditorWindow
                         }
                     }
                 }
-                if(selectedKeyIndexs.Count > 0)
+                if(clear && selectedKeyIndexs.Count > 0)
                 {
                     needsRepaint = true;
                     GUI.FocusControl(null);
@@ -719,7 +745,7 @@ public class MapGenerateHelper : EditorWindow
             mouseIsDownOverKey = false;
         }
 
-        if (guiEvent.type == EventType.MouseDrag )
+        if (guiEvent.type == EventType.MouseDrag)
         {
             if (guiEvent.button == 0)
             {
