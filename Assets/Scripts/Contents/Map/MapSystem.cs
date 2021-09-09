@@ -89,12 +89,16 @@ public class MapSystem : MonoBehaviour
 	{
 		currentStage++;
 		Managers.Instance.GetScene<GameScene>().postProcessVolume.profile = stageInfo[currentStage].volumeProfile;
+		itemInfos.Clear();
+		_infoIndex = 0;
 
 		for (int i = 0; i < mapCount ; i++)
 		{
 			maps[i].DestoryChild();
 			if (i > emptyPipeCount)
 				GenerateItem(maps[i]);
+			else
+				maps[i].ResetGenerateItem();
 		}
 		Managers.Instance.GetScene<GameScene>().player.SetupNetStage();
 

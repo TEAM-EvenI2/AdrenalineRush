@@ -149,6 +149,15 @@ public class EditableMap : MonoBehaviour
 				migi.curve = so.curve;
 				migi.noise = so.noiseStrength;
 			}
+			else if (l[i].Key is SurfacePartialObstacle)
+			{
+				SurfacePartialObstacle so = (SurfacePartialObstacle)l[i].Value.ti;
+				migi.sizePercent = so.sizePercent;
+				migi.anglePercent = so.anglePercent;
+				migi.curveLength = so.curveLength;
+				migi.noise = so.noiseStrength;
+				migi.sideNoise = so.sideNoiseStrength;
+			}
 			infos.Add(migi);
 
 			previewPos = curArc;
@@ -250,6 +259,18 @@ public class EditableMap : MonoBehaviour
 				so.curve = new AnimationCurve(((SurfaceObstacle)from).curve.keys);
 				so.noiseStrength = ((SurfaceObstacle)from).noiseStrength;
 				so.curveLength = ((SurfaceObstacle)from).curveLength;
+			}
+		}
+		else if (to is SurfacePartialObstacle)
+		{
+			if (from as SurfacePartialObstacle != null)
+			{
+				SurfacePartialObstacle so = (SurfacePartialObstacle)to;
+				so.sizePercent = ((SurfacePartialObstacle)from).sizePercent;
+				so.anglePercent = ((SurfacePartialObstacle)from).anglePercent;
+				so.noiseStrength = ((SurfacePartialObstacle)from).noiseStrength;
+				so.curveLength = ((SurfacePartialObstacle)from).curveLength;
+				so.sideNoiseStrength = ((SurfacePartialObstacle)from).sideNoiseStrength;
 			}
 		}
 	}

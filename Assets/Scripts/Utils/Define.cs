@@ -49,12 +49,17 @@ public partial class Define
         public float middleSizePercent;
 
         // for Surface Obstacle
-        public float sizePercent;
         public float roadWidth;
         public float curveLength;
+        public float sizePercent;
+        // for Surface Partial Obstacle
+        public float anglePercent;
+        public float sideNoise;
 
-            // for both
+        // for long, surface
         public AnimationCurve curve;
+
+        // for long, surface, surfacepartial
         public float noise;
 
 
