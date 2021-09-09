@@ -141,124 +141,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 4
   point: 100
---- !u!1 &1702185245703931334
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7655114797802598994}
-  - component: {fileID: 8155013212702142617}
-  - component: {fileID: 6376413526773163438}
-  - component: {fileID: 3934776622727013007}
-  - component: {fileID: 71003438862903012}
-  m_Layer: 0
-  m_Name: FatCircularObstacle(Clone)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7655114797802598994
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1702185245703931334}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 3381459130263804035}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &8155013212702142617
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1702185245703931334}
-  m_Mesh: {fileID: 0}
---- !u!23 &6376413526773163438
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1702185245703931334}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: d2e015f4cbb4c074cbdc878a1a7a5247, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &3934776622727013007
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1702185245703931334}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
---- !u!114 &71003438862903012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1702185245703931334}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4826c6342d738474fb3bb0c62f00e165, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  angle: 0
-  mesh: {fileID: 0}
-  curveSegmentCount: 21
-  radiusSegmentCount: 21
-  sideSegmentCount: 1
-  sizePercent: 0.3
-  anglePercent: 0.2
-  noiseStrength: 1
-  sideNoiseStrength: 0
 --- !u!1 &3381459130263804036
 GameObject:
   m_ObjectHideFlags: 0
@@ -292,7 +174,6 @@ Transform:
   m_Children:
   - {fileID: 461233475416538103}
   - {fileID: 2529877623352149185}
-  - {fileID: 7655114797802598994}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -405,14 +286,6 @@ MonoBehaviour:
       curveAngle: 0.40107042
       curveRadius: 3000
       percent: 0.35030866
-  - itemPrefab: {fileID: 6340216323241413992, guid: 6513d3dfe1345e14bb3e824f25941856, type: 3}
-    c: {r: 0.9339623, g: 0.26922098, b: 0, a: 1}
-    toggle: 1
-    spawnedObjectInfos:
-    - ti: {fileID: 71003438862903012}
-      curveAngle: 0.40107042
-      curveRadius: 3000
-      percent: 0.4814815
 --- !u!1 &4743272317788402816
 GameObject:
   m_ObjectHideFlags: 0
@@ -512,7 +385,6 @@ MonoBehaviour:
   mesh: {fileID: 0}
   curveSegmentCount: 21
   radiusSegmentCount: 21
-  sideSegmentCount: 1
   curveLength: 3.68
   sizePercent: 0.328
   anglePercent: 0.7
