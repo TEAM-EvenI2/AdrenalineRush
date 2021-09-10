@@ -7,10 +7,9 @@ public class Player : MonoBehaviour
 
 	public MapSystem mapSystem;
 
-	public float velocity;
+	public float curVelocity;
 	public float acceleration = 1f;
-	private float defaultVelocity;
-	public const float maxVelocity = 10f;
+	public float maxVelocity;
 	public float decreaseVelWhenCollided = 4f;
 	private float rotationVelocity;
 
@@ -33,13 +32,18 @@ public class Player : MonoBehaviour
 	private float worldRotation;
 	private float avatarRotation;
 
-	public int earnedItem;
+	public int[] earnedItems = new int[2];
+	public int earnedScore;
 
 	public float health = 100;
 
 	public SmoothDampStruct<float> inputSmooth;
 	private float targetInput = 0;
 	private float curInput = 0;
+
+	public float invincibleTime = 0.4f;
+	private float _invincibleTime = 0;
+	public bool invincible = false;
 
 
 	private void Start()
@@ -49,8 +53,9 @@ public class Player : MonoBehaviour
 		currentPipe = mapSystem.SetupFirstPipe();
 		SetupCurrentPipe();
 
-		defaultVelocity = Managers.Instance.Config.playerInfo.velocity;
+		maxVelocity = Managers.Instance.Config.playerInfo.velocity;
 		rotationVelocity = Managers.Instance.Config.playerInfo.rotateVelocity;
+
 	}
 
 	private void Update()
@@ -58,13 +63,17 @@ public class Player : MonoBehaviour
 		if (Managers.Instance.GetScene<GameScene>().isPause)
 			return;
 
-		if (velocity < defaultVelocity)
-		{
-			velocity += acceleration * Time.deltaTime;
-		}
-		velocity = Mathf.Clamp(velocity, 0.1f, maxVelocity-0.1f);
+		if(_invincibleTime > 0)
+        {
+			_invincibleTime -= Time.deltaTime;
+        }
 
-		float delta = velocity * Time.deltaTime;
+		if (curVelocity < maxVelocity)
+		{
+			curVelocity += acceleration * Time.deltaTime;
+		}
+
+		float delta = curVelocity * Time.deltaTime;
 		distanceTraveled += delta;
 		systemRotation += delta * deltaToRotation;
 
@@ -83,7 +92,7 @@ public class Player : MonoBehaviour
 
 		if(health < 100)
         {
-			health += velocity * Time.deltaTime;
+			health += curVelocity * Time.deltaTime;
 			if (health > 100)
 				health = 100;
         }
@@ -150,14 +159,25 @@ public class Player : MonoBehaviour
 
 	}
 
-	public void Hit()
+	public bool Hit()
 	{
-		health -= 34;
-		velocity -= decreaseVelWhenCollided;
-		if (health <= 0)
-			Die();
-		else
-			gameObject.GetComponentInChildren<GraphicManager>().Damaged();
+		if (_invincibleTime <= 0 && !invincible)
+		{
+
+			health -= 34;
+			curVelocity  = 0;
+			if (health <= 0) {
+				FindObjectOfType<AudioManager>().Play("PlayerDie");
+				Die();
+			} else {
+				gameObject.GetComponentInChildren<GraphicManager>().Damaged();
+				FindObjectOfType<AudioManager>().Play("PlayerHit");
+			}
+			_invincibleTime = invincibleTime;
+
+			return true;
+		}
+		return false;
 	}
 
 	private void Die()
@@ -165,6 +185,8 @@ public class Player : MonoBehaviour
 		gameObject.GetComponentInChildren<GraphicManager>().Die();
 		gameObject.SetActive(false);
 		Managers.Instance.GetUIManager<GameUIManager>().ActiveRe();
+		FindObjectOfType<PlayGames>().playerScore = earnedScore;
+		FindObjectOfType<PlayGames>().AddScoreToLeaderboard();
 	}
 
 	public void CollideItem(GameObject item)

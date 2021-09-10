@@ -104,6 +104,15 @@ public class MapMeshWrapper : MonoBehaviour
                         so.curve = new AnimationCurve(info.curve.keys);
                         so.noiseStrength = info.noise;
                     }
+                    else if (item is SurfacePartialObstacle)
+                    {
+                        SurfacePartialObstacle so = (SurfacePartialObstacle)item;
+                        so.sizePercent = info.sizePercent;
+                        so.anglePercent = info.anglePercent;
+                        so.curveLength = info.curveLength;
+                        so.noiseStrength = info.noise;
+                        so.sideNoiseStrength = info.sideNoise;
+                    }
 
                     item.Setting(this, info.percent, angle / 360, distance);
                 }

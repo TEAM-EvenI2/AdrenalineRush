@@ -82,7 +82,7 @@ public class SurfaceObstacle : MeshObstacle
 
 				float _sizePercent = (1 - sizePercent * ( 1 + noiseValue)) ;
 
-				float arc = u * curveLength + enableArc * percent;
+				float arc = u * curveLength + enableArc * (percent * (1 + noiseValue / 30f));
 				float _angle = v * 360 + angle;
 				if (_angle < 0)
 					_angle += 360;

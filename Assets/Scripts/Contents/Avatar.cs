@@ -27,18 +27,27 @@ public class Avatar : MonoBehaviour
 	{
         if (collider.tag.Equals("Obstacle"))
 		{
-            player.Hit();
-			cameraController.ShakeCam(cameraController.playerCollisionShakeDuration, cameraController.playerCollisionShakePower);
+			if (player.Hit())
+			{
+				cameraController.ShakeCam(cameraController.playerCollisionShakeDuration, cameraController.playerCollisionShakePower);
+			}
 
-			if(collider.GetComponentInParent<ScoreItem>() != null)
-            {
-				Destroy(collider.GetComponentInParent<ScoreItem>().gameObject);
-            }
+				if (collider.GetComponentInParent<ScoreItem>() != null)
+				{
+					Destroy(collider.GetComponentInParent<ScoreItem>().gameObject);
+				}
+				else if (player.invincible)
+				{
+					Destroy(collider.gameObject);
+				}
+			
 		}
 		else if (collider.tag.Equals("Item"))
         {
 			player.CollideItem(collider.gameObject);
-			player.earnedItem++;
+			ScoreItem item = collider.GetComponentInParent<ScoreItem>();
+			if(item.id >= 0 && item.id < player.earnedItems.Length)
+				player.earnedItems[item.id]++;
         }
         //player.GetComponentInChildren<PlayerGraphicManager>().Damaged();
     }

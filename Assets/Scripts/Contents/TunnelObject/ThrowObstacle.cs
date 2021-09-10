@@ -12,7 +12,7 @@ public class ThrowObstacle : MapItem
 
         float deltaToRotation = 360f / (2f * Mathf.PI * mw.curveRadius);
 
-        float delta = Managers.Instance.GetScene<GameScene>().player.velocity * Time.deltaTime;
+        float delta = Managers.Instance.GetScene<GameScene>().player.curVelocity * Time.deltaTime;
 
         sam.Setting(curveRotation / (delta * deltaToRotation));
     }

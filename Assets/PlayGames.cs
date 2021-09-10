@@ -12,6 +12,11 @@ public class PlayGames : MonoBehaviour
     string achievementID = "CgkIzffj8u8ZEAIQAA";
     public static PlayGamesPlatform platform;
 
+    void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
+
     void Start()
     {
         if (platform == null)

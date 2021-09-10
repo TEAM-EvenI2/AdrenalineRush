@@ -42,21 +42,25 @@ public class LobbyScene : BaseScene
     
     public void MoveGameScene()
     {
+        FindObjectOfType<AudioManager>().Play("UIClick");
         Managers.Instance.Scene.LoadScene("Game", null, null, true);
     }
 
     public void MoveAchievementScene()
     {
+        FindObjectOfType<AudioManager>().Play("UIClick");
         Managers.Instance.Scene.LoadScene("Achievement", null, null);
     }
 
     public void MoveOptionScene()
     {
+        FindObjectOfType<AudioManager>().Play("UIClick");
         Managers.Instance.Scene.LoadScene("Option", null, null);
     }
 
     public void MoveStoreScene()
     {
+        FindObjectOfType<AudioManager>().Play("UIClick");
         Managers.Instance.Scene.LoadScene("Store", null, null);
     }
 
