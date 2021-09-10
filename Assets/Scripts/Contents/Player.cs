@@ -166,12 +166,13 @@ public class Player : MonoBehaviour
 
 			health -= 34;
 			curVelocity  = 0;
-			if (health <= 0)
+			if (health <= 0) {
+				FindObjectOfType<AudioManager>().Play("PlayerDie");
 				Die();
-			else
+			} else {
 				gameObject.GetComponentInChildren<GraphicManager>().Damaged();
 				FindObjectOfType<AudioManager>().Play("PlayerHit");
-
+			}
 			_invincibleTime = invincibleTime;
 
 			return true;
@@ -184,6 +185,8 @@ public class Player : MonoBehaviour
 		gameObject.GetComponentInChildren<GraphicManager>().Die();
 		gameObject.SetActive(false);
 		Managers.Instance.GetUIManager<GameUIManager>().ActiveRe();
+		FindObjectOfType<PlayGames>().playerScore = earnedScore;
+		FindObjectOfType<PlayGames>().AddScoreToLeaderboard();
 	}
 
 	public void CollideItem(GameObject item)

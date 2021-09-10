@@ -33,11 +33,13 @@ public class GameScene : BaseScene
 
     public void Re(string sceneName)
     {
+        FindObjectOfType<AudioManager>().Play("UIClick");
         Managers.Instance.Scene.LoadScene(sceneName, null, null);
     }
 
     public void GotoMain()
     {
+        FindObjectOfType<AudioManager>().Play("UIClick");
         Managers.Instance.Scene.LoadScene("Lobby", null, null);
     }
 

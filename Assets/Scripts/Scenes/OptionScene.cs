@@ -26,6 +26,7 @@ public class OptionScene : BaseScene
     
     public void MoveLobbyScene()
     {
+        FindObjectOfType<AudioManager>().Play("UIClick");
         Managers.Instance.Scene.LoadScene("Lobby", null, null, false);
     }
 }
