@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TunnelNonTransparent
+  m_Shader: {fileID: -6465566751694194690, guid: e5cd03391d4c9544f8ab4b6c6a311efe, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _SampleTexture2D_c8b7753eaf5347e89432f0bf15917a57_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 5e05e4cef96c9bc438075794617c9233, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - Vector1_2e70bef120ad4014bdf973d7891cc3d4: 0.5
+    - Vector1_4764308f3dc24ee89b2fed5c24a594ac: 0
+    - Vector1_cc4dcc8618094915a937989e32818a3d: 0.3
+    - Vector1_eb981b517dc84a8686f897dee2883aaf: 0.1
+    m_Colors:
+    - Color_47f118f3903e471ea7a11771efe05506: {r: 0.14150941, g: 0, b: 0.0032820113, a: 0}
+    - Color_7dc7148223e54e8b86722f523a08ac1c: {r: 0.6509434, g: 0.11974897, b: 0.11974897, a: 0}
+    - Color_a9f5d6b7b45f481684d464378bcfe0df: {r: 0.5754717, g: 0.046146322, b: 0.069847375, a: 0}
+  m_BuildTextureStacks: []
+--- !u!114 &4919624578576658068
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 4

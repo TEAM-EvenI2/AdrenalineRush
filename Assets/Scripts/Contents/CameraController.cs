@@ -27,7 +27,7 @@ public class CameraController : MonoBehaviour
         gameCam = GetComponent<Camera>();
 
         speedLine = Instantiate(particle);
-        speedLine.transform.localPosition = new Vector3(particleDistance, 0, 0);
+        speedLine.transform.localPosition = new Vector3(particleDistance, particleDistance * 0.5f, 0);
         speedLine.gameObject.SetActive(false);
     }
 
@@ -43,7 +43,7 @@ public class CameraController : MonoBehaviour
             distance = Mathf.Clamp(player.curVelocity/5, 1.1f, 2f);
             transform.position = target.position - transform.forward * distance + transform.up * (distance * 0.2f) + camShakePos;
         
-        gameCam.fieldOfView = Mathf.Clamp(player.curVelocity * 10, 70, 120);
+        gameCam.fieldOfView = Mathf.Clamp(player.curVelocity * 12, 70, 110);
 
         transform.parent.eulerAngles = rotater.eulerAngles;
 
@@ -51,6 +51,11 @@ public class CameraController : MonoBehaviour
             speedLine.gameObject.SetActive(true);
         else
             speedLine.gameObject.SetActive(false);
+
+        if (speedLine.gameObject.activeSelf)
+        {
+            speedLine.transform.localPosition = new Vector3(particleDistance, 0, 0);
+        }
     }
 
     public void ShakeCam(float duration, float power)
