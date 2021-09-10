@@ -170,6 +170,7 @@ public class Player : MonoBehaviour
 				Die();
 			else
 				gameObject.GetComponentInChildren<GraphicManager>().Damaged();
+				FindObjectOfType<AudioManager>().Play("PlayerHit");
 
 			_invincibleTime = invincibleTime;
 
