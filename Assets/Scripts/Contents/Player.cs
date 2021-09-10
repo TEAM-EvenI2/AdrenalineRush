@@ -45,6 +45,13 @@ public class Player : MonoBehaviour
 	private float _invincibleTime = 0;
 	public bool invincible = false;
 
+	public int TotalScore()
+	{
+		/**
+		총점을 반환합니다.
+		*/
+		return 70; // 일단 무조건 70을 반환하게 만들었습니다 TODO FIXME
+	}
 
 	private void Start()
 	{
@@ -182,11 +189,25 @@ public class Player : MonoBehaviour
 
 	private void Die()
 	{
+		FindObjectOfType<PlayGames>().playerScore = TotalScore(); // 총점
+		int score = FindObjectOfType<PlayGames>().playerScore;
+		Debug.Log(score);
+		DataManager dataManager = FindObjectOfType<DataManager>();
+		if (dataManager)
+		{
+			Debug.Log("소프트커런시 획득량: " + score);
+			dataManager.gameData.SoftCurr += score; // 점수를 얼마를 줄지는 PM분들 결정되면 수정. 일단은 총점만큼 획득.
+			dataManager.SaveGameData();
+		}
+		else
+		{
+			Debug.LogWarning("DataManager 인스턴스를 찾을 수 없습니다");
+		}
+		FindObjectOfType<PlayGames>().AddScoreToLeaderboard();
+
 		gameObject.GetComponentInChildren<GraphicManager>().Die();
 		gameObject.SetActive(false);
 		Managers.Instance.GetUIManager<GameUIManager>().ActiveRe();
-		FindObjectOfType<PlayGames>().playerScore = earnedScore;
-		FindObjectOfType<PlayGames>().AddScoreToLeaderboard();
 	}
 
 	public void CollideItem(GameObject item)

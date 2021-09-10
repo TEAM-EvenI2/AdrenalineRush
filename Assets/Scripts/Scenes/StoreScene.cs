@@ -1,12 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using TMPro;
 using UnityEngine;
 
 public class StoreScene : BaseScene
 {    
     private Animator animator;
+    public GameObject SoftCurrUI;
+    public GameObject HardCurrUI;
+    private DataManager dataManager;
     void Start()
     {
+        dataManager = FindObjectOfType<DataManager>();
+        if (dataManager)
+        {
+            dataManager.LoadGameData();
+            SoftCurrUI.GetComponent<TextMeshProUGUI>().text = dataManager.gameData.SoftCurr.ToString();
+            HardCurrUI.GetComponent<TextMeshProUGUI>().text = dataManager.gameData.HardCurr.ToString();
+        }
+        else
+        {
+            Debug.LogError("Cannot load datamanager.");
+        }        
     }
 
     protected override void Init()
