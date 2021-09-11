@@ -15,6 +15,9 @@ public class GameUIManager : UIManager
     [Header("Item Count")]
     public TextMeshProUGUI[] itemCountTexts;
 
+    [Header("Buff Buttons")]
+    public BuffButton[] buffButtons;
+
     public void ActiveRe()
     {
         re.SetActive(!re.gameObject.activeSelf);
@@ -62,17 +65,13 @@ public class GameUIManager : UIManager
         }
     }
 
-    public void DoMagnet()
+    public void SettingBuff(List<int> buffs)
     {
-        Managers.Instance.GetScene<GameScene>().player.GetComponent<PlayerBuffManager>().AddMagnetBuff(0, 5,.7f, 7);
+        for (int i = 0; i < buffs.Count && i < buffButtons.Length; i++)
+        {
+            buffButtons[i].Setting(buffs[i]);
+            buffButtons[i].gameObject.SetActive(true);
+        }
     }
 
-    public void DoSize()
-    {
-        Managers.Instance.GetScene<GameScene>().player.GetComponent<PlayerBuffManager>().AddSizeBuff(1, 5, .5f);
-    }
-    public void DoSpeed()
-    {
-        Managers.Instance.GetScene<GameScene>().player.GetComponent<PlayerBuffManager>().AddSpeedBuff(2, 5, 100);
-    }
 }

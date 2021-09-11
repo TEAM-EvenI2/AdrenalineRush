@@ -468,6 +468,7 @@ public class MapGenerateHelper : EditorWindow
                         EditorGUI.DrawRect(new Rect(keyRect.x - 2, keyRect.y - 2, keyRect.width + 4, keyRect.height + 4), new Color(0.1f, 0.1f, 0.1f));
                     }
 
+
                     Color c = targetMap.prefabObjectEditInfos[i].c;
                     if (!targetMap.prefabObjectEditInfos[i].toggle)
                         c.a = 0.2f;
@@ -582,7 +583,10 @@ public class MapGenerateHelper : EditorWindow
             so.curveLength = EditorGUILayout.FloatField("Curve Length", so.curveLength, GUILayout.ExpandWidth(false));
             so.roadWidth = EditorGUILayout.FloatField("Road Width", so.roadWidth, GUILayout.ExpandWidth(false));
             so.curve = EditorGUILayout.CurveField("Path", so.curve, GUILayout.ExpandWidth(false));
+            GUILayout.BeginHorizontal();
             so.noiseStrength = EditorGUILayout.FloatField("Noise", so.noiseStrength, GUILayout.ExpandWidth(false));
+            so.sideNoiseStrength = EditorGUILayout.FloatField("sideNoise", so.sideNoiseStrength, GUILayout.ExpandWidth(false));
+            GUILayout.EndHorizontal();
             GUILayout.EndVertical();
             if (GUI.changed)
             {
@@ -655,8 +659,11 @@ public class MapGenerateHelper : EditorWindow
                     {
                         mouseIsDownOverKey = true;
 
-                        if(!downShift)
+                        if (!downShift)
+                        {
                             selectedKeyIndexs.Clear();
+                            Selection.activeGameObject = targetMap.prefabObjectEditInfos[keyRects[i].Key.x].spawnedObjectInfos[keyRects[i].Key.y].ti.gameObject;
+                        }
                         bool isIn = false;
                         for (int k = 0; k < selectedKeyIndexs.Count; k++)
                         {

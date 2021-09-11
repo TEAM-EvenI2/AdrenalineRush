@@ -18,13 +18,15 @@ public partial class Define
         public BuffType type;
         public float originTime;
         public float time;
+        public float coolTime;
 
-        public BuffStruct(int id, BuffType type,float time)
+        public BuffStruct(int id, BuffType type,float time, float coolTime)
         {
             this.type = type;
             this.originTime = time;
             this.time = time;
             this.id = id;
+            this.coolTime = coolTime;
         }
     }
     public class MagnetBuffStruct : BuffStruct
@@ -32,8 +34,8 @@ public partial class Define
         public float range;
         public float power;
 
-        public MagnetBuffStruct(int id, float time, float range, float power) :
-            base(id, BuffType.Magnet, time)
+        public MagnetBuffStruct(int id, float time, float coolTime, float range, float power) :
+            base(id, BuffType.Magnet, time, coolTime)
         {
             this.range = range;
             this.power = power;
@@ -41,25 +43,51 @@ public partial class Define
     }
     public class SpeedBuffStruct : BuffStruct
     {
-        public float distance;
+        public float speed;
         public float originSpeed;
+        public bool invincibility;
 
-        public SpeedBuffStruct(int id, float time, float distance, float originSpeed) :
-            base(id, BuffType.Speed, time)
+        public SpeedBuffStruct(int id, float time, float coolTime, float speed, bool invincibility) :
+            base(id, BuffType.Speed, time, coolTime)
         {
-            this.distance = distance;
+            this.speed = speed;
+            this.invincibility = invincibility;
+        }
+
+        public SpeedBuffStruct(int id, float time, float coolTime, float speed, float originSpeed, bool invincibility) :
+            base(id, BuffType.Speed, time, coolTime)
+        {
+            this.speed = speed;
             this.originSpeed = originSpeed;
+            this.invincibility = invincibility;
         }
     }
     public class SizeBuffStruct : BuffStruct
     {
         public float sizeFactor;
         public Vector3 originalSize;
-        public SizeBuffStruct(int id, float time, float sizeFactor, Vector3 originalSize) :
-            base(id, BuffType.Size, time)
+        public SizeBuffStruct(int id, float time, float coolTime, float sizeFactor) :
+            base(id, BuffType.Size, time, coolTime)
+        {
+            this.sizeFactor = sizeFactor;
+        }
+        public SizeBuffStruct(int id, float time, float coolTime, float sizeFactor, Vector3 originalSize) :
+            base(id, BuffType.Size, time, coolTime)
         {
             this.sizeFactor = sizeFactor;
             this.originalSize = originalSize;
+        }
+    }
+
+    public class BuffTextStruct
+    {
+        public string explain;
+        public string name;
+
+        public BuffTextStruct(string explain, string name)
+        {
+            this.explain = explain;
+            this.name = name;
         }
     }
 }

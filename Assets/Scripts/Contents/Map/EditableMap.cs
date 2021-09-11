@@ -148,6 +148,7 @@ public class EditableMap : MonoBehaviour
 				migi.curveLength = so.curveLength;
 				migi.curve = so.curve;
 				migi.noise = so.noiseStrength;
+				migi.sideNoise = so.sideNoiseStrength;
 			}
 			else if (l[i].Key is SurfacePartialObstacle)
 			{
@@ -259,6 +260,7 @@ public class EditableMap : MonoBehaviour
 				so.curve = new AnimationCurve(((SurfaceObstacle)from).curve.keys);
 				so.noiseStrength = ((SurfaceObstacle)from).noiseStrength;
 				so.curveLength = ((SurfaceObstacle)from).curveLength;
+				so.sideNoiseStrength = ((SurfaceObstacle)from).sideNoiseStrength;
 			}
 		}
 		else if (to is SurfacePartialObstacle)

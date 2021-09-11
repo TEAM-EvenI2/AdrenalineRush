@@ -83,7 +83,7 @@ public class SurfacePartialObstacle : MeshObstacle
 				float arc = u * curveLength + enableArc * percent;
 				float _angle = (v + noiseValue * sideNoiseStrength * (Mathf.Sign(_j)) * (_sizePercent == 1? 1 : 0)) * maxAngle + angle;
 				
-				vertices[vertexIndex] = mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / maxAngle) * _sizePercent);
+				vertices[vertexIndex] = mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360) * _sizePercent);
 				if (i < curveSegmentCount)
 				{
 					if (_j < radiusSegmentCount + sideSegmentCount - 1)
@@ -125,7 +125,7 @@ public class SurfacePartialObstacle : MeshObstacle
 
 					float arc = ((u - noiseValue * sideNoiseStrength) * curveLength) + enableArc * percent ;
 					float _angle = v * maxAngle + angle;
-					vertices[vertexIndex] = mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / maxAngle));
+					vertices[vertexIndex] = mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360));
 
 					if(j < radiusSegmentCount - 2)
                     {

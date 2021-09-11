@@ -19,6 +19,20 @@ public class GameScene : BaseScene
         SceneType = Define.Scene.Game;
         Managers.Instance.SetScene(this);
 
+
+        SettingFinish = true;
+
+        // Temp
+
+        List<int> a = new List<int>();
+        a.Add(0);
+        a.Add(1);
+        SettingBuff(a);
+    }
+
+    public void SettingBuff(List<int> buffs)
+    {
+        ((GameUIManager)baseUIManager).SettingBuff(buffs);
     }
 
     public override void Clear()

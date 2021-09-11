@@ -103,6 +103,7 @@ public class MapMeshWrapper : MonoBehaviour
                         so.curveLength = info.curveLength;
                         so.curve = new AnimationCurve(info.curve.keys);
                         so.noiseStrength = info.noise;
+                        so.sideNoiseStrength = info.sideNoise;
                     }
                     else if (item is SurfacePartialObstacle)
                     {

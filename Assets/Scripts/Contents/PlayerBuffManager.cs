@@ -46,7 +46,23 @@ public class PlayerBuffManager : MonoBehaviour
         }
     }
 
-    public void AddSizeBuff(int id, float time, float sizeFactor)
+    public void AddBuff(BuffStruct bs)
+    {
+        switch (bs.type)
+        {
+            case BuffType.Magnet:
+                AddMagnetBuff(bs.id, bs.time, bs.coolTime, ((MagnetBuffStruct)bs).range, ((MagnetBuffStruct)bs).power);
+                break;
+            case BuffType.Size:
+                AddSizeBuff(bs.id, bs.time, bs.coolTime, ((SizeBuffStruct)bs).sizeFactor);
+                break;
+            case BuffType.Speed:
+                AddSpeedBuff(bs.id, bs.time, bs.coolTime, ((SpeedBuffStruct)bs).speed, ((SpeedBuffStruct)bs).invincibility);
+                break;
+        }
+    }
+
+    public void AddSizeBuff(int id, float time, float coolTime, float sizeFactor)
     {
         for (int i = 0; i < buffList.Count; i++)
         {
@@ -59,10 +75,10 @@ public class PlayerBuffManager : MonoBehaviour
             }
         }
         Transform avatar = player.transform.GetChild(0).GetChild(0);
-        buffList.Add(new SizeBuffStruct(id, time, sizeFactor, avatar.localScale));
+        buffList.Add(new SizeBuffStruct(id, time, coolTime, sizeFactor, avatar.localScale));
     }
 
-    public void AddSpeedBuff(int id, float time, float distance)
+    public void AddSpeedBuff(int id, float time, float coolTime, float speed, bool invincibility)
     {
         for (int i = 0; i < buffList.Count; i++)
         {
@@ -70,14 +86,14 @@ public class PlayerBuffManager : MonoBehaviour
             {
                 SpeedBuffStruct sbs = buffList[i] as SpeedBuffStruct;
                 sbs.time = time;
-                sbs.distance = distance;
+                sbs.speed = speed;
                 return;
             }
         }
-        buffList.Add(new SpeedBuffStruct(id, time, distance, Managers.Instance.Config.playerInfo.velocity));
+        buffList.Add(new SpeedBuffStruct(id, time, coolTime, speed, Managers.Instance.Config.playerInfo.velocity, invincibility));
     }
 
-    public void AddMagnetBuff(int id, float time, float range, float power)
+    public void AddMagnetBuff(int id, float time, float coolTime, float range, float power)
     {
 
         for (int i = 0; i <buffList.Count; i++)
@@ -91,7 +107,7 @@ public class PlayerBuffManager : MonoBehaviour
                 return;
             }
         }
-        buffList.Add(new MagnetBuffStruct(id, time, range, power));
+        buffList.Add(new MagnetBuffStruct(id, time, coolTime, range, power));
     }
 
     private bool HandleBuff(BuffStruct bs)
@@ -120,7 +136,6 @@ public class PlayerBuffManager : MonoBehaviour
         MagnetBuffStruct mbs = bs as MagnetBuffStruct;
         Transform avatar = player.transform.GetChild(0).GetChild(0);
         Collider[] items = Physics.OverlapSphere(avatar.position + avatar.right * mbs.range / 2, mbs.range, itemLayer);
-        print(items.Length);
         
 
         for (int i = 0; i < items.Length; i++)
@@ -160,9 +175,11 @@ public class PlayerBuffManager : MonoBehaviour
     private void SpeedBuff(BuffStruct bs)
     {
         SpeedBuffStruct sbs = bs as SpeedBuffStruct;
-        player.invincible = true;
+        player.invincible = sbs.invincibility;
 
-        float vel = sbs.distance / sbs.originTime;
+        float distance = sbs.speed * sbs.originTime;
+
+        float vel = distance / (sbs.originTime - speedChangeTime);
         float _vel;
 
         if (sbs.originTime - sbs.time <= speedChangeTime)

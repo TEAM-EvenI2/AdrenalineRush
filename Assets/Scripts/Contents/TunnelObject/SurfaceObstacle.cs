@@ -18,6 +18,7 @@ public class SurfaceObstacle : MeshObstacle
 
 	public float sizePercent = 1f;
 	public float noiseStrength = 1f;
+	public float sideNoiseStrength = 0f;
 
 
 	public override void Generate(MapMeshWrapper mw, float percent, float angle)
@@ -37,6 +38,15 @@ public class SurfaceObstacle : MeshObstacle
         //SetUV();
         mesh.normals = CaculateNormals(mesh.vertices, mesh.triangles);
     }
+
+	private float CalcAngle(float p, float angle)
+	{
+		float _angle = p * 360 + angle;
+		if (_angle < 0)
+			_angle += 360;
+
+		return _angle;
+	}
 
 	private void SetVertices(MapMeshWrapper mw, float percent, float angle)
 	{
@@ -78,11 +88,11 @@ public class SurfaceObstacle : MeshObstacle
 				float y = Mathf.Sin(v * 360 * Mathf.Deg2Rad) * Mathf.Sin(u * 360 * Mathf.Deg2Rad);
 				float z = Mathf.Cos(v * 360 * Mathf.Deg2Rad);
 
-				float noiseValue = noise.Evaluate(new Vector3(x, y, z)) * noiseStrength;
+				float noiseValue = (noise.Evaluate(new Vector3(x, y, z)) + 1f) *0.5f * noiseStrength;
 
 				float _sizePercent = (1 - sizePercent * ( 1 + noiseValue)) ;
 
-				float arc = u * curveLength + enableArc * (percent * (1 + noiseValue / 30f));
+				float arc = u * curveLength + enableArc * percent;
 				float _angle = v * 360 + angle;
 				if (_angle < 0)
 					_angle += 360;
@@ -104,23 +114,23 @@ public class SurfaceObstacle : MeshObstacle
 					// 격자에 맞지 않는 위치라서 따로 설정해줘야 함.
 					if (!enterRoad)
 					{
-						if (r_u >= 0)
+						//if (r_u >= 0)
 						{
-							_angle = (r_u * 360 + angle) / 360;
+							_angle = (r_u * 360 + angle);/// 360;
 							_angle = _angle % 360;
 							if (_angle < 0)
 								_angle += 360;
 							verticesStartEndCount[i, 0, 1] = vertices.Count;
-							vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, (r_u * 360 + angle) * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360) * _sizePercent) );
+							vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360) * _sizePercent) );
 						}
-						if (l_u <= 1)
+						//if (l_u <= 1)
 						{
-							_angle = (l_u * 360 + angle) / 360;
+							_angle = (l_u * 360 + angle);/// 360;
 							_angle = _angle % 360;
 							if (_angle < 0)
 								_angle += 360;
 							verticesStartEndCount[i, 1, 0] = vertices.Count;
-							vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, (l_u * 360 + angle) * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360) * _sizePercent) );
+							vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360) * _sizePercent) );
 						}
 					}
 					enterRoad = true;
@@ -156,13 +166,10 @@ public class SurfaceObstacle : MeshObstacle
 				float y = Mathf.Sin(v * 360 * Mathf.Deg2Rad) * Mathf.Sin(u * 360 * Mathf.Deg2Rad);
 				float z = Mathf.Cos(v * 360 * Mathf.Deg2Rad);
 
-				float noiseValue = noise.Evaluate(new Vector3(x, y, z)) * noiseStrength;
+				float noiseValue = (noise.Evaluate(new Vector3(x, y, z)) + 1f) * 0.5f * noiseStrength;
 
-				float arc = u * curveLength + enableArc * percent;
+				float arc = (u - noiseValue * sideNoiseStrength * (u == 0? 1 : -1)) * curveLength + enableArc * percent ;
 				float _angle = v * 360 + angle;
-				_angle = _angle % 360;
-				if (_angle < 0)
-					_angle += 360;
 
 				if (v >= r_u && v <= l_u)
 				{
@@ -170,21 +177,15 @@ public class SurfaceObstacle : MeshObstacle
 					// 격자에 맞지 않는 위치라서 따로 설정해줘야 함.
 					if (!enterRoad)
 					{
-						if (r_u >= 0)
+						//if (r_u >= 0)
 						{
-							_angle = (r_u * 360 + angle) / 360;
-							_angle = _angle % 360;
-							if (_angle < 0)
-								_angle += 360;
-							vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, (r_u * 360 + angle) * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360)));
+							_angle = (r_u * 360 + angle) ;
+							vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360)));
 						}
-						if (l_u <= 1)
+						//if (l_u <= 1)
 						{
-							_angle = (l_u * 360 + angle) / 360;
-							_angle = _angle % 360;
-							if (_angle < 0)
-								_angle += 360;
-							vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, (l_u * 360 + angle) * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360)));
+							_angle = (l_u * 360 + angle) ;
+							vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360)));
 						}
 					}
 					enterRoad = true;
@@ -206,21 +207,15 @@ public class SurfaceObstacle : MeshObstacle
 
 			float arc = u * curveLength + enableArc * percent;
 			
-			if (r_u >= 0)
+			//if (r_u >= 0)
 			{
-				float _angle = (l_u * 360 + angle) / 360;
-				_angle = _angle % 360;
-				if (_angle < 0)
-					_angle += 360;
-				vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, (r_u * 360 + angle) * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc/ curArc, _angle / 360)));
+				float _angle = (r_u * 360 + angle) ;
+				vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc/ curArc, _angle / 360)));
 			}
-			if (l_u <= 1)
+			//if (l_u <= 1)
 			{
-				float _angle = (l_u * 360 + angle) / 360;
-				_angle = _angle % 360;
-				if (_angle < 0)
-					_angle += 360;
-				vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, (l_u * 360 + angle) * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360)));
+				float _angle = (l_u * 360 + angle) ;
+				vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle* Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360)));
 			}
 		}
 
@@ -249,43 +244,36 @@ public class SurfaceObstacle : MeshObstacle
 						{
 							if (nSt + (idx- gap) + 1 <= nEd)
 							{
-								triangles.Add(st + idx);
-								triangles.Add(nSt + idx - gap);
-								triangles.Add(nSt + idx - gap + 1);
-								if (st + idx + 1 <= ed)
+                                AddTriangle(triangles, st + idx, nSt + idx - gap, nSt + idx - gap + 1);
+                                if (st + idx + 1 <= ed)
 								{
-                                    triangles.Add(st + idx);
-                                    triangles.Add(nSt + idx - gap + 1);
-                                    triangles.Add(st + idx + 1);
+                                    AddTriangle(triangles, st + idx, nSt + idx - gap + 1, st + idx + 1);
                                 }
                             }
-                            else
+
+							if(idx >= curHeight - 1)
                             {
-								if(k == 1)
-								{
-									int lSt = verticesStartEndCount[i, 0, 0];
-									int nLSt = verticesStartEndCount[i + 1, 0, 0];
+                                if (k == 1)
+                                {
+                                    int lSt = verticesStartEndCount[i, 0, 0];
+                                    int nLSt = verticesStartEndCount[i + 1, 0, 0];
 
-									if(lSt != -1 && nLSt != -1)
+
+                                    //print("[" + i + "]: " + lSt + ", " + nLSt + ", " + (curHeight - nextHeight));
+                                    if (lSt != -1 && nLSt != -1)
                                     {
-                                        triangles.Add(st + idx);
-                                        triangles.Add(nSt + idx - gap);
-                                        triangles.Add(nLSt);
+                                        AddTriangle(triangles, st + idx, nSt + idx - (curHeight - nextHeight), nLSt);
+                                        AddTriangle(triangles, st + idx, nLSt, lSt);
 
-                                        triangles.Add(st + idx);
-                                        triangles.Add(nLSt);
-                                        triangles.Add(lSt);
                                     }
-								}
+                                }
                             }
 						}
                         else
                         {
-							if(gap - idx == 1)
+                            if (gap - idx == 1)
                             {
-                                triangles.Add(st + idx);
-                                triangles.Add(nSt + idx - gap + 1);
-                                triangles.Add(st + idx + 1);
+                                AddTriangle(triangles, st + idx, nSt + idx - gap + 1, st + idx + 1);
                             }
                         }
 					}
@@ -378,10 +366,11 @@ public class SurfaceObstacle : MeshObstacle
             int np = verticesStartEndCount[curveSegmentCount, k, 1 - k];
 
             if (p != -1 && np != -1)
-            {
-                int v = verticesStartEndCount[curveSegmentCount - 1, 0, 1] - verticesStartEndCount[curveSegmentCount - 1, 0, 0];
-                AddTriangle(triangles, p, mainVertexCount + stCount + v + k, mainVertexCount + wallVertex + k, k == 1);
-                AddTriangle(triangles, p, np, mainVertexCount + stCount + v + k, k == 1);
+			{
+                print("[" + k + "]: " + p + ", " + np + ", " );
+                int v = verticesStartEndCount[curveSegmentCount , 0, 1] - verticesStartEndCount[curveSegmentCount , 0, 0];
+                AddTriangle(triangles, p, mainVertexCount + stCount + v +k , mainVertexCount + wallVertex + k, k == 1);
+                AddTriangle(triangles, p, np, mainVertexCount + stCount + v +k, k == 1);
             }
         }
 

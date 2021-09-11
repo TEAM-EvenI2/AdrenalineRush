@@ -73,6 +73,8 @@ public class Player : MonoBehaviour
 			curVelocity += acceleration * Time.deltaTime;
 		}
 
+		CalculatePlayerPosition();
+
 		float delta = curVelocity * Time.deltaTime;
 		distanceTraveled += delta;
 		systemRotation += delta * deltaToRotation;
@@ -96,6 +98,19 @@ public class Player : MonoBehaviour
 			if (health > 100)
 				health = 100;
         }
+	}
+
+	private void CalculatePlayerPosition()
+    {
+		Transform avatar = rotater.GetChild(0);
+
+		//float percent = systemRotation / currentPipe.curveAngle;
+		//float angle = (rotater.localEulerAngles.x + 180) % 360;
+
+		//float distance = currentPipe.mapMesh.GetDistance(currentPipe, percent, angle / 360);
+
+		avatar.localPosition = Vector3.down *( currentPipe.mapMesh.mapSize  );
+
 	}
 
 	public void SetupNetStage()
