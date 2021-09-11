@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class ApplyOption : MonoBehaviour
 {
     public GameObject VolumeSlider;
+    public GameObject SilencedUI;
 
     void Awake()
     {
@@ -16,5 +17,10 @@ public class ApplyOption : MonoBehaviour
     void Update()
     {
         AudioListener.volume = VolumeSlider.GetComponent<Slider>().value;
+        if (AudioListener.volume == 0) {
+            SilencedUI.gameObject.SetActive(true);
+        } else {
+            SilencedUI.gameObject.SetActive(false);
+        }
     }
 }
