@@ -165,7 +165,7 @@ public class EditableMap : MonoBehaviour
 		}
 
 		float _curArc = l[l.Count - 1].Value.curveRadius * l[l.Count - 1].Value.curveAngle * Mathf.Deg2Rad;
-		if (_curArc > 0)
+		if (1 - l[l.Count - 1].Value.percent > 0)
 		{
 			infos.Add(new MapItemGenerateInfo()
 			{

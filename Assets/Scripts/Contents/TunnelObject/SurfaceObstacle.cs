@@ -367,7 +367,7 @@ public class SurfaceObstacle : MeshObstacle
 
             if (p != -1 && np != -1)
 			{
-                print("[" + k + "]: " + p + ", " + np + ", " );
+                //print("[" + k + "]: " + p + ", " + np + ", " );
                 int v = verticesStartEndCount[curveSegmentCount , 0, 1] - verticesStartEndCount[curveSegmentCount , 0, 0];
                 AddTriangle(triangles, p, mainVertexCount + stCount + v +k , mainVertexCount + wallVertex + k, k == 1);
                 AddTriangle(triangles, p, np, mainVertexCount + stCount + v +k, k == 1);

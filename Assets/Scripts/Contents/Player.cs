@@ -164,12 +164,12 @@ public class Player : MonoBehaviour
 
 	private void SetInput()
 	{
-		if (!EventSystem.current.IsPointerOverGameObject())
-		{
 #if UNITY_EDITOR
-			targetInput = Input.GetAxisRaw("Horizontal");
+		targetInput = Input.GetAxisRaw("Horizontal");
 #else
-			if(Input.touchCount > 0)
+		if(Input.touchCount > 0)
+		{
+			if (!EventSystem.current.IsPointerOverGameObject(0))
 			{
 				Vector3 pos = Input.GetTouch(0).position;
 
@@ -178,10 +178,10 @@ public class Player : MonoBehaviour
 				else
 					targetInput = -1;
 			}
-			else
-				targetInput= 0;
-#endif
 		}
+		else
+			targetInput= 0;
+#endif
 
 	}
 
@@ -208,6 +208,7 @@ public class Player : MonoBehaviour
 
 	private void Die()
 	{
+		print("Score: " +Managers.Instance.GetScene<GameScene>().GetScore());
 		FindObjectOfType<PlayGames>().playerScore = TotalScore(); // 총점
 		int score = FindObjectOfType<PlayGames>().playerScore;
 		Debug.Log(score);

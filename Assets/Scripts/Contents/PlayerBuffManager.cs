@@ -8,6 +8,7 @@ public class PlayerBuffManager : MonoBehaviour
     private List<BuffStruct> buffList = new List<BuffStruct>();
 
     public Player player;
+    public Transform playerScalable;
     public LayerMask itemLayer;
 
     private Dictionary<BuffType, System.Action<BuffStruct>> handleBuffDict = new Dictionary<BuffType, System.Action<BuffStruct>>();
@@ -74,8 +75,7 @@ public class PlayerBuffManager : MonoBehaviour
                 return;
             }
         }
-        Transform avatar = player.transform.GetChild(0).GetChild(0);
-        buffList.Add(new SizeBuffStruct(id, time, coolTime, sizeFactor, avatar.localScale));
+        buffList.Add(new SizeBuffStruct(id, time, coolTime, sizeFactor, playerScalable.localScale));
     }
 
     public void AddSpeedBuff(int id, float time, float coolTime, float speed, bool invincibility)
@@ -155,19 +155,18 @@ public class PlayerBuffManager : MonoBehaviour
     private void SizeBuff(BuffStruct bs)
     {
         SizeBuffStruct sbs = bs as SizeBuffStruct;
-        Transform avatar = player.transform.GetChild(0).GetChild(0);
 
         if (sbs.originTime - sbs.time <= sizeChangeTime)
         {
-            avatar.localScale = Vector3.Lerp(sbs.originalSize, sbs.originalSize * sbs.sizeFactor, Utils.Easing.Exponential.Out((sbs.originTime - sbs.time)/ sizeChangeTime));
+            playerScalable.localScale = Vector3.Lerp(sbs.originalSize, sbs.originalSize * sbs.sizeFactor, Utils.Easing.Exponential.Out((sbs.originTime - sbs.time)/ sizeChangeTime));
         }
         else if( sbs.time <= sizeChangeTime)
         {
-            avatar.localScale = Vector3.Lerp(sbs.originalSize, sbs.originalSize * sbs.sizeFactor, Utils.Easing.Exponential.Out((sbs.time) / sizeChangeTime));
+            playerScalable.localScale = Vector3.Lerp(sbs.originalSize, sbs.originalSize * sbs.sizeFactor, Utils.Easing.Exponential.Out((sbs.time) / sizeChangeTime));
         }
         else
         {
-            avatar.localScale = sbs.originalSize * sbs.sizeFactor;
+            playerScalable.localScale = sbs.originalSize * sbs.sizeFactor;
         }
 
     }
