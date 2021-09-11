@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using static Define;
 public class Player : MonoBehaviour
 {
@@ -17,12 +18,12 @@ public class Player : MonoBehaviour
 	private MapMeshWrapper currentPipe;
 	private float distanceTraveled;
 	public float DistanceTraveled
-    {
-        get
-        {
+	{
+		get
+		{
 			return distanceTraveled;
-        }
-    }
+		}
+	}
 	private float deltaToRotation;
 	private float systemRotation;
 
@@ -39,7 +40,7 @@ public class Player : MonoBehaviour
 
 	public SmoothDampStruct<float> inputSmooth;
 	private float targetInput = 0;
-	private float curInput = 0;
+	public float curInput { get; private set; } = 0;
 
 	public float invincibleTime = 0.4f;
 	private float _invincibleTime = 0;
@@ -155,22 +156,25 @@ public class Player : MonoBehaviour
 	}
 
 	private void SetInput()
-    {
+	{
+		if (!EventSystem.current.IsPointerOverGameObject())
+		{
 #if UNITY_EDITOR
-		targetInput = Input.GetAxisRaw("Horizontal");
+			targetInput = Input.GetAxisRaw("Horizontal");
 #else
-		if(Input.touchCount > 0)
-        {
-			Vector3 pos = Input.GetTouch(0).position;
+			if(Input.touchCount > 0)
+			{
+				Vector3 pos = Input.GetTouch(0).position;
 
-			if (pos.x > Screen.width / 2)
-				targetInput = 1;
+				if (pos.x > Screen.width / 2)
+					targetInput = 1;
+				else
+					targetInput = -1;
+			}
 			else
-				targetInput = -1;
-        }
-		else
-			targetInput= 0;
+				targetInput= 0;
 #endif
+		}
 
 	}
 

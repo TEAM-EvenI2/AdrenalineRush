@@ -54,7 +54,7 @@ public class Avatar : MonoBehaviour
 
 	private void Update()
 	{
-		smoothRoatation = Mathf.Clamp(Input.GetAxis("Horizontal") * accelRotationSpeed + smoothRoatation, -maxRotateX, maxRotateX);
+		smoothRoatation = Mathf.Clamp(player.curInput* accelRotationSpeed + smoothRoatation, -maxRotateX, maxRotateX);
 		xRotate = Mathf.Clamp(smoothRoatation * 1 + transform.localRotation.x, -maxRotateX, maxRotateX);
 		if (smoothRoatation > 0)
 		{

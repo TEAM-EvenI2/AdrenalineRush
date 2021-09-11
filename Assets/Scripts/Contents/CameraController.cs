@@ -31,7 +31,7 @@ public class CameraController : MonoBehaviour
         speedLine.gameObject.SetActive(false);
     }
 
-    void Update()
+    void LateUpdate()
     {
         Vector3 camShakePos = Vector3.zero;
         if (currentShakeTime > 0)
@@ -40,12 +40,12 @@ public class CameraController : MonoBehaviour
             currentShakeTime -= Time.deltaTime;
         }
 
-            distance = Mathf.Clamp(player.curVelocity/5, 1.1f, 2f);
-            transform.position = target.position - transform.forward * distance + transform.up * (distance * 0.2f) + camShakePos;
-        
+        distance = Mathf.Clamp(player.curVelocity / 5, 1.1f, 2f);
+
         gameCam.fieldOfView = Mathf.Clamp(player.curVelocity * 12, 70, 110);
 
         transform.parent.eulerAngles = rotater.eulerAngles;
+        transform.position = target.position - transform.forward * distance + transform.up * (distance * 0.2f) + camShakePos;
 
         if (player.curVelocity >= drawSpeedlineVelocityMin)
             speedLine.gameObject.SetActive(true);
