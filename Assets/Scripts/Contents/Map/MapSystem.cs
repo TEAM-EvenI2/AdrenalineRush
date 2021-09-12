@@ -230,5 +230,14 @@ public class MapSystem : MonoBehaviour
 		}
 	}
 
-
+	public StageInformation GetCurrentStage()
+    {
+		return stageInfo[currentStage];
+	}
+	public StageInformation GetNextStage()
+	{
+		if (stageInfo.Count <= currentStage + 1)
+			return null;
+		return stageInfo[currentStage + 1];
+	}
 }

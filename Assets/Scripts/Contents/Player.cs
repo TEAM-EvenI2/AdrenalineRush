@@ -164,6 +164,7 @@ public class Player : MonoBehaviour
 
 	private void SetInput()
 	{
+
 #if UNITY_EDITOR
 		targetInput = Input.GetAxisRaw("Horizontal");
 #else
@@ -227,7 +228,7 @@ public class Player : MonoBehaviour
 
 		gameObject.GetComponentInChildren<GraphicManager>().Die();
 		gameObject.SetActive(false);
-		Managers.Instance.GetUIManager<GameUIManager>().ActiveRe();
+		Managers.Instance.GetUIManager<GameUIManager>().OpenFinishWindow();
 	}
 
 	public void CollideItem(GameObject item)
