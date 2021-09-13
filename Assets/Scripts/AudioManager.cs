@@ -31,6 +31,7 @@ public class AudioManager : MonoBehaviour
 
     void Start()
     {
+        AudioListener.volume = FindObjectOfType<DataManager>().gameData.masterVolume;
         Play("LobbyTheme");
     }
 
