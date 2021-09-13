@@ -59,8 +59,7 @@ public class ConfigDataManager
                 case BuffType.Magnet:
                     {
                         float range = float.Parse(buffcsv[i]["Range"].ToString());
-                        float power = float.Parse(buffcsv[i]["Power"].ToString());
-                        buffInfos[id].Add(new MagnetBuffStruct(id, time, cooltime, range, power));
+                        buffInfos[id].Add(new MagnetBuffStruct(id, time, cooltime, range));
                         break;
                     }
                 case BuffType.Size:
