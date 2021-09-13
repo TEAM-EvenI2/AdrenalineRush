@@ -209,7 +209,7 @@ public class Player : MonoBehaviour
 		if (dataManager)
 		{
 			Debug.Log("소프트커런시 획득량: " + score);
-			dataManager.gameData.SoftCurr += score; // 점수를 얼마를 줄지는 PM분들 결정되면 수정. 일단은 총점만큼 획득.
+			dataManager.gameData.SoftCurr += score; // 점수 일단은 총점만큼 획득.
 			dataManager.SaveGameData();
 		}
 		else

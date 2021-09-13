@@ -14,6 +14,8 @@ public class ItemEquipManager : MonoBehaviour
     private DataManager dataManager;
     private Color EquippedColor;
     private Color UnequippedColor;
+    private StoreScene storeScene;
+    private AudioManager audioManager;
 
     void UpdateUI()
     {
@@ -48,6 +50,8 @@ public class ItemEquipManager : MonoBehaviour
         EquippedColor = new Color(0,255,0,255);
         UnequippedColor = new Color(255,255,255,255);
         dataManager = FindObjectOfType<DataManager>();
+        audioManager = FindObjectOfType<AudioManager>();
+        storeScene = FindObjectOfType<StoreScene>();
         UpdateUI();
     }
 
@@ -61,40 +65,43 @@ public class ItemEquipManager : MonoBehaviour
     {
         if (dataManager.gameData.getItem(itemId) == null)
         {
-            Debug.LogError("장착 혹은 탈착할 수 있는 아이템을 선택하지 않았거나, 잘못된 itemId가 전달되었습니다.");
+            storeScene.WarnUser("아무런 아이템도 선택하지 않았습니다.");
             UpdateUI();
             return;
         } else if (dataManager.gameData.getItem(itemId).EquipSlot != -1) {
             dataManager.gameData.getItem(itemId).EquipSlot = -1;
             dataManager.SaveGameData();
+            audioManager.Play("EquipItem");
             Debug.Log("장착을 해제합니다.");
             UpdateUI();
             return;
         } else if (itemId == "slot") { // 슬롯아이템은 장착불가
             dataManager.gameData.getItem(itemId).EquipSlot = -1;
             dataManager.SaveGameData();
-            Debug.LogError("장착할 수 없는 아이템입니다.");
+            storeScene.WarnUser("장착할 수 없는 아이템입니다.");
             UpdateUI();
             return;
         } else if (!dataManager.gameData.getItem(itemId).HasItem) { // 슬롯아이템은 장착불가
             dataManager.gameData.getItem(itemId).EquipSlot = -1;
             dataManager.SaveGameData();
-            Debug.LogError("보유하지 않은 아이템입니다.");
+            storeScene.WarnUser("구매하지 않은 아이템입니다.");
             UpdateUI();
             return;
         }
 
+        // 장착
         for (int i = 0; i < dataManager.gameData.SlotCount; ++i)
         {
             if (dataManager.gameData.EquippedItem[i] == null)
             {
+                audioManager.Play("EquipItem");
                 dataManager.gameData.getItem(itemId).EquipSlot = i;
                 dataManager.SaveGameData();
                 UpdateUI();
                 return;
             }
         }
-        Debug.LogError("장착할 수 있는 칸이 없습니다."); // TODO
+        storeScene.WarnUser("아이템 슬롯이 부족합니다.");
         UpdateUI();
         return;
     }

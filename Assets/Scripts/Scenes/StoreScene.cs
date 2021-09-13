@@ -17,10 +17,15 @@ public class StoreScene : BaseScene
     public GameObject CurrentItemPriceUI;
     public GameObject CurrentItemUpgradeUI; // 현재 업그레이드가 얼만큼 되었는지
     public GameObject CurrentSlotLeftUI; // 남은 칸수
+    public GameObject ShopWarnUI;
+    public GameObject ShopLogUI;
+    public GameObject ScrollPanel; // 아이템 버튼들을 저장중
+    private AudioManager audioManager;
 
     void Start()
     {
         dataManager = FindObjectOfType<DataManager>();
+        audioManager = FindObjectOfType<AudioManager>();
         if (dataManager)
         {
             dataManager.LoadGameData();
@@ -31,7 +36,7 @@ public class StoreScene : BaseScene
         {
             Debug.LogError("Cannot load datamanager.");
         }
-        selected = "";    
+        selected = "";  
         UpdateUI();   
     }
 
@@ -54,6 +59,22 @@ public class StoreScene : BaseScene
     {
         FindObjectOfType<AudioManager>().Play("UIClick");
         Managers.Instance.Scene.LoadScene("Lobby", null, null, false);
+    }
+
+    public void WarnUser(string msg)
+    {
+        //사용자에게 상점 내 알림창을 띄웁니다.
+        ShopLogUI.GetComponent<TextMeshProUGUI>().text = msg;
+        ShopWarnUI.SetActive(true);
+        audioManager.Play("UserWarn");
+    }
+
+    public void CloseWarnUI()
+    {
+        //상점 내 알림창을 닫습니다.
+        ShopWarnUI.SetActive(false);
+        ShopLogUI.GetComponent<TextMeshProUGUI>().text = "";
+        audioManager.Play("UIClick");
     }
 
     private bool CanPurchase(int price)
@@ -99,7 +120,7 @@ public class StoreScene : BaseScene
         if (selected != "" && selected != null)
             PurchaseItem(selected);
         else
-            Debug.LogWarning("아무 아이템도 선택하지 않았습니다.");
+            Debug.LogError("아무런 아이템도 선택되지 않았습니다.");
     }
 
     private void PurchaseItem(string itemId)
@@ -109,13 +130,16 @@ public class StoreScene : BaseScene
             if (itemData.ItemId == itemId)
             {
                 int upgrade = itemData.Upgrade;
-                if (upgrade >= 5) break;
+                if (upgrade >= 5){
+                    WarnUser("더 이상 업그레이드 할 수 없습니다.");
+                    break;
+                }
 
                 int price = GetItemPrice(itemId, upgrade);
                 if (CanPurchase(price)){
                     SpendMoney(price);
                 } else {
-                    Debug.LogWarning("돈이 부족합니다.");
+                    WarnUser("돈이 부족합니다.");
                     UpdateUI();
                     return; // TODO : 부족알림?
                 }
@@ -133,8 +157,19 @@ public class StoreScene : BaseScene
     
     private void UpdateUI(string itemId="<없음>")
     {
+        /**
+        itemId:
+            Optional, 특정 아이템을 입력 시 해당 아이템의 정보를 UI에 표시함.
+            만약 공란이거나 알 수 없는 값이 주어지면 UI에 아무런 아이템 정보도 표시하지 않음. (초기화)
+        */
         SoftCurrUI.GetComponent<TextMeshProUGUI>().text = dataManager.gameData.SoftCurr.ToString();
         HardCurrUI.GetComponent<TextMeshProUGUI>().text = dataManager.gameData.HardCurr.ToString();
+
+        for (int i = 0; i < ScrollPanel.transform.childCount; ++i)// 개선 가능
+        {
+            ScrollPanel.transform.GetChild(i).GetComponent<Image>().color = new Color(255,255,255);
+        }
+
         foreach (ItemData itemData in dataManager.gameData.purchasedItems)
         {
             if (itemData.ItemId == "slot")
@@ -148,18 +183,23 @@ public class StoreScene : BaseScene
                 {
                     case "magnet":
                         CurrentItemNameUI.GetComponent<TextMeshProUGUI>().text = "자석: ";
+                        ScrollPanel.transform.GetChild(0).GetComponent<Image>().color = new Color(0,255,0); // 인덱스로 접근하는게 좋은 방식은 아님
                         break;
                     case "boost":
                         CurrentItemNameUI.GetComponent<TextMeshProUGUI>().text = "무적 부스트: ";
+                        ScrollPanel.transform.GetChild(1).GetComponent<Image>().color = new Color(0,255,0);
                         break;
                     case "shrink":
                         CurrentItemNameUI.GetComponent<TextMeshProUGUI>().text = "크기 축소: ";
+                        ScrollPanel.transform.GetChild(2).GetComponent<Image>().color = new Color(0,255,0);
                         break;
                     case "slow":
                         CurrentItemNameUI.GetComponent<TextMeshProUGUI>().text = "슬로우: ";
+                        ScrollPanel.transform.GetChild(3).GetComponent<Image>().color = new Color(0,255,0);
                         break;
                     case "slot":
                         CurrentItemNameUI.GetComponent<TextMeshProUGUI>().text = "슬롯 추가: ";
+                        ScrollPanel.transform.GetChild(4).GetComponent<Image>().color = new Color(0,255,0);
                         break;
                 }
                 if (itemData.Upgrade == 0){

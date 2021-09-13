@@ -23,7 +23,7 @@ public class GameData
                 if (itemData.ItemId == "slot")
                 {
                     if (!itemData.HasItem) return 0;
-                    else return itemData.Upgrade-1;
+                    else return itemData.Upgrade;
                 }
             }
             Debug.LogWarning("SlotCount 제대로 반환하지 못함.");
