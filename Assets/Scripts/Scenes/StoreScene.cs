@@ -7,6 +7,7 @@ using UnityEngine;
 public class StoreScene : BaseScene
 {    
     private Animator animator;
+    [HideInInspector]
     public string selected; // 선택한 아이템
     public GameObject SoftCurrUI;
     public GameObject HardCurrUI;
@@ -15,6 +16,7 @@ public class StoreScene : BaseScene
     public GameObject CurrentItemNameUI;
     public GameObject CurrentItemPriceUI;
     public GameObject CurrentItemUpgradeUI; // 현재 업그레이드가 얼만큼 되었는지
+    public GameObject CurrentSlotLeftUI; // 남은 칸수
 
     void Start()
     {
@@ -29,7 +31,8 @@ public class StoreScene : BaseScene
         {
             Debug.LogError("Cannot load datamanager.");
         }
-        selected = "";       
+        selected = "";    
+        UpdateUI();   
     }
 
     protected override void Init()
@@ -133,6 +136,11 @@ public class StoreScene : BaseScene
         HardCurrUI.GetComponent<TextMeshProUGUI>().text = dataManager.gameData.HardCurr.ToString();
         foreach (ItemData itemData in dataManager.gameData.purchasedItems)
         {
+            if (itemData.ItemId == "slot")
+            {
+                CurrentSlotLeftUI.GetComponent<TextMeshProUGUI>().text = "아이템 슬롯 수: " + dataManager.gameData.SlotCount.ToString();
+            }
+
             if (itemData.ItemId == itemId)
             {
                 switch (itemId)

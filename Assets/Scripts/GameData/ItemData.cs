@@ -21,6 +21,11 @@ public class ItemData
         itemId = Id;
         hasItem = false;
         upgrade = 0;
+        if (itemId == "slot")
+        {
+            upgrade = 1;
+            hasItem = true;
+        }
         equipSlot = -1; // 장착 안됨
     }
 
