@@ -24,8 +24,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 182945350}
-  m_LocalRotation: {x: 0, y: 0, z: -0.0015680996, w: 0.9999988}
-  m_LocalPosition: {x: 9.411718, y: 3000.984, z: 0.05547004}
+  m_LocalRotation: {x: 0, y: 0, z: -0.00448193, w: 0.99999}
+  m_LocalPosition: {x: 26.900255, y: 3000.878, z: 0.05547004}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7463428632013006223}
@@ -101,8 +101,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 270612325}
-  m_LocalRotation: {x: 0, y: 0, z: -0.0013888882, w: 0.99999905}
-  m_LocalPosition: {x: 8.330544, y: 2998.9885, z: -0.00000008742278}
+  m_LocalRotation: {x: 0, y: 0, z: -0.003956934, w: 0.9999922}
+  m_LocalPosition: {x: 23.733503, y: 2998.9062, z: -0.00000008742278}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 231160712}
@@ -1872,8 +1872,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2382853358688810995}
-  m_LocalRotation: {x: 0, y: 0, z: -0.0025684722, w: 0.9999967}
-  m_LocalPosition: {x: 15.412193, y: 3000.2354, z: 0.96152395}
+  m_LocalRotation: {x: 0, y: 0, z: -0.0017013878, w: 0.99999857}
+  m_LocalPosition: {x: 10.209247, y: 3000.2573, z: 0.96152395}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4423320094135065420}
@@ -3267,7 +3267,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4709536776315468746}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -3000.0002, z: 0}
+  m_LocalPosition: {x: 0, y: -3000, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 270612327}
@@ -3405,15 +3405,15 @@ MonoBehaviour:
     toggle: 1
     spawnedObjectInfos:
     - ti: {fileID: 2597959564895548589}
-      curveAngle: 0.66845065
-      curveRadius: 3000.0002
+      curveAngle: 0.6684507
+      curveRadius: 3000
       percent: 0.29166666
   - itemPrefab: {fileID: 6553706658921896217, guid: 4b1f8e2986701e445b3498a80de1e8ea, type: 3}
     c: {r: 0.27303332, g: 0.053119063, b: 0.18921292, a: 1}
     toggle: 1
     spawnedObjectInfos:
     - ti: {fileID: 270612326}
-      curveAngle: 0.40107042
+      curveAngle: 0.6684507
       curveRadius: 3000
       percent: 0.67833334
   - itemPrefab: {fileID: 6553706658921896217, guid: 92f04d692bfe63e45a274853515e2306, type: 3}
@@ -3421,7 +3421,7 @@ MonoBehaviour:
     toggle: 1
     spawnedObjectInfos:
     - ti: {fileID: 182945351}
-      curveAngle: 0.40107042
+      curveAngle: 0.6684507
       curveRadius: 3000
       percent: 0.7683333
 --- !u!1 &5189181109365777059
