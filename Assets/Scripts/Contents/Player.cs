@@ -46,14 +46,6 @@ public class Player : MonoBehaviour
 	private float _invincibleTime = 0;
 	public bool invincible = false;
 
-	public int TotalScore()
-	{
-		/**
-		총점을 반환합니다.
-		*/
-		return 70; // 일단 무조건 70을 반환하게 만들었습니다 TODO FIXME
-	}
-
 	private void Start()
 	{
 		world = mapSystem.transform.parent;
@@ -209,9 +201,9 @@ public class Player : MonoBehaviour
 
 	private void Die()
 	{
-		print("Score: " +Managers.Instance.GetScene<GameScene>().GetScore());
-		FindObjectOfType<PlayGames>().playerScore = TotalScore(); // 총점
-		int score = FindObjectOfType<PlayGames>().playerScore;
+		int score = Managers.Instance.GetScene<GameScene>().GetScore();
+		print("Score: " +score);
+		FindObjectOfType<PlayGames>().playerScore = score; // 총점 GooglePlay로 전송준비
 		Debug.Log(score);
 		DataManager dataManager = FindObjectOfType<DataManager>();
 		if (dataManager)
@@ -224,7 +216,7 @@ public class Player : MonoBehaviour
 		{
 			Debug.LogWarning("DataManager 인스턴스를 찾을 수 없습니다");
 		}
-		FindObjectOfType<PlayGames>().AddScoreToLeaderboard();
+		FindObjectOfType<PlayGames>().AddScoreToLeaderboard(); // 전송
 
 		gameObject.GetComponentInChildren<GraphicManager>().Die();
 		gameObject.SetActive(false);
