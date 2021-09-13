@@ -39,11 +39,40 @@ public class LobbyScene : BaseScene
     {
 
     }
-    
+
     public void MoveGameScene()
     {
         FindObjectOfType<AudioManager>().Play("UIClick");
-        Managers.Instance.Scene.LoadScene("Game", null, null, true);
+
+        List<int> selectedItem = new List<int>();
+        ItemData[] equipedItem = DataManager.instance.gameData.EquippedItem;
+        for (int i = 0; i < equipedItem.Length; i++)
+        {
+            if (equipedItem[i] != null)
+            {
+                int id = -1;
+                for (int j = 0; j < GameData.itemIdList.Length; j++)
+                {
+                    if(equipedItem[i].ItemId == GameData.itemIdList[j])
+                    {
+                        id = j;
+                        break;
+                    }
+                }
+
+                if (id != -1)
+                    selectedItem.Add(id);
+            }
+            else
+                break;
+        }
+
+        Managers.Instance.Scene.LoadScene("Game", 
+            () =>{ return Managers.Instance.GetScene<GameScene>() != null && Managers.Instance.GetScene<GameScene>().SettingFinish; },
+            ()=>
+            {
+                Managers.Instance.GetScene<GameScene>().SettingBuff(selectedItem);
+            }, true);
     }
 
     public void MoveAchievementScene()

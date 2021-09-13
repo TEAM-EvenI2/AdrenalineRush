@@ -21,13 +21,6 @@ public class GameScene : BaseScene
 
 
         SettingFinish = true;
-
-        // Temp
-
-        List<int> a = new List<int>();
-        a.Add(0);
-        a.Add(1);
-        SettingBuff(a);
     }
 
     public void SettingBuff(List<int> buffs)

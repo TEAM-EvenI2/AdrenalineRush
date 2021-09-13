@@ -13,7 +13,7 @@ public class GameData
     public float masterVolume;
     public ItemData[] purchasedItems; // 구매한 아이템들
     public CharacterData[] purchasedCharacters; // 구매한 캐릭터들
-    private string[] itemIdList = {"magnet", "boost", "shrink", "slow", "slot"};
+    public static readonly string[] itemIdList = {"magnet", "shrink", "boost", "slow", "slot"};
 
     public int SlotCount
     {

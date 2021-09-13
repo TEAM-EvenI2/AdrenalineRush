@@ -13,7 +13,8 @@ public class BuffButton : MonoBehaviour
     public Transform sizeTransform;
     public GameObject blackCool;
 
-    public TextMeshProUGUI buffText;
+    public Transform testImageParent;
+
 
     private void Awake()
     {
@@ -60,8 +61,11 @@ public class BuffButton : MonoBehaviour
     {
         id = buffId;
 
-        // TODO
-        // image 
-        buffText.text = Managers.Instance.Config.buffTextInfos[id].name;
+        for(int i = 0; i < testImageParent.childCount; i++)
+        {
+            testImageParent.GetChild(i).gameObject.SetActive(false);
+        }
+        testImageParent.GetChild(buffId).gameObject.SetActive(true);
+
     }
 }
