@@ -124,6 +124,7 @@ public class StoreScene : BaseScene
                 if (!itemData.HasItem) itemData.HasItem = true;
                 itemData.Upgrade += 1;
                 UpdateUI(itemId);
+                FindObjectOfType<AudioManager>().Play("PurchaseItem");
                 break;
             }
         }

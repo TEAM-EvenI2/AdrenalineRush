@@ -225,6 +225,7 @@ public class Player : MonoBehaviour
 
 	public void CollideItem(GameObject item)
 	{
+		FindObjectOfType<AudioManager>().Play("ItemCollide");
 		gameObject.GetComponentInChildren<GraphicManager>().CollideItem(item);
 	}
 }
