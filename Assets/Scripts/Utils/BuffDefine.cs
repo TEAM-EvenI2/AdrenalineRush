@@ -32,13 +32,11 @@ public partial class Define
     public class MagnetBuffStruct : BuffStruct
     {
         public float range;
-        public float power;
 
-        public MagnetBuffStruct(int id, float time, float coolTime, float range, float power) :
+        public MagnetBuffStruct(int id, float time, float coolTime, float range) :
             base(id, BuffType.Magnet, time, coolTime)
         {
             this.range = range;
-            this.power = power;
         }
     }
     public class SpeedBuffStruct : BuffStruct

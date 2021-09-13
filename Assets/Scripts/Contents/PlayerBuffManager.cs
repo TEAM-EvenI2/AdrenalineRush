@@ -54,7 +54,7 @@ public class PlayerBuffManager : MonoBehaviour
         switch (bs.type)
         {
             case BuffType.Magnet:
-                AddMagnetBuff(bs.id, bs.time, bs.coolTime, ((MagnetBuffStruct)bs).range, ((MagnetBuffStruct)bs).power);
+                AddMagnetBuff(bs.id, bs.time, bs.coolTime, ((MagnetBuffStruct)bs).range);
                 break;
             case BuffType.Size:
                 AddSizeBuff(bs.id, bs.time, bs.coolTime, ((SizeBuffStruct)bs).sizeFactor);
@@ -95,7 +95,7 @@ public class PlayerBuffManager : MonoBehaviour
         buffList.Add(new SpeedBuffStruct(id, time, coolTime, speed, Managers.Instance.Config.playerInfo.velocity, invincibility));
     }
 
-    public void AddMagnetBuff(int id, float time, float coolTime, float range, float power)
+    public void AddMagnetBuff(int id, float time, float coolTime, float range)
     {
 
         for (int i = 0; i <buffList.Count; i++)
@@ -105,11 +105,10 @@ public class PlayerBuffManager : MonoBehaviour
                 MagnetBuffStruct mbs = buffList[i] as MagnetBuffStruct;
                 mbs.time = time;
                 mbs.range = range;
-                mbs.power = power;
                 return;
             }
         }
-        buffList.Add(new MagnetBuffStruct(id, time, coolTime, range, power));
+        buffList.Add(new MagnetBuffStruct(id, time, coolTime, range));
     }
 
     private bool HandleBuff(BuffStruct bs)
@@ -145,18 +144,19 @@ public class PlayerBuffManager : MonoBehaviour
         tempMagnetEffect.localScale = Vector3.one * mbs.range * 2;
         tempMagnetEffect.position = avatar.position + avatar.right * mbs.range / 2;
 
+        float power = player.curVelocity + 2;
 
         for (int i = 0; i < items.Length; i++)
         {
             Vector3 dir = (avatar.position - items[i].transform.position).normalized;
             
 
-            if(Vector3.Distance(avatar.position, items[i].transform.position) < mbs.power * Time.deltaTime)
+            if(Vector3.Distance(avatar.position, items[i].transform.position) < power * Time.deltaTime)
             {
                 items[i].transform.position = avatar.position;
             }
             else
-                items[i].transform.position += dir * mbs.power * Time.deltaTime;
+                items[i].transform.position += dir * power * Time.deltaTime;
         }
     }
 
