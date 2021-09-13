@@ -17,6 +17,8 @@ public class PlayerBuffManager : MonoBehaviour
     public float sizeChangeTime = 0.4f;
     public float speedChangeTime = 1f;
 
+
+    public Transform tempMagnetEffect;
     private void Awake()
     {
         handleBuffDict.Add(BuffType.Magnet, MagnetBuff);
@@ -136,7 +138,13 @@ public class PlayerBuffManager : MonoBehaviour
         MagnetBuffStruct mbs = bs as MagnetBuffStruct;
         Transform avatar = player.transform.GetChild(0).GetChild(0);
         Collider[] items = Physics.OverlapSphere(avatar.position + avatar.right * mbs.range / 2, mbs.range, itemLayer);
-        
+
+        if (!tempMagnetEffect.gameObject.activeSelf)
+            tempMagnetEffect.gameObject.SetActive(true);
+
+        tempMagnetEffect.localScale = Vector3.one * mbs.range * 2;
+        tempMagnetEffect.position = avatar.position + avatar.right * mbs.range / 2;
+
 
         for (int i = 0; i < items.Length; i++)
         {
@@ -187,7 +195,7 @@ public class PlayerBuffManager : MonoBehaviour
         }
         else if (sbs.time <= speedChangeTime)
         {
-            _vel = Mathf.Lerp(sbs.originSpeed, vel , Utils.Easing.Exponential.In((sbs.time) / speedChangeTime));
+            _vel = Mathf.Lerp(sbs.originSpeed, vel , Utils.Easing.Exponential.Out((sbs.time) / speedChangeTime));
         }
         else
         {
@@ -198,6 +206,7 @@ public class PlayerBuffManager : MonoBehaviour
 
     private void EndMagnetBuff(BuffStruct bs)
     {
+        tempMagnetEffect.gameObject.SetActive(false);
 
     }
 
