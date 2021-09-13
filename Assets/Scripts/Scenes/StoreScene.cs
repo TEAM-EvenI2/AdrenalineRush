@@ -82,7 +82,6 @@ public class StoreScene : BaseScene
 
     private void SpendMoney(int amount)
     {
-        // 돈 차감의 경우 음수를 보내야함.
         if (CanPurchase(amount)) // 혹시 모를 이중 체크
         {
             dataManager.gameData.SoftCurr -= amount;
@@ -94,7 +93,7 @@ public class StoreScene : BaseScene
 
     public void PurchaseSelectedItem()
     {
-        if (selected != "")
+        if (selected != "" && selected != null)
             PurchaseItem(selected);
         else
             Debug.LogWarning("아무 아이템도 선택하지 않았습니다.");
