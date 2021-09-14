@@ -18,15 +18,16 @@ public class DataManager : MonoBehaviour
         else{
             Destroy(gameObject);
         }
-
+        
+        gameData = GameDataManager.LoadData();
         if (gameData == null || debugging)
         {
             Debug.LogError("기존 게임데이터를 찾을 수 없습니다. 데이터를 새로 생성합니다.");
             debugging = false;
             gameData = new GameData();
             SaveGameData();
+            gameData = GameDataManager.LoadData();
         }
-        gameData = GameDataManager.LoadData();
 
         DontDestroyOnLoad(gameObject);
     }
