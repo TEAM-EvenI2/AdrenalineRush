@@ -141,7 +141,7 @@ public class StoreScene : BaseScene
                 } else {
                     WarnUser("돈이 부족합니다.");
                     UpdateUI();
-                    return; // TODO : 부족알림?
+                    return;
                 }
 
                 // 구매완료

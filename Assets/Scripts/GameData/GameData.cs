@@ -40,11 +40,6 @@ public class GameData
         }
     }
 
-    public CharacterData EquippedCharacter
-    {
-        get {return purchasedCharacters[currentCharaIndex];}
-    }
-
     public void EquipCurrentCharacter()
     {
         // 현재 선택(장착 아님)한 캐릭터를 장착함.
@@ -64,6 +59,11 @@ public class GameData
             }
             return eqItems;
         }
+    }
+
+    public CharacterData CurrentChar
+    {
+        get {return purchasedCharacters[currentCharaIndex];}
     }
 
     public ItemData getItem(string itemId)

@@ -185,12 +185,12 @@ public class Player : MonoBehaviour
 
 			health -= 34;
 			curVelocity  = 0;
+			FindObjectOfType<AudioManager>().Play("PlayerHit");
 			if (health <= 0) {
 				FindObjectOfType<AudioManager>().Play("PlayerDie");
 				Die();
 			} else {
 				gameObject.GetComponentInChildren<GraphicManager>().Damaged();
-				FindObjectOfType<AudioManager>().Play("PlayerHit");
 			}
 			_invincibleTime = invincibleTime;
 
