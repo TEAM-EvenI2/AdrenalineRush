@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8101018202870119908}
   - component: {fileID: 2540243978075144927}
   - component: {fileID: 7444344679607932379}
+  - component: {fileID: 5479376034049926117}
   m_Layer: 0
   m_Name: FatPartialObstacle
   m_TagString: Obstacle
@@ -96,10 +97,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   angle: 0
   mesh: {fileID: 0}
-  curveSegmentCount: 21
-  radiusSegmentCount: 40
+  curveSegmentCount: 20
+  radiusSegmentCount: 21
   curveLength: 3
   sizePercent: 0.3
   anglePercent: 0.2
   noiseStrength: 1
   sideNoiseStrength: 0
+--- !u!64 &5479376034049926117
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6892244331751327963}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}

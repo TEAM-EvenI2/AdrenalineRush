@@ -13,6 +13,8 @@ public class SceneLoader : MonoBehaviour
 
     private string loadSceneName;
 
+    private bool hasCondition;
+
     public static SceneLoader Create()
     {
         var SceneLoaderPrefab = Resources.Load<SceneLoader>("Prefabs/SceneLoader");
@@ -34,9 +36,11 @@ public class SceneLoader : MonoBehaviour
             SceneManager.sceneLoaded += LoadSceneEnd;
         }
         loadSceneName = sceneName;
+
+        hasCondition = condition != null;
         StartCoroutine(CoLoad(sceneName, diplayLoadScene));
 
-        if(condition != null)
+        if (condition != null && action != null)
         {
             StartCoroutine(CoSceneChangeAction(condition, action));
         }
@@ -48,6 +52,9 @@ public class SceneLoader : MonoBehaviour
             yield return null;
 
         action.Invoke();
+
+
+        gameObject.SetActive(false);
     }
 
     private IEnumerator CoLoad(string sceneName, bool diplayLoadScene=false)
@@ -107,6 +114,7 @@ public class SceneLoader : MonoBehaviour
     private void FadeOutImmediate()
     {
         canvasGroup.alpha = 0;
-        gameObject.SetActive(false);
+        if(!hasCondition)
+            gameObject.SetActive(false);
     }
 }

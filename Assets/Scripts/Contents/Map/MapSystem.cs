@@ -105,7 +105,7 @@ public class MapSystem : MonoBehaviour
 	}
 
 
-    private void GenerateItem(MapMeshWrapper mw)
+	private void GenerateItem(MapMeshWrapper mw)
 	{
 
 		// Generate Item
@@ -115,35 +115,50 @@ public class MapSystem : MonoBehaviour
 
 		mw.ResetGenerateItem();
 
-		while (true)
+		//while (true)
+		//{
+		//	if (itemInfos.Count == _infoIndex)
+		//	{
+		//		EditableMap itemPlace = stageInfo[currentStage].GetRandomItemPlace();
+		//		if (itemPlace == null)
+		//			break;
+
+		//		print("Item Places Name: " +itemPlace.name);
+		//		itemInfos.Clear();
+		//		itemPlace.AddItemToInfos(itemInfos);
+		//		_infoIndex = 0;
+
+		//		if (itemInfos.Count == 0)
+		//			break;
+
+		//	}
+
+		//	MapItemGenerateInfo info = itemInfos[_infoIndex];
+		//	if (finishedArc + info.curveArc > curArc)
+		//	{
+		//		info.curveArc -= curArc - finishedArc;
+		//		break;
+		//	}
+		//	else
+		//	{
+		//		finishedArc += info.curveArc;
+
+		//		mw.AddGenerateItem(info);
+		//		_infoIndex++;
+		//	}
+		//}
+
+
+		EditableMap itemPlace = stageInfo[currentStage].GetRandomItemPlace();
+		itemInfos.Clear();
+		_infoIndex = 0;
+		itemPlace.AddItemToInfos(itemInfos);
+		while (_infoIndex < itemInfos.Count)
 		{
-			if (itemInfos.Count == _infoIndex)
-			{
-				EditableMap itemPlace = stageInfo[currentStage].GetRandomItemPlace();
-				if (itemPlace == null)
-					break;
-
-				itemPlace.AddItemToInfos(itemInfos);
-				_infoIndex = 0;
-
-				if (itemInfos.Count == 0)
-					break;
-
-			}
 
 			MapItemGenerateInfo info = itemInfos[_infoIndex];
-			if (finishedArc + info.curveArc > curArc)
-			{
-				info.curveArc -= curArc - finishedArc;
-				break;
-			}
-			else
-			{
-				finishedArc += info.curveArc;
-
-				mw.AddGenerateItem(info);
-				_infoIndex++;
-			}
+			mw.AddGenerateItem(info);
+			_infoIndex++;
 		}
 
 	}
@@ -215,5 +230,14 @@ public class MapSystem : MonoBehaviour
 		}
 	}
 
-
+	public StageInformation GetCurrentStage()
+    {
+		return stageInfo[currentStage];
+	}
+	public StageInformation GetNextStage()
+	{
+		if (stageInfo.Count <= currentStage + 1)
+			return null;
+		return stageInfo[currentStage + 1];
+	}
 }

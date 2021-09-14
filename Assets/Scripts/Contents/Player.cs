@@ -46,14 +46,6 @@ public class Player : MonoBehaviour
 	private float _invincibleTime = 0;
 	public bool invincible = false;
 
-	public int TotalScore()
-	{
-		/**
-		총점을 반환합니다.
-		*/
-		return 70; // 일단 무조건 70을 반환하게 만들었습니다 TODO FIXME
-	}
-
 	private void Start()
 	{
 		world = mapSystem.transform.parent;
@@ -164,12 +156,13 @@ public class Player : MonoBehaviour
 
 	private void SetInput()
 	{
-		if (!EventSystem.current.IsPointerOverGameObject())
-		{
+
 #if UNITY_EDITOR
-			targetInput = Input.GetAxisRaw("Horizontal");
+		targetInput = Input.GetAxisRaw("Horizontal");
 #else
-			if(Input.touchCount > 0)
+		if(Input.touchCount > 0)
+		{
+			if (!EventSystem.current.IsPointerOverGameObject(0))
 			{
 				Vector3 pos = Input.GetTouch(0).position;
 
@@ -178,10 +171,10 @@ public class Player : MonoBehaviour
 				else
 					targetInput = -1;
 			}
-			else
-				targetInput= 0;
-#endif
 		}
+		else
+			targetInput= 0;
+#endif
 
 	}
 
@@ -192,12 +185,12 @@ public class Player : MonoBehaviour
 
 			health -= 34;
 			curVelocity  = 0;
+			FindObjectOfType<AudioManager>().Play("PlayerHit");
 			if (health <= 0) {
 				FindObjectOfType<AudioManager>().Play("PlayerDie");
 				Die();
 			} else {
 				gameObject.GetComponentInChildren<GraphicManager>().Damaged();
-				FindObjectOfType<AudioManager>().Play("PlayerHit");
 			}
 			_invincibleTime = invincibleTime;
 
@@ -208,29 +201,31 @@ public class Player : MonoBehaviour
 
 	private void Die()
 	{
-		FindObjectOfType<PlayGames>().playerScore = TotalScore(); // 총점
-		int score = FindObjectOfType<PlayGames>().playerScore;
+		int score = Managers.Instance.GetScene<GameScene>().GetScore();
+		print("Score: " +score);
+		FindObjectOfType<PlayGames>().playerScore = score; // 총점 GooglePlay로 전송준비
 		Debug.Log(score);
 		DataManager dataManager = FindObjectOfType<DataManager>();
 		if (dataManager)
 		{
 			Debug.Log("소프트커런시 획득량: " + score);
-			dataManager.gameData.SoftCurr += score; // 점수를 얼마를 줄지는 PM분들 결정되면 수정. 일단은 총점만큼 획득.
+			dataManager.gameData.SoftCurr += score; // 점수 일단은 총점만큼 획득.
 			dataManager.SaveGameData();
 		}
 		else
 		{
 			Debug.LogWarning("DataManager 인스턴스를 찾을 수 없습니다");
 		}
-		FindObjectOfType<PlayGames>().AddScoreToLeaderboard();
+		FindObjectOfType<PlayGames>().AddScoreToLeaderboard(); // 전송
 
 		gameObject.GetComponentInChildren<GraphicManager>().Die();
 		gameObject.SetActive(false);
-		Managers.Instance.GetUIManager<GameUIManager>().ActiveRe();
+		Managers.Instance.GetUIManager<GameUIManager>().OpenFinishWindow();
 	}
 
 	public void CollideItem(GameObject item)
 	{
+		FindObjectOfType<AudioManager>().Play("ItemCollide");
 		gameObject.GetComponentInChildren<GraphicManager>().CollideItem(item);
 	}
 }

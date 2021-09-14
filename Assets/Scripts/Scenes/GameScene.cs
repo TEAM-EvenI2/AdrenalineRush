@@ -11,6 +11,8 @@ public class GameScene : BaseScene
 
     public bool isPause = false;
 
+    private List<int> currentSelectedBuffs;
+
     protected override void Init()
     {
         base.Init();
@@ -21,18 +23,12 @@ public class GameScene : BaseScene
 
 
         SettingFinish = true;
-
-        // Temp
-
-        List<int> a = new List<int>();
-        a.Add(0);
-        a.Add(1);
-        SettingBuff(a);
     }
 
     public void SettingBuff(List<int> buffs)
     {
         ((GameUIManager)baseUIManager).SettingBuff(buffs);
+        currentSelectedBuffs = buffs;
     }
 
     public override void Clear()
@@ -47,8 +43,15 @@ public class GameScene : BaseScene
 
     public void Re(string sceneName)
     {
+        SettingFinish = false;
+
         FindObjectOfType<AudioManager>().Play("UIClick");
-        Managers.Instance.Scene.LoadScene(sceneName, null, null);
+        Managers.Instance.Scene.LoadScene(sceneName,
+            () => { return Managers.Instance.GetScene<GameScene>() != null && Managers.Instance.GetScene<GameScene>().SettingFinish; },
+            () =>
+            {
+                Managers.Instance.GetScene<GameScene>().SettingBuff(currentSelectedBuffs);
+            });
     }
 
     public void GotoMain()

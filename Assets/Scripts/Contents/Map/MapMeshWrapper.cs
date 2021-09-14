@@ -72,7 +72,8 @@ public class MapMeshWrapper : MonoBehaviour
             {
                 float curArc = curveRadius * curveAngle * Mathf.Deg2Rad;
                 MapItemGenerateInfo info = _infos[_infoIndex];
-                finishedArc += info.curveArc;
+                //finishedArc += info.curveArc;
+                finishedArc = curArc * info.percent;
 
                 if (info.prefab != null)
                 {

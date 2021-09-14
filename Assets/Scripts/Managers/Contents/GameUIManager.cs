@@ -5,23 +5,40 @@ using TMPro;
 
 public class GameUIManager : UIManager
 {
-    public TextMeshProUGUI scoreText;
 
-    public GameObject re;
+    public FinishWindow finishWindow;
+    public GameObject pauseWindow;
     public CanvasGroup stageChangeView;
 
     public RectTransform healthBar;
 
-    [Header("Item Count")]
+    [Header("Main Game UI")]
+    public TextMeshProUGUI scoreText;
     public TextMeshProUGUI[] itemCountTexts;
-
-    [Header("Buff Buttons")]
     public BuffButton[] buffButtons;
 
-    public void ActiveRe()
+    public Color[] earnedItemTextColors;
+
+    private void Start()
     {
-        re.SetActive(!re.gameObject.activeSelf);
+        stageChangeView.alpha = 1;
+        stageChangeView.gameObject.SetActive(true);
+    }
+
+    public void OpenPauseWindow()
+    {
+        pauseWindow.SetActive(!pauseWindow.gameObject.activeSelf);
         Managers.Instance.GetScene<GameScene>().Pause();
+    }
+
+    public void OpenFinishWindow()
+    {
+        finishWindow.gameObject.SetActive(true);
+
+        finishWindow.Initialized();
+        finishWindow.AddAdditionalAnimQueue(Managers.Instance.GetScene<GameScene>().player.earnedItems[0], 5, earnedItemTextColors[0]);
+        finishWindow.AddAdditionalAnimQueue(Managers.Instance.GetScene<GameScene>().player.earnedItems[1], 10, earnedItemTextColors[1]);
+
     }
 
     private void reachedThousandPoints()
@@ -32,21 +49,12 @@ public class GameUIManager : UIManager
 
     private void Update()
     {
-        float score = Managers.Instance.GetScene<GameScene>().GetScore();
-        scoreText.text = ((int)Managers.Instance.GetScene<GameScene>().player.DistanceTraveled).ToString() + " m";
-        if (score > 0 && score % 1000 == 0)
-        {
-            reachedThousandPoints();
-        }
-
+        SettingScoreText();
         // About earned item count
-        for(int i = 0; i < Managers.Instance.GetScene<GameScene>().player.earnedItems.Length; i++)
-        {
-            itemCountTexts[i].text = Managers.Instance.GetScene<GameScene>().player.earnedItems[i].ToString();
-        }
+        SettingEarnedItemCount();
 
         // About Stage Change
-        if(stageChangeView.alpha > 0)
+        if (stageChangeView.alpha > 0)
         {
             stageChangeView.alpha -= Time.deltaTime;
             if (stageChangeView.alpha <= 0)
@@ -60,8 +68,55 @@ public class GameUIManager : UIManager
         {
             if (Input.GetKey(KeyCode.Escape))
             {
-                ActiveRe();
+                OpenPauseWindow();
             }
+        }
+    }
+
+    private void SettingScoreText()
+    {
+        float score = Managers.Instance.GetScene<GameScene>().GetScore();
+        scoreText.text = ((int)Managers.Instance.GetScene<GameScene>().player.DistanceTraveled).ToString() + " m";
+        if (score > 0 && score % 1000 == 0)
+        {
+            reachedThousandPoints();
+        }
+
+        int totalItem = 0;
+        for (int i = 0; i < Managers.Instance.GetScene<GameScene>().player.earnedItems.Length; i++)
+        {
+            totalItem += Managers.Instance.GetScene<GameScene>().player.earnedItems[i];
+        }
+
+        RectTransform stagePercent = scoreText.transform.GetChild(0).GetComponent<RectTransform>();
+        MapSystem mapSystem = Managers.Instance.GetScene<GameScene>().player.mapSystem;
+
+        float percent = 0;
+
+        StageInformation cur = mapSystem.GetCurrentStage();
+        StageInformation nxt = mapSystem.GetNextStage();
+
+        if(cur != null && nxt != null)
+        {
+            percent = (totalItem - cur.enterPoint) / (float)(nxt.enterPoint - cur.enterPoint);
+        }
+
+        float width = scoreText.rectTransform.sizeDelta.x * (percent - 1);
+
+        stagePercent.sizeDelta = new Vector2(width, 0);
+        stagePercent.anchoredPosition = new Vector2(width / 2f, 0);
+
+    }
+
+    private void SettingEarnedItemCount()
+    {
+        for (int i = 0; i < Managers.Instance.GetScene<GameScene>().player.earnedItems.Length; i++)
+        {
+            itemCountTexts[i].text = Managers.Instance.GetScene<GameScene>().player.earnedItems[i].ToString();
+            itemCountTexts[i].rectTransform.anchoredPosition = new Vector2(
+                scoreText.rectTransform.sizeDelta.x / 2 * (i == 0? -1: 1),
+                itemCountTexts[i].rectTransform.anchoredPosition.y);
+            itemCountTexts[i].rectTransform.localEulerAngles = Vector3.forward * (i == 0 ? -1 : 1) * 25f;
         }
     }
 

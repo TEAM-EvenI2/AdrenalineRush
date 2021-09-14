@@ -8,6 +8,7 @@ public class PlayerBuffManager : MonoBehaviour
     private List<BuffStruct> buffList = new List<BuffStruct>();
 
     public Player player;
+    public Transform playerScalable;
     public LayerMask itemLayer;
 
     private Dictionary<BuffType, System.Action<BuffStruct>> handleBuffDict = new Dictionary<BuffType, System.Action<BuffStruct>>();
@@ -16,6 +17,8 @@ public class PlayerBuffManager : MonoBehaviour
     public float sizeChangeTime = 0.4f;
     public float speedChangeTime = 1f;
 
+
+    public MagnetBuffEffect magnetEffect;
     private void Awake()
     {
         handleBuffDict.Add(BuffType.Magnet, MagnetBuff);
@@ -51,7 +54,7 @@ public class PlayerBuffManager : MonoBehaviour
         switch (bs.type)
         {
             case BuffType.Magnet:
-                AddMagnetBuff(bs.id, bs.time, bs.coolTime, ((MagnetBuffStruct)bs).range, ((MagnetBuffStruct)bs).power);
+                AddMagnetBuff(bs.id, bs.time, bs.coolTime, ((MagnetBuffStruct)bs).range);
                 break;
             case BuffType.Size:
                 AddSizeBuff(bs.id, bs.time, bs.coolTime, ((SizeBuffStruct)bs).sizeFactor);
@@ -74,8 +77,7 @@ public class PlayerBuffManager : MonoBehaviour
                 return;
             }
         }
-        Transform avatar = player.transform.GetChild(0).GetChild(0);
-        buffList.Add(new SizeBuffStruct(id, time, coolTime, sizeFactor, avatar.localScale));
+        buffList.Add(new SizeBuffStruct(id, time, coolTime, sizeFactor, playerScalable.localScale, playerScalable.parent.GetComponent<BoxCollider>().size));
     }
 
     public void AddSpeedBuff(int id, float time, float coolTime, float speed, bool invincibility)
@@ -93,8 +95,11 @@ public class PlayerBuffManager : MonoBehaviour
         buffList.Add(new SpeedBuffStruct(id, time, coolTime, speed, Managers.Instance.Config.playerInfo.velocity, invincibility));
     }
 
-    public void AddMagnetBuff(int id, float time, float coolTime, float range, float power)
+    public void AddMagnetBuff(int id, float time, float coolTime, float range)
     {
+
+        magnetEffect.Setting(range);
+        magnetEffect.gameObject.SetActive(true);
 
         for (int i = 0; i <buffList.Count; i++)
         {
@@ -103,11 +108,10 @@ public class PlayerBuffManager : MonoBehaviour
                 MagnetBuffStruct mbs = buffList[i] as MagnetBuffStruct;
                 mbs.time = time;
                 mbs.range = range;
-                mbs.power = power;
                 return;
             }
         }
-        buffList.Add(new MagnetBuffStruct(id, time, coolTime, range, power));
+        buffList.Add(new MagnetBuffStruct(id, time, coolTime, range));
     }
 
     private bool HandleBuff(BuffStruct bs)
@@ -137,37 +141,41 @@ public class PlayerBuffManager : MonoBehaviour
         Transform avatar = player.transform.GetChild(0).GetChild(0);
         Collider[] items = Physics.OverlapSphere(avatar.position + avatar.right * mbs.range / 2, mbs.range, itemLayer);
         
+        magnetEffect.transform.position = avatar.position + avatar.right * mbs.range / 2;
+
+        float power = player.curVelocity + 2;
 
         for (int i = 0; i < items.Length; i++)
         {
             Vector3 dir = (avatar.position - items[i].transform.position).normalized;
             
 
-            if(Vector3.Distance(avatar.position, items[i].transform.position) < mbs.power * Time.deltaTime)
+            if(Vector3.Distance(avatar.position, items[i].transform.position) < power * Time.deltaTime)
             {
                 items[i].transform.position = avatar.position;
             }
             else
-                items[i].transform.position += dir * mbs.power * Time.deltaTime;
+                items[i].transform.position += dir * power * Time.deltaTime;
         }
     }
 
     private void SizeBuff(BuffStruct bs)
     {
         SizeBuffStruct sbs = bs as SizeBuffStruct;
-        Transform avatar = player.transform.GetChild(0).GetChild(0);
+
+        playerScalable.parent.GetComponent<BoxCollider>().size = new Vector3(sbs.collisionOriginalSize.x * sbs.sizeFactor, sbs.collisionOriginalSize.y, sbs.collisionOriginalSize.z * sbs.sizeFactor);
 
         if (sbs.originTime - sbs.time <= sizeChangeTime)
         {
-            avatar.localScale = Vector3.Lerp(sbs.originalSize, sbs.originalSize * sbs.sizeFactor, Utils.Easing.Exponential.Out((sbs.originTime - sbs.time)/ sizeChangeTime));
+            playerScalable.localScale = Vector3.Lerp(sbs.originalSize, sbs.originalSize * sbs.sizeFactor, Utils.Easing.Exponential.Out((sbs.originTime - sbs.time)/ sizeChangeTime));
         }
         else if( sbs.time <= sizeChangeTime)
         {
-            avatar.localScale = Vector3.Lerp(sbs.originalSize, sbs.originalSize * sbs.sizeFactor, Utils.Easing.Exponential.Out((sbs.time) / sizeChangeTime));
+            playerScalable.localScale = Vector3.Lerp(sbs.originalSize, sbs.originalSize * sbs.sizeFactor, Utils.Easing.Exponential.Out((sbs.time) / sizeChangeTime));
         }
         else
         {
-            avatar.localScale = sbs.originalSize * sbs.sizeFactor;
+            playerScalable.localScale = sbs.originalSize * sbs.sizeFactor;
         }
 
     }
@@ -188,7 +196,7 @@ public class PlayerBuffManager : MonoBehaviour
         }
         else if (sbs.time <= speedChangeTime)
         {
-            _vel = Mathf.Lerp(sbs.originSpeed, vel , Utils.Easing.Exponential.In((sbs.time) / speedChangeTime));
+            _vel = Mathf.Lerp(sbs.originSpeed, vel , Utils.Easing.Exponential.Out((sbs.time) / speedChangeTime));
         }
         else
         {
@@ -199,6 +207,8 @@ public class PlayerBuffManager : MonoBehaviour
 
     private void EndMagnetBuff(BuffStruct bs)
     {
+        magnetEffect.Stop();
+        //magnetEffect.gameObject.SetActive(false);
 
     }
 
@@ -208,6 +218,7 @@ public class PlayerBuffManager : MonoBehaviour
         Transform avatar = player.transform.GetChild(0).GetChild(0);
 
         avatar.localScale = sbs.originalSize;
+        playerScalable.parent.GetComponent<BoxCollider>().size =sbs.collisionOriginalSize;
     }
 
     private void EndSpeedBuff(BuffStruct bs)
