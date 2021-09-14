@@ -8,6 +8,9 @@ public class LobbyScene : BaseScene
 {
     public GameObject GameCam;
     private Animator animator;
+
+    private DataManager dataManager;
+    public GameObject[] ModelArr; // GameData의 CharaId와 순서가 똑같아야 함
     public GameObject presetGetInBtn;
     public GameObject presetGetOutBtn;
     public GameObject prevPresetBtn;
@@ -23,6 +26,7 @@ public class LobbyScene : BaseScene
     void Start()
     {
         animator = GameCam.GetComponent<Animator>();
+        dataManager = FindObjectOfType<DataManager>();
     }
 
     protected override void Init()
@@ -118,6 +122,7 @@ public class LobbyScene : BaseScene
 
     public IEnumerator CoDisplayPresetUI()
     {
+        UpdatePresetUI();
         presetName.SetActive(true);
         presetDesc.SetActive(true);
         prevPresetBtn.SetActive(true);
@@ -142,6 +147,39 @@ public class LobbyScene : BaseScene
         }
     }
 
+    void UpdatePresetUI()
+    {
+        GameData tmp = dataManager.gameData;
+        presetName.GetComponent<TextMeshProUGUI>().text = tmp.EquippedCharacter.CharacterName;
+        presetDesc.GetComponent<TextMeshProUGUI>().text = tmp.EquippedCharacter.CharacterDesc;
+    }
+
+    void UpdatePresetModel()
+    {   
+        string id = dataManager.gameData.EquippedCharacter.CharacterId;
+        int index = 0;
+        switch (id)
+        {
+            case "rbc": // .하드코딩됨. 좋은 방식은 아님.
+                index = 0;
+                break;
+            case "plasma":
+                index = 1;
+                break;
+            case "wbc":
+                index = 2;
+                break;
+            case "platelet":
+                index = 3;
+                break;
+        }
+        for (int i = 0 ; i < ModelArr.Length; i++)
+        {
+            if (i == index) ModelArr[i].SetActive(true);
+            else ModelArr[i].SetActive(false); // SetActive 대신 instantiate를 사용해 프래팹을 가지고와도 괜찮지만 아직 굳이 그럴 단계는 아님.
+        }
+    }
+
     public void GetOutPresetScene()
     {
         animator.SetBool("CameraMoveToPreset", !animator.GetBool("CameraMoveToPreset"));
@@ -152,5 +190,29 @@ public class LobbyScene : BaseScene
         prevPresetBtn.SetActive(false);
         nextPresetBtn.SetActive(false);
         ToggleUIButtonsForPreset();
+    }
+
+    public void NextPreset()
+    {
+        GameData tmp = dataManager.gameData;
+        tmp.currentCharaIndex += 1;
+        if (tmp.currentCharaIndex > GameData.charaIdList.Length-1)
+        {
+            tmp.currentCharaIndex = 0;
+        }
+        UpdatePresetUI();
+        UpdatePresetModel();
+    } 
+
+    public void PrevPreset()
+    {
+        GameData tmp = dataManager.gameData;
+        tmp.currentCharaIndex -= 1;
+        if (tmp.currentCharaIndex < 0)
+        {
+            tmp.currentCharaIndex = GameData.charaIdList.Length - 1;
+        }
+        UpdatePresetUI();
+        UpdatePresetModel();
     }
 }

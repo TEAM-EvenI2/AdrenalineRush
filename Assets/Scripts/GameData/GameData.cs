@@ -11,9 +11,18 @@ public class GameData
     public int SoftCurr; // 소프트커런시
     public int HardCurr; // 하드커런시
     public float masterVolume;
-    public ItemData[] purchasedItems; // 구매한 아이템들
-    public CharacterData[] purchasedCharacters; // 구매한 캐릭터들
+    public ItemData[] purchasedItems; // 게임 내 존재하는 모든 아이템들 (구매여부는 개별적으로 저장)
+    public CharacterData[] purchasedCharacters; // 게임 내 존재하는 모든 캐릭터들 (구매여부는 개별적으로 저장)
+    public static readonly string[] charaIdList = {"rbc", "plasma", "wbc", "platelet"};
+    public static readonly string[] charaNameList = {"적혈구", "혈장", "백혈구", "혈소판"};
+    public static readonly string[] charaDescList = {"적혈구입니다.", "혈장입니다.", "백혈구입니다.", "혈소판입니다."};
+    public static readonly int[] charaSoftCurrPriceList = {500, 500, 0, 0};
+    public static readonly int[] charaHardCurrPriceList = {0, 0, 1, 1};
+    // 가격 = sofrCurrPrice + HardCurrPrice
+    public static readonly bool[] charaStartCond = {true, false, false, false};
     public static readonly string[] itemIdList = {"magnet", "shrink", "boost", "slow", "slot"};
+    public int currentCharaIndex = 0; // 실제로 장착한 캐릭터 인덱스가 아님.
+    public int equippedCharaIndex = 0; // 장착한 인덱스
 
     public int SlotCount
     {
@@ -29,6 +38,17 @@ public class GameData
             Debug.LogWarning("SlotCount 제대로 반환하지 못함.");
             return 0;
         }
+    }
+
+    public CharacterData EquippedCharacter
+    {
+        get {return purchasedCharacters[currentCharaIndex];}
+    }
+
+    public void EquipCurrentCharacter()
+    {
+        // 현재 선택(장착 아님)한 캐릭터를 장착함.
+        equippedCharaIndex = currentCharaIndex;
     }
 
     public ItemData[] EquippedItem
@@ -61,10 +81,14 @@ public class GameData
         HardCurr = 0;
         masterVolume = 1;
         purchasedItems = new ItemData[5];
+        purchasedCharacters = new CharacterData[5];
+        for (int i = 0; i < charaIdList.Length; ++i)
+        {
+            purchasedCharacters[i] = new CharacterData(charaIdList[i], charaNameList[i], charaDescList[i], charaSoftCurrPriceList[i], charaHardCurrPriceList[i], charaStartCond[i]);
+        }
         for (int i = 0; i < itemIdList.Length; ++i)
         {
             purchasedItems[i] = new ItemData(itemIdList[i]);
         }
-        purchasedCharacters = new CharacterData[5];
     }
 }
