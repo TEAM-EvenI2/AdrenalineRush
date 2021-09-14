@@ -36,9 +36,9 @@ public class SceneLoader : MonoBehaviour
             SceneManager.sceneLoaded += LoadSceneEnd;
         }
         loadSceneName = sceneName;
-        StartCoroutine(CoLoad(sceneName, diplayLoadScene));
 
         hasCondition = condition != null;
+        StartCoroutine(CoLoad(sceneName, diplayLoadScene));
 
         if (condition != null && action != null)
         {
