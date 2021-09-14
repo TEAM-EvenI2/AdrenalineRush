@@ -77,7 +77,7 @@ public class PlayerBuffManager : MonoBehaviour
                 return;
             }
         }
-        buffList.Add(new SizeBuffStruct(id, time, coolTime, sizeFactor, playerScalable.localScale));
+        buffList.Add(new SizeBuffStruct(id, time, coolTime, sizeFactor, playerScalable.localScale, playerScalable.parent.GetComponent<BoxCollider>().size));
     }
 
     public void AddSpeedBuff(int id, float time, float coolTime, float speed, bool invincibility)
@@ -163,6 +163,8 @@ public class PlayerBuffManager : MonoBehaviour
     {
         SizeBuffStruct sbs = bs as SizeBuffStruct;
 
+        playerScalable.parent.GetComponent<BoxCollider>().size = new Vector3(sbs.collisionOriginalSize.x * sbs.sizeFactor, sbs.collisionOriginalSize.y, sbs.collisionOriginalSize.z * sbs.sizeFactor);
+
         if (sbs.originTime - sbs.time <= sizeChangeTime)
         {
             playerScalable.localScale = Vector3.Lerp(sbs.originalSize, sbs.originalSize * sbs.sizeFactor, Utils.Easing.Exponential.Out((sbs.originTime - sbs.time)/ sizeChangeTime));
@@ -216,6 +218,7 @@ public class PlayerBuffManager : MonoBehaviour
         Transform avatar = player.transform.GetChild(0).GetChild(0);
 
         avatar.localScale = sbs.originalSize;
+        playerScalable.parent.GetComponent<BoxCollider>().size =sbs.collisionOriginalSize;
     }
 
     private void EndSpeedBuff(BuffStruct bs)

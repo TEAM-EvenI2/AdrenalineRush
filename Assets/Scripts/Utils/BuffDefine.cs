@@ -64,16 +64,18 @@ public partial class Define
     {
         public float sizeFactor;
         public Vector3 originalSize;
+        public Vector3 collisionOriginalSize;
         public SizeBuffStruct(int id, float time, float coolTime, float sizeFactor) :
             base(id, BuffType.Size, time, coolTime)
         {
             this.sizeFactor = sizeFactor;
         }
-        public SizeBuffStruct(int id, float time, float coolTime, float sizeFactor, Vector3 originalSize) :
+        public SizeBuffStruct(int id, float time, float coolTime, float sizeFactor, Vector3 originalSize, Vector3 collisionOriginalSize) :
             base(id, BuffType.Size, time, coolTime)
         {
             this.sizeFactor = sizeFactor;
             this.originalSize = originalSize;
+            this.collisionOriginalSize = collisionOriginalSize;
         }
     }
 
