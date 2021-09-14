@@ -30,6 +30,7 @@ public class LobbyScene : BaseScene
     public GameObject ShopWarnUI; // 캐릭터샵 ui
     public GameObject ShopLogUI; // 캐릭터샵 ui
     public GameObject PurchaseBtn; // 캐릭터샵 ui
+    public GameObject CharacterLockUI;
     private bool isBtnHidden = false;
     void Start()
     {
@@ -168,6 +169,7 @@ public class LobbyScene : BaseScene
         GameData tmp = dataManager.gameData;
         presetName.GetComponent<TextMeshProUGUI>().text = tmp.CurrentChar.CharacterName;
         presetDesc.GetComponent<TextMeshProUGUI>().text = tmp.CurrentChar.CharacterDesc;
+        CharacterLockUI.SetActive(!tmp.CurrentChar.Purchased);
         string price = "";
         if (tmp.CurrentChar.HardCurrPrice > 0) price += $"{tmp.CurrentChar.HardCurrPrice} 다이아 ";
         if (tmp.CurrentChar.SoftCurrPrice > 0) price += $"{tmp.CurrentChar.SoftCurrPrice} 혈액 ";
