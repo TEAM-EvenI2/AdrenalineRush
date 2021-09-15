@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class RotatePlayerModel : MonoBehaviour
 {
-    public float rotateSpeedX = 0.1f;
-    public float rotateSpeedY = 0.1f;
-    public float rotateSpeedZ = 0.1f;
+    public float rotateSpeedX = 0f;
+    public float rotateSpeedY = 1f;
+    public float rotateSpeedZ = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -15,7 +15,7 @@ public class RotatePlayerModel : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         transform.Rotate(new Vector3(rotateSpeedX, rotateSpeedY, rotateSpeedZ));
     }

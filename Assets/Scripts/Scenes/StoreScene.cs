@@ -12,7 +12,10 @@ public class StoreScene : BaseScene
     public GameObject SoftCurrUI;
     public GameObject HardCurrUI;
     private DataManager dataManager;
-
+    public GameObject ItemDescUI;
+    public GameObject ItemNextUpgradeDescUI;
+    public GameObject ItemCurrUpgradeDescUI;
+    public GameObject ItemUpgradeArrow;
     public GameObject CurrentItemNameUI;
     public GameObject CurrentItemPriceUI;
     public GameObject CurrentItemUpgradeUI; // 현재 업그레이드가 얼만큼 되었는지
@@ -184,26 +187,88 @@ public class StoreScene : BaseScene
 
             if (itemData.ItemId == itemId)
             {
+                ItemNextUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = ""; // 일단 지움
                 switch (itemId)
                 {
                     case "magnet":
                         CurrentItemNameUI.GetComponent<TextMeshProUGUI>().text = "자석: ";
+                        ItemDescUI.GetComponent<TextMeshProUGUI>().text = ItemDescChart.ItemDesc[0];
+                        ItemUpgradeArrow.SetActive(false);
+                        ItemNextUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "";
+                        if (itemData.Upgrade > 0) {
+                            Debug.Log("SSSSSS");
+                            ItemCurrUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "현재: "+ItemDescChart.MAGNET[itemData.Upgrade - 1];
+                            if (itemData.Upgrade < 5) {
+                                ItemNextUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "강화 후: "+ItemDescChart.MAGNET[itemData.Upgrade];
+                                ItemUpgradeArrow.SetActive(true);
+                            }
+                        } else {
+                            ItemCurrUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "아이템 효과: "+ItemDescChart.MAGNET[0];
+                        }
                         ScrollPanel.transform.GetChild(0).GetComponent<Image>().color = new Color(0,255,0); // 인덱스로 접근하는게 좋은 방식은 아님
                         break;
                     case "boost":
                         CurrentItemNameUI.GetComponent<TextMeshProUGUI>().text = "무적 부스트: ";
+                        ItemDescUI.GetComponent<TextMeshProUGUI>().text = ItemDescChart.ItemDesc[1];
+                        ItemUpgradeArrow.SetActive(false);
+                        ItemNextUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "";
+                        if (itemData.Upgrade > 0) {
+                            ItemCurrUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "현재: "+ItemDescChart.BOOST[itemData.Upgrade - 1];
+                            if (itemData.Upgrade < 5) {
+                                ItemNextUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "강화 후: "+ItemDescChart.BOOST[itemData.Upgrade];
+                                ItemUpgradeArrow.SetActive(true);
+                            }
+                        } else {
+                            ItemCurrUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "아이템 효과: "+ItemDescChart.BOOST[0];
+                        }
                         ScrollPanel.transform.GetChild(1).GetComponent<Image>().color = new Color(0,255,0);
                         break;
                     case "shrink":
                         CurrentItemNameUI.GetComponent<TextMeshProUGUI>().text = "크기 축소: ";
+                        ItemDescUI.GetComponent<TextMeshProUGUI>().text = ItemDescChart.ItemDesc[2];
+                        ItemUpgradeArrow.SetActive(false);
+                        ItemNextUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "";
+                        if (itemData.Upgrade > 0) {
+                            ItemCurrUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "현재: "+ItemDescChart.SHRINK[itemData.Upgrade - 1];
+                            if (itemData.Upgrade < 5) {
+                                ItemNextUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "강화 후: "+ItemDescChart.SHRINK[itemData.Upgrade];
+                                ItemUpgradeArrow.SetActive(true);
+                            }
+                        } else {
+                            ItemCurrUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "아이템 효과: "+ItemDescChart.SHRINK[0];
+                        }
                         ScrollPanel.transform.GetChild(2).GetComponent<Image>().color = new Color(0,255,0);
                         break;
                     case "slow":
                         CurrentItemNameUI.GetComponent<TextMeshProUGUI>().text = "슬로우: ";
+                        ItemDescUI.GetComponent<TextMeshProUGUI>().text = ItemDescChart.ItemDesc[3];
+                        ItemUpgradeArrow.SetActive(false);
+                        ItemNextUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "";
+                        if (itemData.Upgrade > 0) {
+                            ItemCurrUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "현재: "+ItemDescChart.SLOW[itemData.Upgrade - 1];
+                            if (itemData.Upgrade < 5) {
+                                ItemNextUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "강화 후: "+ItemDescChart.SLOW[itemData.Upgrade];
+                                ItemUpgradeArrow.SetActive(true);
+                            }
+                        } else {
+                            ItemCurrUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "아이템 효과: "+ItemDescChart.SLOW[0];
+                        }
                         ScrollPanel.transform.GetChild(3).GetComponent<Image>().color = new Color(0,255,0);
                         break;
                     case "slot":
                         CurrentItemNameUI.GetComponent<TextMeshProUGUI>().text = "슬롯 추가: ";
+                        ItemDescUI.GetComponent<TextMeshProUGUI>().text = ItemDescChart.ItemDesc[4];
+                        ItemUpgradeArrow.SetActive(false);
+                        ItemNextUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "";
+                        if (itemData.Upgrade > 0) {
+                            ItemCurrUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "현재: "+ItemDescChart.SLOT[itemData.Upgrade - 1];
+                            if (itemData.Upgrade < 5) {
+                                ItemNextUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "강화 후: "+ItemDescChart.SLOT[itemData.Upgrade];
+                                ItemUpgradeArrow.SetActive(true);
+                            }
+                        } else {
+                            ItemCurrUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "아이템 효과: "+ItemDescChart.SLOT[0];
+                        }
                         ScrollPanel.transform.GetChild(4).GetComponent<Image>().color = new Color(0,255,0);
                         break;
                 }

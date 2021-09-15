@@ -2564,7 +2564,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotateSpeedX: 0
-  rotateSpeedY: 0.1
+  rotateSpeedY: 1
   rotateSpeedZ: 0
 --- !u!1001 &1042247834
 PrefabInstance:
@@ -4094,6 +4094,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6967546571654666251, guid: b38d59e167ee7d241b85a7da65dd5ae3, type: 3}
+      propertyPath: rotateSpeedY
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6967546571654666251, guid: b38d59e167ee7d241b85a7da65dd5ae3, type: 3}
       propertyPath: rotateSpeedZ
       value: 0
       objectReference: {fileID: 0}
@@ -4806,9 +4810,18 @@ MonoBehaviour:
     masterVolume: 1
     purchasedItems: []
     purchasedCharacters: []
+    buttonsPos:
+    - x: 0
+      y: 0
+    - x: 0
+      y: 0
+    - x: 0
+      y: 0
+    - x: 0
+      y: 0
     currentCharaIndex: 0
     equippedCharaIndex: 0
-  debugging: 0
+  debugging: 1
 --- !u!4 &1945384231
 Transform:
   m_ObjectHideFlags: 0

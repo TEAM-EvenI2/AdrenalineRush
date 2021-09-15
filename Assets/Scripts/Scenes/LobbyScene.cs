@@ -318,5 +318,6 @@ public class LobbyScene : BaseScene
         Application.OpenURL(urls[Random.Range(0, urls.Length-1)]);
         WarnUser($"{hardCurrGainPerAd} 다이아를 획득하셨습니다!");
         dataManager.gameData.HardCurr += hardCurrGainPerAd;
+        dataManager.SaveGameData();
     }
 }
