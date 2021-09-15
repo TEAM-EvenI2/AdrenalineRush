@@ -10,7 +10,7 @@ public class LobbyScene : BaseScene
     private Animator animator;
     private AudioManager audioManager;
     private DataManager dataManager;
-    private int hardCurrGainPerAd = 1; // 광고 1회 클릭시 획득재화량
+    private int hardCurrGainPerAd = 100; // 광고 1회 클릭시 획득재화량
     private readonly string[] urls = {"https://gamesmith.tistory.com/"};
     public GameObject[] ModelArr; // GameData의 CharaId와 순서가 똑같아야 함
     public GameObject presetGetInBtn;
