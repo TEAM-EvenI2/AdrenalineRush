@@ -15,7 +15,7 @@ public class Player : MonoBehaviour
 	private float rotationVelocity;
 
 	public Camera gameCam;
-	private MapMeshWrapper currentPipe;
+	public MapMeshWrapper currentPipe;
 	private float distanceTraveled;
 	public float DistanceTraveled
 	{

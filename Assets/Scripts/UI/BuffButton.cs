@@ -54,10 +54,16 @@ public class BuffButton : MonoBehaviour
 
     private BuffStruct GetBuffSturct()
     {
-        return Managers.Instance.Config.buffInfos[id][0];
+        int upgrade = DataManager.instance.gameData.purchasedItems[id].Upgrade - 1;
+        if (upgrade < 0)
+            upgrade = 0;
+        else if (upgrade >= Managers.Instance.Config.buffInfos[id].Count)
+            upgrade = Managers.Instance.Config.buffInfos[id].Count - 1;
+
+        return Managers.Instance.Config.buffInfos[id][upgrade];
     }
 
-    public void Setting(int buffId)
+    public void Setting(int buffId, Vector2 pos)
     {
         id = buffId;
 
@@ -66,6 +72,8 @@ public class BuffButton : MonoBehaviour
             testImageParent.GetChild(i).gameObject.SetActive(false);
         }
         testImageParent.GetChild(buffId).gameObject.SetActive(true);
+
+        GetComponent<RectTransform>().anchoredPosition = pos;
 
     }
 }

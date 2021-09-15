@@ -29,6 +29,9 @@ public class FinishWindow : MonoBehaviour
     private Queue<AnimQueueContent> animQueueContent = new Queue<AnimQueueContent>();
 
     private Animator animator;
+
+    private float passedTime;
+
     private void Awake()
     {
         animator = GetComponent<Animator>();
@@ -38,9 +41,13 @@ public class FinishWindow : MonoBehaviour
     {
         if (!finished)
         {
+            passedTime += Time.deltaTime;
             if (Input.touchCount > 0 || Input.GetMouseButtonDown(0))
             {
-                Finish();
+                if (passedTime > 0.5f)
+                {
+                    Finish();
+                }
             }
             else {
                 if (!anim) {
@@ -61,6 +68,7 @@ public class FinishWindow : MonoBehaviour
         mainScoreText.text = _mainScore.ToString();
         anim = false;
         finished = false;
+        passedTime = 0;
     }
 
     public void Finish()

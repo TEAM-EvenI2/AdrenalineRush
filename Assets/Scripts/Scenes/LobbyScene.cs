@@ -81,11 +81,13 @@ public class LobbyScene : BaseScene
                 break;
         }
 
+
+
         Managers.Instance.Scene.LoadScene("Game", 
             () =>{ return Managers.Instance.GetScene<GameScene>() != null && Managers.Instance.GetScene<GameScene>().SettingFinish; },
             ()=>
             {
-                Managers.Instance.GetScene<GameScene>().SettingBuff(selectedItem);
+                Managers.Instance.GetScene<GameScene>().SettingBuff(selectedItem, null);
             }, true);
     }
 

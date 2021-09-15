@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class GameDataManager
 {
-    static string versionNum = "1_0_0";
+    static string versionNum = "1_0_1";
 
     // 게임 데이터의 세이브/로드를 관리
     public static void SaveData(GameData gameData)

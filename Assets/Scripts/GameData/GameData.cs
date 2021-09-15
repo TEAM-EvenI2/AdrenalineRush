@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Define;
 
 [System.Serializable]
 public class GameData
@@ -26,8 +27,10 @@ public class GameData
     // 가격 = sofrCurrPrice + HardCurrPrice
     public static readonly bool[] charaStartCond = {true, false, false, false};
     public static readonly string[] itemIdList = {"magnet", "shrink", "boost", "slow", "slot"};
+    public SerVector2[] buttonsPos;
     public int currentCharaIndex = 0; // 실제로 장착한 캐릭터 인덱스가 아님.
     public int equippedCharaIndex = 0; // 장착한 인덱스
+
 
     public int SlotCount
     {
@@ -87,6 +90,7 @@ public class GameData
         masterVolume = 1;
         purchasedItems = new ItemData[5];
         purchasedCharacters = new CharacterData[5];
+        buttonsPos = new SerVector2[4];
         for (int i = 0; i < charaIdList.Length; ++i)
         {
             purchasedCharacters[i] = new CharacterData(charaIdList[i], charaNameList[i], charaDescList[i], charaSoftCurrPriceList[i], charaHardCurrPriceList[i], charaStartCond[i]);

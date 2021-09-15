@@ -120,11 +120,11 @@ public class GameUIManager : UIManager
         }
     }
 
-    public void SettingBuff(List<int> buffs)
+    public void SettingBuff(List<int> buffs, Vector2[] buttonPos)
     {
         for (int i = 0; i < buffs.Count && i < buffButtons.Length; i++)
         {
-            buffButtons[i].Setting(buffs[i]);
+            buffButtons[i].Setting(buffs[i], buffButtons[i].GetComponent<RectTransform>().anchoredPosition);
             buffButtons[i].gameObject.SetActive(true);
         }
     }

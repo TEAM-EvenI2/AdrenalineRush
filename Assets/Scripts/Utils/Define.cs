@@ -64,4 +64,18 @@ public partial class Define
 
 
     }
+
+    [System.Serializable]
+    public struct SerVector2
+    {
+        public float x;
+        public float y;
+
+        public SerVector2(float x, float y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+
+    }
 }

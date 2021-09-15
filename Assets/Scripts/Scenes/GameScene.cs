@@ -12,6 +12,7 @@ public class GameScene : BaseScene
     public bool isPause = false;
 
     private List<int> currentSelectedBuffs;
+    private Vector2[] currentSelectedBuffPos;
 
     protected override void Init()
     {
@@ -25,10 +26,11 @@ public class GameScene : BaseScene
         SettingFinish = true;
     }
 
-    public void SettingBuff(List<int> buffs)
+    public void SettingBuff(List<int> buffs, Vector2[] buttonPos)
     {
-        ((GameUIManager)baseUIManager).SettingBuff(buffs);
+        ((GameUIManager)baseUIManager).SettingBuff(buffs, buttonPos);
         currentSelectedBuffs = buffs;
+        currentSelectedBuffPos = buttonPos;
     }
 
     public override void Clear()
@@ -50,7 +52,7 @@ public class GameScene : BaseScene
             () => { return Managers.Instance.GetScene<GameScene>() != null && Managers.Instance.GetScene<GameScene>().SettingFinish; },
             () =>
             {
-                Managers.Instance.GetScene<GameScene>().SettingBuff(currentSelectedBuffs);
+                Managers.Instance.GetScene<GameScene>().SettingBuff(currentSelectedBuffs, currentSelectedBuffPos);
             });
     }
 

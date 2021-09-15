@@ -17,8 +17,11 @@ public class PlayerBuffManager : MonoBehaviour
     public float sizeChangeTime = 0.4f;
     public float speedChangeTime = 1f;
 
-
+    [Header("Effects")]
     public MagnetBuffEffect magnetEffect;
+    public RushBuffEffect rushEffect;
+
+
     private void Awake()
     {
         handleBuffDict.Add(BuffType.Magnet, MagnetBuff);
@@ -46,6 +49,11 @@ public class PlayerBuffManager : MonoBehaviour
             {
                 buffList.RemoveAt(i);
             }
+        }
+
+        if (rushEffect.gameObject.activeSelf)
+        {
+            rushEffect.transform.position = playerScalable.position;
         }
     }
 
@@ -82,6 +90,12 @@ public class PlayerBuffManager : MonoBehaviour
 
     public void AddSpeedBuff(int id, float time, float coolTime, float speed, bool invincibility)
     {
+        if(speed >= 20)
+        {
+            rushEffect.Setting(speed);
+            rushEffect.gameObject.SetActive(true);
+        }
+
         for (int i = 0; i < buffList.Count; i++)
         {
             if (buffList[i].id == id)
@@ -141,12 +155,14 @@ public class PlayerBuffManager : MonoBehaviour
         Transform avatar = player.transform.GetChild(0).GetChild(0);
         Collider[] items = Physics.OverlapSphere(avatar.position + avatar.right * mbs.range / 2, mbs.range, itemLayer);
         
+        
         magnetEffect.transform.position = avatar.position + avatar.right * mbs.range / 2;
 
-        float power = player.curVelocity + 2;
+        float power = player.curVelocity * 1.1f;
 
         for (int i = 0; i < items.Length; i++)
         {
+            items[i].GetComponentInParent<ScoreItem>()?.transform.SetParent(null);
             Vector3 dir = (avatar.position - items[i].transform.position).normalized;
             
 
@@ -210,6 +226,7 @@ public class PlayerBuffManager : MonoBehaviour
         magnetEffect.Stop();
         //magnetEffect.gameObject.SetActive(false);
 
+        player.currentPipe.DestoryChildNoParent();
     }
 
     private void EndSizeBuff(BuffStruct bs)
@@ -225,7 +242,16 @@ public class PlayerBuffManager : MonoBehaviour
     {
         SpeedBuffStruct sbs = bs as SpeedBuffStruct;
 
-        player.invincible = false;
         player.maxVelocity = player.curVelocity = sbs.originSpeed;
+
+        rushEffect.Stop();
+
+        Invoke("RemoveInvincible", 1.5f);
+    }
+
+    private void RemoveInvincible()
+    {
+
+        player.invincible = false;
     }
 }

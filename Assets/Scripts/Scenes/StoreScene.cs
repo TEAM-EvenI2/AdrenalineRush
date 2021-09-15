@@ -54,7 +54,12 @@ public class StoreScene : BaseScene
     {
 
     }
-    
+
+    public void MovePlacerScene()
+    {
+        FindObjectOfType<AudioManager>().Play("UIClick");
+        Managers.Instance.Scene.LoadScene("ButtonPlace", null, null, false);
+    }
     public void MoveLobbyScene()
     {
         FindObjectOfType<AudioManager>().Play("UIClick");
