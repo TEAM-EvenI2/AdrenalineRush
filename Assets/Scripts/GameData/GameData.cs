@@ -15,9 +15,14 @@ public class GameData
     public CharacterData[] purchasedCharacters; // 게임 내 존재하는 모든 캐릭터들 (구매여부는 개별적으로 저장)
     public static readonly string[] charaIdList = {"rbc", "plasma", "wbc", "platelet"};
     public static readonly string[] charaNameList = {"적혈구", "혈장", "백혈구", "혈소판"};
-    public static readonly string[] charaDescList = {"적혈구입니다.", "혈장입니다.", "백혈구입니다.", "혈소판입니다."};
-    public static readonly int[] charaSoftCurrPriceList = {500, 500, 0, 0};
-    public static readonly int[] charaHardCurrPriceList = {0, 0, 1, 1};
+    public static readonly string[] charaDescList = {
+        "기본 캐릭터인 적혈구는 혈관을 빠르게 이동할 수 있습니다.", 
+        "혈장이는 혈액을 구성하는 액체성분입니다.\n(회복속도 2배)", 
+        "작고 귀여운 백혈구는 세균을 막아주는 역할을 합니다.\n(회복속도 1.2배)", 
+        "울긋불긋하게 생긴 혈소판은 생긴건 이래도 우리 혈액을 응고시켜주는 중요한 역할을 합니다.\n(회복속도 1.5배)"
+        };
+    public static readonly int[] charaSoftCurrPriceList = {0, 0, 0, 0};
+    public static readonly int[] charaHardCurrPriceList = {0, 2800, 800, 2000};
     // 가격 = sofrCurrPrice + HardCurrPrice
     public static readonly bool[] charaStartCond = {true, false, false, false};
     public static readonly string[] itemIdList = {"magnet", "shrink", "boost", "slow", "slot"};
