@@ -76,8 +76,7 @@ public class MapSystem : MonoBehaviour
 				// TODO Update Stage
 				ChangeStage();
 
-				Managers.Instance.GetUIManager<GameUIManager>().stageChangeView.gameObject.SetActive(true);
-				Managers.Instance.GetUIManager<GameUIManager>().stageChangeView.alpha = 1;
+				Managers.Instance.GetUIManager<GameUIManager>().ChangeScreen();
 
 			}
 		}

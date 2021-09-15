@@ -9,6 +9,7 @@ public class GameScene : BaseScene
 {
     public Volume postProcessVolume;
     public Player player;
+    public EffectController ec;
 
     public bool isPause = false;
 

@@ -182,6 +182,7 @@ public class Player : MonoBehaviour
 	{
 		if (_invincibleTime <= 0 && !invincible)
 		{
+			Managers.Instance.GetUIManager<GameUIManager>().HitScreen();
 
 			health -= 34;
 			curVelocity  = 0;
