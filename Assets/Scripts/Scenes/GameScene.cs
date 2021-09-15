@@ -3,16 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using static Define;
 
 public class GameScene : BaseScene
 {
     public Volume postProcessVolume;
     public Player player;
+    public EffectController ec;
 
     public bool isPause = false;
 
     private List<int> currentSelectedBuffs;
-    private Vector2[] currentSelectedBuffPos;
 
     protected override void Init()
     {
@@ -26,11 +27,10 @@ public class GameScene : BaseScene
         SettingFinish = true;
     }
 
-    public void SettingBuff(List<int> buffs, Vector2[] buttonPos)
+    public void SettingBuff(List<int> buffs)
     {
-        ((GameUIManager)baseUIManager).SettingBuff(buffs, buttonPos);
+        ((GameUIManager)baseUIManager).SettingBuff(buffs, DataManager.instance.gameData.buttonsPos);
         currentSelectedBuffs = buffs;
-        currentSelectedBuffPos = buttonPos;
     }
 
     public override void Clear()
@@ -52,7 +52,7 @@ public class GameScene : BaseScene
             () => { return Managers.Instance.GetScene<GameScene>() != null && Managers.Instance.GetScene<GameScene>().SettingFinish; },
             () =>
             {
-                Managers.Instance.GetScene<GameScene>().SettingBuff(currentSelectedBuffs, currentSelectedBuffPos);
+                Managers.Instance.GetScene<GameScene>().SettingBuff(currentSelectedBuffs);
             });
     }
 

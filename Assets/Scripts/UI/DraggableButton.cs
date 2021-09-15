@@ -17,6 +17,7 @@ public class DraggableButton : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        print("OnDrag");
         offset = rectTransform.anchoredPosition - eventData.position;
     }
 

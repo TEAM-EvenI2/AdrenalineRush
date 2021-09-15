@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
+using static Define;
 
 public class GameUIManager : UIManager
 {
@@ -9,6 +11,7 @@ public class GameUIManager : UIManager
     public FinishWindow finishWindow;
     public GameObject pauseWindow;
     public CanvasGroup stageChangeView;
+    public Color hitColor;
 
     public RectTransform healthBar;
 
@@ -22,7 +25,6 @@ public class GameUIManager : UIManager
     private void Start()
     {
         stageChangeView.alpha = 1;
-        stageChangeView.gameObject.SetActive(true);
     }
 
     public void OpenPauseWindow()
@@ -57,8 +59,6 @@ public class GameUIManager : UIManager
         if (stageChangeView.alpha > 0)
         {
             stageChangeView.alpha -= Time.deltaTime;
-            if (stageChangeView.alpha <= 0)
-                stageChangeView.gameObject.SetActive(false);
         }
 
         float percent = Managers.Instance.GetScene<GameScene>().player.health / 100;
@@ -72,6 +72,18 @@ public class GameUIManager : UIManager
             }
         }
     }
+
+    public void ChangeScreen()
+    {
+        stageChangeView.alpha = 1;
+        stageChangeView.GetComponent<Image>().color = Color.white;
+    }
+    public void HitScreen()
+    {
+        stageChangeView.alpha = 0.4f;
+        stageChangeView.GetComponent<Image>().color = hitColor;
+    }
+
 
     private void SettingScoreText()
     {
@@ -120,11 +132,11 @@ public class GameUIManager : UIManager
         }
     }
 
-    public void SettingBuff(List<int> buffs, Vector2[] buttonPos)
+    public void SettingBuff(List<int> buffs, SerVector2[] buttonPos)
     {
         for (int i = 0; i < buffs.Count && i < buffButtons.Length; i++)
         {
-            buffButtons[i].Setting(buffs[i], buffButtons[i].GetComponent<RectTransform>().anchoredPosition);
+            buffButtons[i].Setting(buffs[i], Utils.Ser2Vector(buttonPos[i]));
             buffButtons[i].gameObject.SetActive(true);
         }
     }
