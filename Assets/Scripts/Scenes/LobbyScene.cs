@@ -87,7 +87,7 @@ public class LobbyScene : BaseScene
             () =>{ return Managers.Instance.GetScene<GameScene>() != null && Managers.Instance.GetScene<GameScene>().SettingFinish; },
             ()=>
             {
-                Managers.Instance.GetScene<GameScene>().SettingBuff(selectedItem, null);
+                Managers.Instance.GetScene<GameScene>().SettingBuff(selectedItem);
             }, true);
     }
 

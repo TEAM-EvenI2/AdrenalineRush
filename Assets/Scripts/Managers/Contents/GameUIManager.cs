@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using static Define;
 
 public class GameUIManager : UIManager
 {
@@ -120,11 +121,11 @@ public class GameUIManager : UIManager
         }
     }
 
-    public void SettingBuff(List<int> buffs, Vector2[] buttonPos)
+    public void SettingBuff(List<int> buffs, SerVector2[] buttonPos)
     {
         for (int i = 0; i < buffs.Count && i < buffButtons.Length; i++)
         {
-            buffButtons[i].Setting(buffs[i], buffButtons[i].GetComponent<RectTransform>().anchoredPosition);
+            buffButtons[i].Setting(buffs[i], Utils.Ser2Vector(buttonPos[i]));
             buffButtons[i].gameObject.SetActive(true);
         }
     }

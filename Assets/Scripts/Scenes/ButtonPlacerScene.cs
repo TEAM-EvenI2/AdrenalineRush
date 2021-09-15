@@ -30,6 +30,7 @@ public class ButtonPlacerScene : BaseScene
 
     public void MoveLobbyScene()
     {
+        print("Move to Lobby!!");
         Vector2[] buttons = bbp.GetButtonPositions();
         for(int i = 0; i < DataManager.instance.gameData.buttonsPos.Length; i++)
         {

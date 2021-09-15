@@ -90,7 +90,7 @@ public class GameData
         masterVolume = 1;
         purchasedItems = new ItemData[5];
         purchasedCharacters = new CharacterData[5];
-        buttonsPos = new SerVector2[4];
+        buttonsPos = new SerVector2[4] { new SerVector2(500, -162), new SerVector2(650, -77), new SerVector2(-500, -162), new SerVector2(-650, -77) };
         for (int i = 0; i < charaIdList.Length; ++i)
         {
             purchasedCharacters[i] = new CharacterData(charaIdList[i], charaNameList[i], charaDescList[i], charaSoftCurrPriceList[i], charaHardCurrPriceList[i], charaStartCond[i]);
