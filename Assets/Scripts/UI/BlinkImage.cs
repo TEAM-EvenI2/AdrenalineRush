@@ -16,21 +16,29 @@ public class BlinkImage : MonoBehaviour
         StartCoroutine("blink");
     }
 
-    IEnumerator blink() {
+    IEnumerator blink()
+    {
+        float percent = 0;
+        float speed = 1 / 0.7f ;
+        Color c = img.color;
         for (int i = 0; i < blinkCount; ++i)
         {
-            for (float f = 0f; f < 1f; f += fadeSpeed) {
-                Color c = img.color;
-                c.a = f;
+            while(percent < 1)
+            {
+                percent += speed * Time.deltaTime;
+                c.a = percent;
                 img.color = c;
                 yield return null;
             }
-            for (float f = 1f; f > 0; f -= fadeSpeed) {
-            Color c = img.color;
-            c.a = f;
-            img.color = c;
-            yield return null;
+            percent = 0;
+            while(percent < 1)
+            {
+                percent += speed * Time.deltaTime;
+                c.a = (1 - percent);
+                img.color = c;
+                yield return null;
             }
+            
         }
     }
 }
