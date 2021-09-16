@@ -45,9 +45,9 @@ public static class ItemDescChart
     readonly public static string[] BOOST = {
         "3초간 부스트와 함께 무적효과",
         "5초간 부스트와 함께 무적효과",
-        "10초간 부스트와 함께 무적효과",
-        "15초간 부스트와 함께 무적효과",
-        "20초간 부스트와 함께 무적효과"
+        "8초간 부스트와 함께 무적효과",
+        "12초간 부스트와 함께 무적효과",
+        "17초간 부스트와 함께 무적효과"
         };    
     readonly public static string[] SLOT = {
         "1개의 아이템 슬롯 사용 가능", 

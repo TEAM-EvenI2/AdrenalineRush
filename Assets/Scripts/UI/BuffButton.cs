@@ -8,12 +8,14 @@ using static Define;
 public class BuffButton : MonoBehaviour
 {
     public float remainCooltime;
-    private int id;
+    public int id;
 
     public Transform sizeTransform;
     public GameObject blackCool;
 
     public Transform testImageParent;
+
+    private bool decreaseCool = false;
 
 
     private void Awake()
@@ -26,10 +28,13 @@ public class BuffButton : MonoBehaviour
 
     void Update()
     {
-        if(remainCooltime > 0)
+        if(remainCooltime > 0 )
         {
-            remainCooltime -= Time.deltaTime;
-            sizeTransform.localScale = Vector3.Lerp(Vector3.one, Vector3.one * 0.2f, remainCooltime / (GetBuffSturct().coolTime));
+            if (decreaseCool)
+            {
+                remainCooltime -= Time.deltaTime;
+                sizeTransform.localScale = Vector3.Lerp(Vector3.one, Vector3.one * 0.2f, remainCooltime / (GetBuffSturct().coolTime));
+            }
         }
         else
         {
@@ -37,6 +42,7 @@ public class BuffButton : MonoBehaviour
             {
                 sizeTransform.localScale = Vector3.one;
                 blackCool.SetActive(false);
+                decreaseCool = false;
             }
         }
     }
@@ -47,9 +53,16 @@ public class BuffButton : MonoBehaviour
         {
             Managers.Instance.GetScene<GameScene>().player.GetComponent<PlayerBuffManager>().AddBuff(GetBuffSturct());
             remainCooltime = GetBuffSturct().coolTime;
+            decreaseCool = false;
 
+            sizeTransform.localScale = Vector3.one;
             blackCool.SetActive(true);
         }
+    }
+
+    public void StartDecreaseCool()
+    {
+        decreaseCool = true;
     }
 
     private BuffStruct GetBuffSturct()

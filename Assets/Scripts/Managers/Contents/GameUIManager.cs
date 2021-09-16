@@ -132,6 +132,17 @@ public class GameUIManager : UIManager
         }
     }
 
+    public void StartBuffCoolTime(int id)
+    {
+        for (int i = 0; i < buffButtons.Length; i++)
+        {
+            if(buffButtons[i].id == id)
+            {
+                buffButtons[i].StartDecreaseCool();
+            }
+        }
+    }
+
     public void SettingBuff(List<int> buffs, SerVector2[] buttonPos)
     {
         for (int i = 0; i < buffs.Count && i < buffButtons.Length; i++)

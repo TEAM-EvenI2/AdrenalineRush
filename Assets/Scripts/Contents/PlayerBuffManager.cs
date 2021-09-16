@@ -90,7 +90,7 @@ public class PlayerBuffManager : MonoBehaviour
 
     public void AddSpeedBuff(int id, float time, float coolTime, float speed, bool invincibility)
     {
-        if(speed >= 20)
+        if(invincibility)
         {
             rushEffect.Setting(speed);
             rushEffect.gameObject.SetActive(true);
@@ -143,6 +143,7 @@ public class PlayerBuffManager : MonoBehaviour
             if(handleEndBuffDict.TryGetValue(bs.type, out endAction))
             {
                 endAction.Invoke(bs);
+                Managers.Instance.GetUIManager<GameUIManager>().StartBuffCoolTime(bs.id);
             }
             return false;
         }

@@ -307,7 +307,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 2, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1913647205363883592
 CanvasRenderer:
@@ -593,6 +593,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   remainCooltime: 0
+  id: 0
   sizeTransform: {fileID: 3713121411189960561}
   blackCool: {fileID: 7947359574486455650}
   testImageParent: {fileID: 7716351303755676664}
