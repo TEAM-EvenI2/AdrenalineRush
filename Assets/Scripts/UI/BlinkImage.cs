@@ -5,40 +5,44 @@ using UnityEngine.UI;
 
 public class BlinkImage : MonoBehaviour
 {
-    private float fadeSpeed = 0.005f;
+    public int blinkCount = 3;
+    private int _blinkedCount = 0;
+    private CanvasGroup cg;
 
-    private int blinkCount = 3;
-    private Image img;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        img = this.GetComponent<Image>();
-        StartCoroutine("blink");
+        cg = GetComponent<CanvasGroup>();
+    }
+
+    private void OnEnable()
+    {
+        if (blinkCount == -1 || _blinkedCount < blinkCount)
+        {
+            StartCoroutine("blink");
+        }
     }
 
     IEnumerator blink()
     {
         float percent = 0;
         float speed = 1 / 0.7f ;
-        Color c = img.color;
-        for (int i = 0; i < blinkCount; ++i)
+        while(_blinkedCount < blinkCount || blinkCount == -1)
         {
             while(percent < 1)
             {
                 percent += speed * Time.deltaTime;
-                c.a = percent;
-                img.color = c;
+                cg.alpha = percent;
                 yield return null;
             }
             percent = 0;
             while(percent < 1)
             {
                 percent += speed * Time.deltaTime;
-                c.a = (1 - percent);
-                img.color = c;
+                cg.alpha = (1 - percent);
                 yield return null;
             }
-            
+            _blinkedCount++;
         }
     }
 }
