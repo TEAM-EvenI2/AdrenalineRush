@@ -137,6 +137,7 @@ public class PlayerBuffManager : MonoBehaviour
         }
 
         bs.time -= Time.deltaTime;
+        Managers.Instance.GetUIManager<GameUIManager>().SetRemainTime(bs.id, (int)bs.time);
         if (bs.time <= 0)
         {
             System.Action<BuffStruct> endAction = null;

@@ -139,6 +139,18 @@ public class GameUIManager : UIManager
             if(buffButtons[i].id == id)
             {
                 buffButtons[i].StartDecreaseCool();
+                break;
+            }
+        }
+    }
+    public void SetRemainTime(int id, int time)
+    {
+        for (int i = 0; i < buffButtons.Length; i++)
+        {
+            if(buffButtons[i].id == id)
+            {
+                buffButtons[i].SetTime(time);
+                break;
             }
         }
     }

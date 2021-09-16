@@ -15,6 +15,8 @@ public class BuffButton : MonoBehaviour
 
     public Transform testImageParent;
 
+    public TextMeshProUGUI remainTime;
+
     private bool decreaseCool = false;
 
 
@@ -63,6 +65,12 @@ public class BuffButton : MonoBehaviour
     public void StartDecreaseCool()
     {
         decreaseCool = true;
+        remainTime.gameObject.SetActive(false);
+    }
+    public void SetTime( int time)
+    {
+        remainTime.text = time.ToString();
+        remainTime.gameObject.SetActive(true);
     }
 
     private BuffStruct GetBuffSturct()
