@@ -29,12 +29,14 @@ public class BlinkImage : MonoBehaviour
         float speed = 1 / 0.7f ;
         while(_blinkedCount < blinkCount || blinkCount == -1)
         {
-            while(percent < 1)
+            percent = 0;
+            while (percent < 1)
             {
                 percent += speed * Time.deltaTime;
                 cg.alpha = percent;
                 yield return null;
             }
+            yield return new WaitForSeconds(0.3f);
             percent = 0;
             while(percent < 1)
             {

@@ -64,7 +64,7 @@ public class SceneLoader : MonoBehaviour
         if (diplayLoadScene)
         {
             touchText.text = "로딩중...";
-            loadingText.text = "0%";
+            //loadingText.text = "0%";
             yield return StartCoroutine(CoFade(true)); // 스크린 fade out + screenLoader 프리팹의 박스 알파값 변경
 
             AsyncOperation op = SceneManager.LoadSceneAsync(sceneName); // 엔진단에서 실제로 씬이 로딩되는 부분
@@ -74,11 +74,11 @@ public class SceneLoader : MonoBehaviour
             while (!op.isDone)
             {
                 yield return null;
-                loadingText.text = op.progress * 100 + "%";
+                //loadingText.text = op.progress * 100 + "%";
                 if (op.progress >= 0.9f)
                 {
-                    loadingText.text = "100%";
-                    touchText.text = "화면을 터치해주세요";
+                    //loadingText.text = "100%";
+                    touchText.text = "화면을 터치하면 시작합니다";
 
                     bool tourched = false;
                     #if UNITY_EDITOR
