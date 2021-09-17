@@ -250,13 +250,13 @@ public class LobbyScene : BaseScene
             case "rbc": // .하드코딩됨. 좋은 방식은 아님.
                 index = 0;
                 break;
-            case "plasma":
+            case "wbc":
                 index = 1;
                 break;
-            case "wbc":
+            case "platelet":
                 index = 2;
                 break;
-            case "platelet":
+            case "plasma":
                 index = 3;
                 break;
         }

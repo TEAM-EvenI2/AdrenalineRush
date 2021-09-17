@@ -1414,9 +1414,9 @@ MonoBehaviour:
   GameCam: {fileID: 20542099}
   ModelArr:
   - {fileID: 1006739140}
-  - {fileID: 615302250}
   - {fileID: 1801444572}
   - {fileID: 1725349003}
+  - {fileID: 615302250}
   presetGetInBtn: {fileID: 698187954}
   presetGetOutBtn: {fileID: 482009668}
   hardCurr: {fileID: 552884624}
@@ -1578,7 +1578,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3370003799642020920, guid: 9cd72cfebefe4524eb188d9f1f66544e, type: 3}
       propertyPath: m_Name
-      value: TestModel (1)
+      value: Plasma
       objectReference: {fileID: 0}
     - target: {fileID: 3370003799642020920, guid: 9cd72cfebefe4524eb188d9f1f66544e, type: 3}
       propertyPath: m_IsActive
@@ -3594,7 +3594,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3370003799642020920, guid: 9cd72cfebefe4524eb188d9f1f66544e, type: 3}
       propertyPath: m_Name
-      value: TestModel
+      value: Platelet
       objectReference: {fileID: 0}
     - target: {fileID: 3370003799642020920, guid: 9cd72cfebefe4524eb188d9f1f66544e, type: 3}
       propertyPath: m_IsActive
@@ -4809,7 +4809,7 @@ MonoBehaviour:
       y: 0
     currentCharaIndex: 0
     equippedCharaIndex: 0
-  debugging: 0
+  debugging: 1
 --- !u!4 &1945384231
 Transform:
   m_ObjectHideFlags: 0
