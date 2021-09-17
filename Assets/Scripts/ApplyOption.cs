@@ -8,6 +8,7 @@ public class ApplyOption : MonoBehaviour
 {
     public GameObject VolumeSlider;
     public GameObject SilencedUI;
+    public GameObject VibrateOffUI;
     public GameObject HasVibrationUI;
     private DataManager dataManager;
     private float prevVolume;
@@ -44,7 +45,10 @@ public class ApplyOption : MonoBehaviour
             dataManager.SaveGameData();
             if (!prevVibration) // 진동을 ON한 경우
             {
-                FindObjectOfType<AudioManager>().Vibrate();
+                VibrateOffUI.SetActive(false);
+                FindObjectOfType<AudioManager>().Vibrate(); // 진동으로 알려줌
+            } else {
+                VibrateOffUI.SetActive(true);
             }
         }
         prevVibration = dataManager.gameData.hasVibration;
