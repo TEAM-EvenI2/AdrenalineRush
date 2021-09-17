@@ -57,6 +57,9 @@ public class Player : MonoBehaviour
 		rotationVelocity = Managers.Instance.Config.playerInfo.rotateVelocity;
 
 		audioManager = FindObjectOfType<AudioManager>();
+
+
+		GetComponentInChildren<GraphicManager>().Init();
 	}
 
 	private void Update()
@@ -92,13 +95,33 @@ public class Player : MonoBehaviour
 			Quaternion.Euler(0f, 0f, systemRotation);
 
 		UpdateAvatarRotation();
+		RecoverHealth();
+	}
 
-		if(health < 100)
-        {
-			health += curVelocity * Time.deltaTime;
+	private void RecoverHealth()
+    {
+
+		if (health < 100)
+		{
+			float multiflier = 1;
+            switch (DataManager.instance.gameData.equippedCharaIndex)
+            {
+				case 1:
+					multiflier = 1.2f;
+					break;
+				case 2:
+					multiflier = 1.5f;
+					break;
+				case 3:
+					multiflier = 2f;
+					break;
+			}
+
+
+			health += curVelocity * multiflier * Time.deltaTime;
 			if (health > 100)
 				health = 100;
-        }
+		}
 	}
 
 	private void CalculatePlayerPosition()
@@ -193,7 +216,7 @@ public class Player : MonoBehaviour
 				audioManager.Play("PlayerDie");
 				Die();
 			} else {
-				gameObject.GetComponentInChildren<GraphicManager>().Damaged();
+				GetComponentInChildren<GraphicManager>().Damaged();
 			}
 			_invincibleTime = invincibleTime;
 
@@ -208,7 +231,7 @@ public class Player : MonoBehaviour
 		print("Score: " +score);
 		FindObjectOfType<PlayGames>().playerScore = score; // 총점 GooglePlay로 전송준비
 		Debug.Log(score);
-		DataManager dataManager = FindObjectOfType<DataManager>();
+		DataManager dataManager = DataManager.instance;
 		if (dataManager)
 		{
 			Debug.Log("소프트커런시 획득량: " + score);
@@ -231,4 +254,14 @@ public class Player : MonoBehaviour
 		audioManager.Play("ItemCollide");
 		gameObject.GetComponentInChildren<GraphicManager>().CollideItem(item);
 	}
+
+	public int GetTotalItemCount()
+    {
+		int r = 0;
+		for(int i = 0; i < earnedItems.Length; i++)
+        {
+			r += earnedItems[i];
+        }
+		return r;
+    }
 }

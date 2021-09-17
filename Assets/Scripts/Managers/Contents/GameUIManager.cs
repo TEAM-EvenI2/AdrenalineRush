@@ -13,7 +13,11 @@ public class GameUIManager : UIManager
     public CanvasGroup stageChangeView;
     public Color hitColor;
 
+    [Header("Health Bar")]
     public RectTransform healthBar;
+    public Color fullColor;
+    public Color minColor;
+    public SimpleUIParticle bloodParticle;
 
     [Header("Main Game UI")]
     public TextMeshProUGUI scoreText;
@@ -61,8 +65,19 @@ public class GameUIManager : UIManager
             stageChangeView.alpha -= Time.deltaTime;
         }
 
-        float percent = Managers.Instance.GetScene<GameScene>().player.health / 100;
+        float health = Managers.Instance.GetScene<GameScene>().player.health;
+        float percent = health / 100;
         healthBar.sizeDelta = new Vector2(800 * percent, healthBar.sizeDelta.y);
+        healthBar.GetChild(0).GetComponent<Image>().color = Color.Lerp(minColor, fullColor, percent);
+        if (health > 0)
+        {
+            bloodParticle.particlePerSecond = percent < 0.8f ? Mathf.Lerp(7, 1, Utils.Easing.Exponential.Out(percent)) : 0;
+            bloodParticle.GetComponent<RectTransform>().anchoredPosition = new Vector2(800 * percent, healthBar.sizeDelta.y);
+        }
+        else
+        {
+            bloodParticle.particlePerSecond = 0;
+        }
 
         if (Application.platform == RuntimePlatform.Android)
         {

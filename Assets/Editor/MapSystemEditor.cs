@@ -17,6 +17,7 @@ public class MapSystemEditor : Editor
 
         if (system.stageInfo == null)
             return;
+        HashSet<MapMeshDataWrapper> mmdwSet = new HashSet<MapMeshDataWrapper>();
         for (int i = 0; i < system.stageInfo.Count; i++)
         {
             if (system.stageInfo[i].meshDataWrappers == null)
@@ -26,8 +27,14 @@ public class MapSystemEditor : Editor
                 MapMeshDataWrapper mmdw = system.stageInfo[i].meshDataWrappers[j];
                 if (mmdw == null)
                     continue;
-                DrawSettingEditor(mmdw, ref mmdw.foldout);
+                if (!mmdwSet.Contains(mmdw))
+                    mmdwSet.Add(mmdw);
             }
+        }
+
+        foreach(MapMeshDataWrapper mmdw  in mmdwSet)
+        {
+            DrawSettingEditor(mmdw, ref mmdw.foldout);
         }
     }
 
