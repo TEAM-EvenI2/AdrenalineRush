@@ -41,7 +41,7 @@ public class Player : MonoBehaviour
 	public SmoothDampStruct<float> inputSmooth;
 	private float targetInput = 0;
 	public float curInput { get; private set; } = 0;
-
+	private AudioManager audioManager;
 	public float invincibleTime = 0.4f;
 	private float _invincibleTime = 0;
 	public bool invincible = false;
@@ -56,6 +56,7 @@ public class Player : MonoBehaviour
 		maxVelocity = Managers.Instance.Config.playerInfo.velocity;
 		rotationVelocity = Managers.Instance.Config.playerInfo.rotateVelocity;
 
+		audioManager = FindObjectOfType<AudioManager>();
 	}
 
 	private void Update()
@@ -180,15 +181,16 @@ public class Player : MonoBehaviour
 
 	public bool Hit()
 	{
+		audioManager.Vibrate(); // 무적상태와 관계없이 진동
 		if (_invincibleTime <= 0 && !invincible)
 		{
 			Managers.Instance.GetUIManager<GameUIManager>().HitScreen();
 
 			health -= 34;
 			curVelocity  = 0;
-			FindObjectOfType<AudioManager>().Play("PlayerHit");
+			audioManager.Play("PlayerHit");
 			if (health <= 0) {
-				FindObjectOfType<AudioManager>().Play("PlayerDie");
+				audioManager.Play("PlayerDie");
 				Die();
 			} else {
 				gameObject.GetComponentInChildren<GraphicManager>().Damaged();
@@ -226,7 +228,7 @@ public class Player : MonoBehaviour
 
 	public void CollideItem(GameObject item)
 	{
-		FindObjectOfType<AudioManager>().Play("ItemCollide");
+		audioManager.Play("ItemCollide");
 		gameObject.GetComponentInChildren<GraphicManager>().CollideItem(item);
 	}
 }

@@ -11,5 +11,10 @@ namespace HeathenEngineering.UX.Samples
         {
             animator.SetBool(booleanName, value);
         }
+
+        public bool GetBoolean()
+        {
+            return animator.GetBool(booleanName);
+        }
     }
 }

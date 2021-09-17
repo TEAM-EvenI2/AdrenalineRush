@@ -12,6 +12,7 @@ public class GameData
     public int SoftCurr; // 소프트커런시
     public int HardCurr; // 하드커런시
     public float masterVolume;
+    public bool hasVibration;
     public ItemData[] purchasedItems; // 게임 내 존재하는 모든 아이템들 (구매여부는 개별적으로 저장)
     public CharacterData[] purchasedCharacters; // 게임 내 존재하는 모든 캐릭터들 (구매여부는 개별적으로 저장)
     public static readonly string[] charaIdList = {"rbc", "wbc", "platelet", "plasma"};
