@@ -87,7 +87,7 @@ public class GameData
     public GameData()
     {
         SoftCurr = 10000000;
-        HardCurr = 0;
+        HardCurr = 100000;
         masterVolume = 1;
         purchasedItems = new ItemData[5];
         purchasedCharacters = new CharacterData[5];

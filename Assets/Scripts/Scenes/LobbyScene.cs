@@ -273,6 +273,8 @@ public class LobbyScene : BaseScene
             WarnUser("구매하지 않은 캐릭터를 사용할 수 없습니다.");
             return;
         }
+        dataManager.gameData.EquipCurrentCharacter();
+        dataManager.SaveGameData();
         animator.SetBool("CameraMoveToPreset", !animator.GetBool("CameraMoveToPreset"));
         presetGetInBtn.SetActive(false);
         presetGetOutBtn.SetActive(true);
