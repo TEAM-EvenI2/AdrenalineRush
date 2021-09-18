@@ -106,7 +106,7 @@ public class LobbyScene : BaseScene
     public void MoveStoreScene()
     {
         FindObjectOfType<AudioManager>().Play("UIClick");
-        Managers.Instance.Scene.LoadScene("Store", null, null);
+        Managers.Instance.Scene.LoadScene("Store", null, null, true);
     }
 
     private void ToggleUIButtonsForPreset()
