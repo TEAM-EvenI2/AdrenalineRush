@@ -11,7 +11,7 @@ public class LobbyScene : BaseScene
     private AudioManager audioManager;
     private DataManager dataManager;
     private int hardCurrGainPerAd = 100; // 광고 1회 클릭시 획득재화량
-    private readonly string[] urls = {"https://naver.com/"};
+    private readonly string[] urls = {"https://github.com/TEAM-EvenI2/AdrenalineRush"};
     public GameObject[] ModelArr; // GameData의 CharaId와 순서가 똑같아야 함
     public GameObject presetGetInBtn;
     public GameObject presetGetOutBtn;
