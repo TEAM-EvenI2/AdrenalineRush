@@ -53,13 +53,13 @@ public class GameScene : BaseScene
             () =>
             {
                 Managers.Instance.GetScene<GameScene>().SettingBuff(currentSelectedBuffs);
-            });
+            }, true);
     }
 
     public void GotoMain()
     {
         FindObjectOfType<AudioManager>().Play("UIClick");
-        Managers.Instance.Scene.LoadScene("Lobby", null, null);
+        Managers.Instance.Scene.LoadScene("Lobby", null, null, true);
     }
 
     public void Exit()

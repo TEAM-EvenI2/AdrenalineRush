@@ -104,6 +104,7 @@ public class SceneLoader : MonoBehaviour
                     if (tourched)
                     {
                         op.allowSceneActivation = true;
+                        storyToon.gameObject.SetActive(false);
                         yield break;
                     }
                 }

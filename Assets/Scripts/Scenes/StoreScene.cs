@@ -66,7 +66,7 @@ public class StoreScene : BaseScene
     public void MoveLobbyScene()
     {
         FindObjectOfType<AudioManager>().Play("UIClick");
-        Managers.Instance.Scene.LoadScene("Lobby", null, null, false);
+        Managers.Instance.Scene.LoadScene("Lobby", null, null, true);
     }
 
     public void WarnUser(string msg)
