@@ -39,6 +39,6 @@ public class ButtonPlacerScene : BaseScene
         DataManager.instance.SaveGameData();
 
         FindObjectOfType<AudioManager>().Play("UIClick");
-        Managers.Instance.Scene.LoadScene("Lobby", null, null, false);
+        Managers.Instance.Scene.LoadScene("Store", null, null, false);
     }
 }

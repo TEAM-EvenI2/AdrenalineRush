@@ -101,7 +101,7 @@ public class LobbyScene : BaseScene
     public void MoveAchievementScene()
     {
         FindObjectOfType<AudioManager>().Play("UIClick");
-        Managers.Instance.Scene.LoadScene("Achievement", null, null);
+        Managers.Instance.Scene.LoadScene("Achievement", null, null, true);
     }
 
     public void MoveOptionScene()
@@ -113,7 +113,7 @@ public class LobbyScene : BaseScene
     public void MoveStoreScene()
     {
         FindObjectOfType<AudioManager>().Play("UIClick");
-        Managers.Instance.Scene.LoadScene("Store", null, null);
+        Managers.Instance.Scene.LoadScene("Store", null, null, true);
     }
 
     private void ToggleUIButtonsForPreset()
