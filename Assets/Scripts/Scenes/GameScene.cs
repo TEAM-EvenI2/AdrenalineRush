@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using static Define;
 
 public class GameScene : BaseScene
 {
     public Volume postProcessVolume;
     public Player player;
+    public EffectController ec;
 
     public bool isPause = false;
 
@@ -27,7 +29,7 @@ public class GameScene : BaseScene
 
     public void SettingBuff(List<int> buffs)
     {
-        ((GameUIManager)baseUIManager).SettingBuff(buffs);
+        ((GameUIManager)baseUIManager).SettingBuff(buffs, DataManager.instance.gameData.buttonsPos);
         currentSelectedBuffs = buffs;
     }
 

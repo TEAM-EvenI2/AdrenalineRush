@@ -27,10 +27,9 @@ public class Avatar : MonoBehaviour
 	{
 		if (collider.tag.Equals("Obstacle"))
 		{
-			if (player.Hit())
-			{
-				cameraController.ShakeCam(cameraController.playerCollisionShakeDuration, cameraController.playerCollisionShakePower);
-			}
+			player.Hit();
+			cameraController.ShakeCam(cameraController.playerCollisionShakeDuration, cameraController.playerCollisionShakePower);
+
 
 			if (collider.GetComponentInParent<ScoreItem>() != null)
 			{
@@ -38,6 +37,8 @@ public class Avatar : MonoBehaviour
 			}
 			else if (player.invincible)
 			{
+				Transform effect = Managers.Instance.GetScene<GameScene>().ec.CreateEffect("Explosion", true);
+				effect.position = transform.position;
 				Destroy(collider.gameObject);
 			}
 

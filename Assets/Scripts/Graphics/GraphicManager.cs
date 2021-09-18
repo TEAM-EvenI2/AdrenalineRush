@@ -7,11 +7,18 @@ public class GraphicManager : MonoBehaviour
     private RBCGraphicManager rbcGraphicManager;
     public ParticleSystem p_itemCollided; // 아이템에 적용할 매터리얼
 
-    void Awake()
+    public void Init()
     {
-        rbcGraphicManager = gameObject.GetComponentInChildren<RBCGraphicManager>();
-    }
 
+        int index = DataManager.instance.gameData.equippedCharaIndex;
+        for(int i = 0; i < transform.childCount; i++)
+        {
+            transform.GetChild(i).gameObject.SetActive(false);
+        }
+        transform.GetChild(index).gameObject.SetActive(true);
+        rbcGraphicManager = transform.GetChild(index).GetComponent<RBCGraphicManager>();
+    }
+     
     public void Damaged()
     {
         StartCoroutine(CoDamaged());

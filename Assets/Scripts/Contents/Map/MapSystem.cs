@@ -58,6 +58,8 @@ public class MapSystem : MonoBehaviour
 
         SetupNextPipe();
 
+
+
     }
 
     private void Update()
@@ -76,8 +78,7 @@ public class MapSystem : MonoBehaviour
 				// TODO Update Stage
 				ChangeStage();
 
-				Managers.Instance.GetUIManager<GameUIManager>().stageChangeView.gameObject.SetActive(true);
-				Managers.Instance.GetUIManager<GameUIManager>().stageChangeView.alpha = 1;
+				Managers.Instance.GetUIManager<GameUIManager>().ChangeScreen();
 
 			}
 		}
@@ -88,7 +89,7 @@ public class MapSystem : MonoBehaviour
 	private void ChangeStage()
 	{
 		currentStage++;
-		Managers.Instance.GetScene<GameScene>().postProcessVolume.profile = stageInfo[currentStage].volumeProfile;
+
 		itemInfos.Clear();
 		_infoIndex = 0;
 
@@ -99,13 +100,24 @@ public class MapSystem : MonoBehaviour
 				GenerateItem(maps[i]);
 			else
 				maps[i].ResetGenerateItem();
+
+			maps[i].GetComponent<Renderer>().material.SetColor("_TunnelColor", stageInfo[currentStage].color);
 		}
 		Managers.Instance.GetScene<GameScene>().player.SetupNetStage();
 
 	}
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        foreach(StageInformation si in stageInfo)
+        {
+			si.OnValidate(); 
+        }
+    }
+#endif
 
 
-	private void GenerateItem(MapMeshWrapper mw)
+    private void GenerateItem(MapMeshWrapper mw)
 	{
 
 		// Generate Item
@@ -149,7 +161,7 @@ public class MapSystem : MonoBehaviour
 		//}
 
 
-		EditableMap itemPlace = stageInfo[currentStage].GetRandomItemPlace();
+		EditableMap itemPlace = stageInfo[currentStage].GetRandomItemPlace(Managers.Instance.GetScene<GameScene>().player.GetTotalItemCount());
 		itemInfos.Clear();
 		_infoIndex = 0;
 		itemPlace.AddItemToInfos(itemInfos);

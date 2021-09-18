@@ -11,6 +11,54 @@ public static class ItemPriceChart
     readonly public static int[] SLOT = {3500, 18000, 35000, 53000, 114000};
 }
 
+public static class ItemDescChart
+{
+    readonly public static string[] ItemDesc = {
+        "일정 범위에서 캐릭터가 아이템들을 끌어 당긴다. 장애물을 피하느라 정신이 없을 때 더 쉽게 아이템들을 먹을 수 있다. ", 
+        "일정 시간 동안 캐릭터의 크기가 작아진다. 많은 장애물들을 피하기에 안성맞춤!", 
+        "일정시간 동안 맵 전체의 속도가 줄어든다. 보다 느리지만 더 정밀한 조작이 가능하다.", 
+        "일정 시간동안 장애물들을 무시하고 빠르게 지나갈 수 있다.", 
+        "게임 시작 전 적용가능한 버프 아이템 개수를 설정할 수 있다. 버프 아이템을 사기 전 필수!"
+        };
+
+    readonly public static string[] MAGNET = {
+        "3초간 일정 범위 내 자석효과 발생", 
+        "5초간 일정 범위 내 자석효과 발생", 
+        "7초간 일정 범위 내 자석효과 발생", 
+        "10초간 일정 범위 내 자석효과 발생", 
+        "15초간 일정 범위 내 자석효과 발생"
+        };
+    readonly public static string[] SHRINK = {
+        "3초간 캐릭터 축소효과 발생", 
+        "5초간 캐릭터 축소효과 발생", 
+        "7초간 캐릭터 축소효과 발생", 
+        "10초간 캐릭터 축소효과 발생", 
+        "15초간 캐릭터 축소효과 발생"
+        };
+    readonly public static string[] SLOW = {
+        "3초간 속도 감소효과 발생", 
+        "5초간 속도 감소효과 발생", 
+        "7초간 속도 감소효과 발생", 
+        "10초간 속도 감소효과 발생", 
+        "15초간 속도 감소효과 발생"
+        };
+    readonly public static string[] BOOST = {
+        "3초간 부스트와 함께 무적효과",
+        "5초간 부스트와 함께 무적효과",
+        "8초간 부스트와 함께 무적효과",
+        "12초간 부스트와 함께 무적효과",
+        "17초간 부스트와 함께 무적효과"
+        };    
+    readonly public static string[] SLOT = {
+        "1개의 아이템 슬롯 사용 가능", 
+        "2개의 아이템 슬롯 사용 가능", 
+        "3개의 아이템 슬롯 사용 가능", 
+        "4개의 아이템 슬롯 사용 가능", 
+        "5개의 아이템 슬롯 사용 가능", 
+        };
+}
+
+
 [System.Serializable]
 public class ItemData
 {

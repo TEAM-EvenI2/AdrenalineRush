@@ -8,12 +8,16 @@ using static Define;
 public class BuffButton : MonoBehaviour
 {
     public float remainCooltime;
-    private int id;
+    public int id;
 
     public Transform sizeTransform;
     public GameObject blackCool;
 
     public Transform testImageParent;
+
+    public TextMeshProUGUI remainTime;
+
+    private bool decreaseCool = false;
 
 
     private void Awake()
@@ -26,10 +30,13 @@ public class BuffButton : MonoBehaviour
 
     void Update()
     {
-        if(remainCooltime > 0)
+        if(remainCooltime > 0 )
         {
-            remainCooltime -= Time.deltaTime;
-            sizeTransform.localScale = Vector3.Lerp(Vector3.one, Vector3.one * 0.2f, remainCooltime / (GetBuffSturct().coolTime));
+            if (decreaseCool)
+            {
+                remainCooltime -= Time.deltaTime;
+                sizeTransform.localScale = Vector3.Lerp(Vector3.one, Vector3.one * 0.2f, remainCooltime / (GetBuffSturct().coolTime));
+            }
         }
         else
         {
@@ -37,6 +44,7 @@ public class BuffButton : MonoBehaviour
             {
                 sizeTransform.localScale = Vector3.one;
                 blackCool.SetActive(false);
+                decreaseCool = false;
             }
         }
     }
@@ -47,17 +55,36 @@ public class BuffButton : MonoBehaviour
         {
             Managers.Instance.GetScene<GameScene>().player.GetComponent<PlayerBuffManager>().AddBuff(GetBuffSturct());
             remainCooltime = GetBuffSturct().coolTime;
+            decreaseCool = false;
 
+            sizeTransform.localScale = Vector3.one;
             blackCool.SetActive(true);
         }
     }
 
-    private BuffStruct GetBuffSturct()
+    public void StartDecreaseCool()
     {
-        return Managers.Instance.Config.buffInfos[id][0];
+        decreaseCool = true;
+        remainTime.gameObject.SetActive(false);
+    }
+    public void SetTime( int time)
+    {
+        remainTime.text = time.ToString();
+        remainTime.gameObject.SetActive(true);
     }
 
-    public void Setting(int buffId)
+    private BuffStruct GetBuffSturct()
+    {
+        int upgrade = DataManager.instance.gameData.purchasedItems[id].Upgrade - 1;
+        if (upgrade < 0)
+            upgrade = 0;
+        else if (upgrade >= Managers.Instance.Config.buffInfos[id].Count)
+            upgrade = Managers.Instance.Config.buffInfos[id].Count - 1;
+
+        return Managers.Instance.Config.buffInfos[id][upgrade];
+    }
+
+    public void Setting(int buffId, Vector2 pos)
     {
         id = buffId;
 
@@ -66,6 +93,8 @@ public class BuffButton : MonoBehaviour
             testImageParent.GetChild(i).gameObject.SetActive(false);
         }
         testImageParent.GetChild(buffId).gameObject.SetActive(true);
+
+        GetComponent<RectTransform>().anchoredPosition = pos;
 
     }
 }

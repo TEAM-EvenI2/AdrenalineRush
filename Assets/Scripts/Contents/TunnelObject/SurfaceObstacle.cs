@@ -51,6 +51,7 @@ public class SurfaceObstacle : MeshObstacle
 	private void SetVertices(MapMeshWrapper mw, float percent, float angle)
 	{
 		List<Vector3> vertices = new List<Vector3>();
+		List<Vector2> uv = new List<Vector2>();
 		List<int> triangles = new List<int>();
 		// [width, splited_mesh_count, start-end]
 		int[,,] verticesStartEndCount = new int[curveSegmentCount + 1, 2, 2];
@@ -122,6 +123,7 @@ public class SurfaceObstacle : MeshObstacle
 								_angle += 360;
 							verticesStartEndCount[i, 0, 1] = vertices.Count;
 							vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360) * _sizePercent) );
+							uv.Add(new Vector2(u, r_u));
 						}
 						//if (l_u <= 1)
 						{
@@ -131,6 +133,7 @@ public class SurfaceObstacle : MeshObstacle
 								_angle += 360;
 							verticesStartEndCount[i, 1, 0] = vertices.Count;
 							vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360) * _sizePercent) );
+							uv.Add(new Vector2(u, l_u));
 						}
 					}
 					enterRoad = true;
@@ -140,6 +143,7 @@ public class SurfaceObstacle : MeshObstacle
 
 				Vector3 point = mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360) * _sizePercent);
 				vertices.Add(point);
+				uv.Add(new Vector2(u, v));
 			}
 
 			if(enterRoad == false)
@@ -181,11 +185,13 @@ public class SurfaceObstacle : MeshObstacle
 						{
 							_angle = (r_u * 360 + angle) ;
 							vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360)));
+							uv.Add(new Vector2(u, r_u));
 						}
 						//if (l_u <= 1)
 						{
 							_angle = (l_u * 360 + angle) ;
 							vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360)));
+							uv.Add(new Vector2(u, l_u));
 						}
 					}
 					enterRoad = true;
@@ -195,6 +201,7 @@ public class SurfaceObstacle : MeshObstacle
 
 				Vector3 point = mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360));
 				vertices.Add(point);
+				uv.Add(new Vector2(u, v));
 			}
 		}
 
@@ -211,11 +218,13 @@ public class SurfaceObstacle : MeshObstacle
 			{
 				float _angle = (r_u * 360 + angle) ;
 				vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle * Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc/ curArc, _angle / 360)));
+				uv.Add(new Vector2(u, r_u));
 			}
 			//if (l_u <= 1)
 			{
 				float _angle = (l_u * 360 + angle) ;
 				vertices.Add(mw.mapMesh.GetPointOnSurface(mw, (arc) / mw.curveRadius, _angle* Mathf.Deg2Rad, mw.mapMesh.GetDistance(mw, arc / curArc, _angle / 360)));
+				uv.Add(new Vector2(u, l_u));
 			}
 		}
 
@@ -378,6 +387,7 @@ public class SurfaceObstacle : MeshObstacle
 
         mesh.vertices = vertices.ToArray();
 		mesh.triangles = triangles.ToArray();
+		mesh.uv = uv.ToArray();
 	}
 
 	private void AddTriangle(List<int> triangles, int a, int b, int c, bool flip = false)

@@ -10,8 +10,8 @@ public class LobbyScene : BaseScene
     private Animator animator;
     private AudioManager audioManager;
     private DataManager dataManager;
-    private int hardCurrGainPerAd = 1; // 광고 1회 클릭시 획득재화량
-    private readonly string[] urls = {"https://gamesmith.tistory.com/"};
+    private int hardCurrGainPerAd = 100; // 광고 1회 클릭시 획득재화량
+    private readonly string[] urls = {"https://naver.com/"};
     public GameObject[] ModelArr; // GameData의 CharaId와 순서가 똑같아야 함
     public GameObject presetGetInBtn;
     public GameObject presetGetOutBtn;
@@ -80,6 +80,8 @@ public class LobbyScene : BaseScene
             else
                 break;
         }
+
+
 
         Managers.Instance.Scene.LoadScene("Game", 
             () =>{ return Managers.Instance.GetScene<GameScene>() != null && Managers.Instance.GetScene<GameScene>().SettingFinish; },
@@ -248,13 +250,13 @@ public class LobbyScene : BaseScene
             case "rbc": // .하드코딩됨. 좋은 방식은 아님.
                 index = 0;
                 break;
-            case "plasma":
+            case "wbc":
                 index = 1;
                 break;
-            case "wbc":
+            case "platelet":
                 index = 2;
                 break;
-            case "platelet":
+            case "plasma":
                 index = 3;
                 break;
         }
@@ -271,6 +273,8 @@ public class LobbyScene : BaseScene
             WarnUser("구매하지 않은 캐릭터를 사용할 수 없습니다.");
             return;
         }
+        dataManager.gameData.EquipCurrentCharacter();
+        dataManager.SaveGameData();
         animator.SetBool("CameraMoveToPreset", !animator.GetBool("CameraMoveToPreset"));
         presetGetInBtn.SetActive(false);
         presetGetOutBtn.SetActive(true);
@@ -316,5 +320,6 @@ public class LobbyScene : BaseScene
         Application.OpenURL(urls[Random.Range(0, urls.Length-1)]);
         WarnUser($"{hardCurrGainPerAd} 다이아를 획득하셨습니다!");
         dataManager.gameData.HardCurr += hardCurrGainPerAd;
+        dataManager.SaveGameData();
     }
 }

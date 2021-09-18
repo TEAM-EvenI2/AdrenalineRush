@@ -23,6 +23,8 @@ public class Managers : MonoBehaviour
 
                 s_instance.Scene.Init();
                 s_instance.Config.Init();
+
+                Application.targetFrameRate = 60;
             }
             return s_instance;
         }

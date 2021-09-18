@@ -39,6 +39,9 @@ public class MapMeshWrapper : MonoBehaviour
     private int _infoIndex = 0;
     float finishedArc = 0;
 
+
+    private List<Transform> childs = new List<Transform>();
+
     private void Awake()
     {
         GetComponent<MeshFilter>().mesh = mesh = new Mesh();
@@ -79,6 +82,7 @@ public class MapMeshWrapper : MonoBehaviour
                 {
 
                     MapItem item = Instantiate(info.prefab);
+                    childs.Add(item.transform);
                     float angle = info.angle - cumulativeRelativeRotation;
                     angle = angle % 360;
                     if (angle < 0)
@@ -146,9 +150,19 @@ public class MapMeshWrapper : MonoBehaviour
 
     public void DestoryChild()
     {
-        for (int i = 0; i < transform.childCount; i++)
+        for (int i = 0; i < childs.Count; i++)
         {
-            Destroy(transform.GetChild(i).gameObject);
+            if(childs[i] != null)
+                Destroy(childs[i].gameObject);
+        }
+        childs.Clear();
+    }
+    public void DestoryChildNoParent()
+    {
+        for (int i = 0; i < childs.Count; i++)
+        {
+            if (childs[i] != null && childs[i].parent != transform) 
+                Destroy(childs[i].gameObject);
         }
     }
 

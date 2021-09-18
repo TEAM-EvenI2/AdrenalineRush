@@ -40,6 +40,7 @@ public class LongObstacle : MeshObstacle
     private void SetVertices(MapMeshWrapper mw, float percent, float angle)
 	{
 		vertices = new Vector3[radiusSegmentCount * (lengthSegmentCount + 1)];
+		uv = new Vector2[radiusSegmentCount * (lengthSegmentCount + 1)];
 		triangles = new int[(radiusSegmentCount + 1) * (lengthSegmentCount + 1) * 6];
 
 		int triIndex = 0;
@@ -53,7 +54,6 @@ public class LongObstacle : MeshObstacle
 			float lengthPercent = (float)i / lengthSegmentCount;
 			for (int j = 0; j < radiusSegmentCount; j++)
 			{
-
 				int idx = i * radiusSegmentCount + j;
 				float fixedPercent = (lengthPercent - 0.5f) * 2;
 				float innerAngle = ((float)j / radiusSegmentCount) * 360 ;
@@ -91,6 +91,7 @@ public class LongObstacle : MeshObstacle
 				float new_percent = ((absPercent < middleSizePercent ? middleSizePercent : absPercent) - Mathf.Abs(fixedPercent)) / (middleSizePercent + 0.001f);
 				vertices[idx] = mw.mapMesh.GetPointOnSurface(mw, arc / mw.curveRadius, _angle * Mathf.Deg2Rad, distance)
 					+ new Vector3(0, -Mathf.Sin(angle * Mathf.Deg2Rad), Mathf.Cos(angle * Mathf.Deg2Rad)) * middleSizePercent * new_percent * -Mathf.Sign(fixedPercent) * _size * Mathf.Cos(innerAngle);
+				uv[idx] = new Vector2(lengthPercent, (float)j / radiusSegmentCount);
 
 				if (i != lengthSegmentCount)
 				{
@@ -114,6 +115,7 @@ public class LongObstacle : MeshObstacle
 
 		mesh.vertices = vertices;
 		mesh.triangles = triangles;
+		mesh.uv = uv;
 	}
 
 

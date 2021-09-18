@@ -6,8 +6,10 @@ using UnityEngine.Audio;
 
 public class AudioManager : MonoBehaviour
 {
+    // 게임 내 모든 오디오 및 진동을 관리합니다.
     public Sound[] sounds;
     public static AudioManager instance;
+    private DataManager dataManager;
     void Awake()
     {  
         // 중복 방지
@@ -31,6 +33,7 @@ public class AudioManager : MonoBehaviour
 
     void Start()
     {
+        dataManager = FindObjectOfType<DataManager>();
         AudioListener.volume = FindObjectOfType<DataManager>().gameData.masterVolume;
         Play("LobbyTheme");
     }
@@ -39,5 +42,14 @@ public class AudioManager : MonoBehaviour
     {
         Sound s = Array.Find(sounds, sound => sound.name == name);
         if (s != null) s.source.Play();
+    }
+
+    public void Vibrate()
+    {
+        if (dataManager.gameData.hasVibration)
+        {
+            Debug.Log("(Vibrating Device)");
+            Handheld.Vibrate(); // 진동패턴이나 진동시간 조절하려면 이 함수 말고 다른 함수를 제작해 써야함.
+        }
     }
 }

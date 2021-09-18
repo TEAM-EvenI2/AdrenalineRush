@@ -216,4 +216,14 @@ public class Utils
 			}
 		};
 	}
+
+
+	public static SerVector2 Vector2Ser(Vector2 v)
+    {
+		return new SerVector2(v.x, v.y);
+	}
+	public static Vector2 Ser2Vector(SerVector2 v)
+	{
+		return new Vector2(v.x, v.y);
+	}
 }

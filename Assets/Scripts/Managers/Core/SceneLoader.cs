@@ -10,6 +10,7 @@ public class SceneLoader : MonoBehaviour
     private CanvasGroup canvasGroup;
     private Image loadingImage;
     private TextMeshProUGUI loadingText;
+    private TextMeshProUGUI touchText;
 
     private string loadSceneName;
 
@@ -26,6 +27,7 @@ public class SceneLoader : MonoBehaviour
         canvasGroup = GetComponent<CanvasGroup>();
         loadingImage = transform.Find("LoadingImage").GetComponent<Image>();
         loadingText = transform.Find("LoadingMessage").GetComponent<TextMeshProUGUI>();
+        touchText = transform.Find("TouchText").GetComponent<TextMeshProUGUI>();
     }
 
     public void LoadScene(string sceneName, System.Func<bool> condition, System.Action action, bool diplayLoadScene=false)
@@ -61,7 +63,8 @@ public class SceneLoader : MonoBehaviour
     {
         if (diplayLoadScene)
         {
-            loadingText.text = "0%";
+            touchText.text = "로딩중...";
+            //loadingText.text = "0%";
             yield return StartCoroutine(CoFade(true)); // 스크린 fade out + screenLoader 프리팹의 박스 알파값 변경
 
             AsyncOperation op = SceneManager.LoadSceneAsync(sceneName); // 엔진단에서 실제로 씬이 로딩되는 부분
@@ -71,12 +74,23 @@ public class SceneLoader : MonoBehaviour
             while (!op.isDone)
             {
                 yield return null;
-                loadingText.text = op.progress * 100 + "%";
+                //loadingText.text = op.progress * 100 + "%";
                 if (op.progress >= 0.9f)
                 {
-                    loadingText.text = "100%";
-                    op.allowSceneActivation = true;
-                    yield break;
+                    //loadingText.text = "100%";
+                    touchText.text = "화면을 터치하면 시작합니다";
+
+                    bool tourched = false;
+                    #if UNITY_EDITOR
+                        tourched = Input.GetMouseButtonDown(0);
+                    #else
+                        tourched = Input.touchCount > 0;
+                    #endif
+                    if (tourched)
+                    {
+                        op.allowSceneActivation = true;
+                        yield break;
+                    }
                 }
             }
         }

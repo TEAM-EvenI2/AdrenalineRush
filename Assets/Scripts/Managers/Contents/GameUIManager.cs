@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
+using static Define;
 
 public class GameUIManager : UIManager
 {
@@ -9,8 +11,13 @@ public class GameUIManager : UIManager
     public FinishWindow finishWindow;
     public GameObject pauseWindow;
     public CanvasGroup stageChangeView;
+    public Color hitColor;
 
+    [Header("Health Bar")]
     public RectTransform healthBar;
+    public Color fullColor;
+    public Color minColor;
+    public SimpleUIParticle bloodParticle;
 
     [Header("Main Game UI")]
     public TextMeshProUGUI scoreText;
@@ -22,7 +29,6 @@ public class GameUIManager : UIManager
     private void Start()
     {
         stageChangeView.alpha = 1;
-        stageChangeView.gameObject.SetActive(true);
     }
 
     public void OpenPauseWindow()
@@ -57,12 +63,21 @@ public class GameUIManager : UIManager
         if (stageChangeView.alpha > 0)
         {
             stageChangeView.alpha -= Time.deltaTime;
-            if (stageChangeView.alpha <= 0)
-                stageChangeView.gameObject.SetActive(false);
         }
 
-        float percent = Managers.Instance.GetScene<GameScene>().player.health / 100;
+        float health = Managers.Instance.GetScene<GameScene>().player.health;
+        float percent = health / 100;
         healthBar.sizeDelta = new Vector2(800 * percent, healthBar.sizeDelta.y);
+        healthBar.GetChild(0).GetComponent<Image>().color = Color.Lerp(minColor, fullColor, percent);
+        if (health > 0)
+        {
+            bloodParticle.particlePerSecond = percent < 0.8f ? Mathf.Lerp(7, 1, Utils.Easing.Exponential.Out(percent)) : 0;
+            bloodParticle.GetComponent<RectTransform>().anchoredPosition = new Vector2(800 * percent, healthBar.sizeDelta.y);
+        }
+        else
+        {
+            bloodParticle.particlePerSecond = 0;
+        }
 
         if (Application.platform == RuntimePlatform.Android)
         {
@@ -72,6 +87,18 @@ public class GameUIManager : UIManager
             }
         }
     }
+
+    public void ChangeScreen()
+    {
+        stageChangeView.alpha = 1;
+        stageChangeView.GetComponent<Image>().color = Color.white;
+    }
+    public void HitScreen()
+    {
+        stageChangeView.alpha = 0.4f;
+        stageChangeView.GetComponent<Image>().color = hitColor;
+    }
+
 
     private void SettingScoreText()
     {
@@ -120,11 +147,34 @@ public class GameUIManager : UIManager
         }
     }
 
-    public void SettingBuff(List<int> buffs)
+    public void StartBuffCoolTime(int id)
+    {
+        for (int i = 0; i < buffButtons.Length; i++)
+        {
+            if(buffButtons[i].id == id)
+            {
+                buffButtons[i].StartDecreaseCool();
+                break;
+            }
+        }
+    }
+    public void SetRemainTime(int id, int time)
+    {
+        for (int i = 0; i < buffButtons.Length; i++)
+        {
+            if(buffButtons[i].id == id)
+            {
+                buffButtons[i].SetTime(time);
+                break;
+            }
+        }
+    }
+
+    public void SettingBuff(List<int> buffs, SerVector2[] buttonPos)
     {
         for (int i = 0; i < buffs.Count && i < buffButtons.Length; i++)
         {
-            buffButtons[i].Setting(buffs[i]);
+            buffButtons[i].Setting(buffs[i], Utils.Ser2Vector(buttonPos[i]));
             buffButtons[i].gameObject.SetActive(true);
         }
     }
