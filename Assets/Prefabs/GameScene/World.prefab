@@ -48,11 +48,14 @@ MonoBehaviour:
   emptyPipeCount: 2
   stageInfo:
   - enterPoint: 30000
-    volumeProfile: {fileID: 0}
+    color: {r: 0, g: 0, b: 0, a: 0}
     meshDataWrappers:
     - {fileID: 11400000, guid: 32792ff843fd50944a4e6cbcdd0132da, type: 2}
-    itemPlaces:
-    - {fileID: 1670476552326899039, guid: 7ce58a9f05b8175479f5ad90e7f32d7e, type: 3}
+    itemPlaceStructs:
+    - enterCount: 0
+      eachPercents:
+      - 1
+      itemPlaces: []
   minDistanceEachPreset: 0.5
   maps: []
 --- !u!1 &4444343405605039689
