@@ -11,7 +11,7 @@ public class LobbyScene : BaseScene
     private AudioManager audioManager;
     private DataManager dataManager;
     private int hardCurrGainPerAd = 100; // 광고 1회 클릭시 획득재화량
-    private readonly string[] urls = {"https://naver.com/"};
+    private readonly string[] urls = {"https://github.com/TEAM-EvenI2/AdrenalineRush"};
     public GameObject[] ModelArr; // GameData의 CharaId와 순서가 똑같아야 함
     public GameObject presetGetInBtn;
     public GameObject presetGetOutBtn;
@@ -24,7 +24,6 @@ public class LobbyScene : BaseScene
     public GameObject presetPrice;
     public GameObject settingBtn;
     public GameObject gameStartBtn;
-    public GameObject achBtn;
     public GameObject shopBtn;
     public GameObject adBtn;
     public GameObject ShopWarnUI; // 캐릭터샵 ui
@@ -91,12 +90,6 @@ public class LobbyScene : BaseScene
             }, true);
     }
 
-    public void MoveAchievementScene()
-    {
-        FindObjectOfType<AudioManager>().Play("UIClick");
-        Managers.Instance.Scene.LoadScene("Achievement", null, null);
-    }
-
     public void MoveOptionScene()
     {
         FindObjectOfType<AudioManager>().Play("UIClick");
@@ -115,7 +108,6 @@ public class LobbyScene : BaseScene
         // 다시 실행 시 반대 작업.
         settingBtn.SetActive(isBtnHidden);
         gameStartBtn.SetActive(isBtnHidden);
-        achBtn.SetActive(isBtnHidden);
         shopBtn.SetActive(isBtnHidden);
         adBtn.SetActive(isBtnHidden);
         hardCurr.SetActive(!isBtnHidden);

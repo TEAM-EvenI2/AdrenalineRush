@@ -229,7 +229,7 @@ public class Player : MonoBehaviour
 	{
 		int score = Managers.Instance.GetScene<GameScene>().GetScore();
 		print("Score: " +score);
-		FindObjectOfType<PlayGames>().playerScore = score; // 총점 GooglePlay로 전송준비
+		//FindObjectOfType<PlayGames>().playerScore = score; // 총점 GooglePlay로 전송준비 //기능 삭제 (이븐아이)
 		Debug.Log(score);
 		DataManager dataManager = DataManager.instance;
 		if (dataManager)
@@ -242,7 +242,7 @@ public class Player : MonoBehaviour
 		{
 			Debug.LogWarning("DataManager 인스턴스를 찾을 수 없습니다");
 		}
-		FindObjectOfType<PlayGames>().AddScoreToLeaderboard(); // 전송
+		//FindObjectOfType<PlayGames>().AddScoreToLeaderboard(); // 전송 //기능 삭제 (이븐아이)
 
 		gameObject.GetComponentInChildren<GraphicManager>().Die();
 		gameObject.SetActive(false);
