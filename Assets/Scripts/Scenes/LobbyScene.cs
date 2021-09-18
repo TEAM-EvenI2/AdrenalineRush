@@ -36,6 +36,7 @@ public class LobbyScene : BaseScene
         animator = GameCam.GetComponent<Animator>();
         dataManager = FindObjectOfType<DataManager>();
         audioManager = FindObjectOfType<AudioManager>();
+        UpdatePresetModel();
     }
 
     protected override void Init()
@@ -196,6 +197,20 @@ public class LobbyScene : BaseScene
         Debug.LogError("돈이 부족한 상황에서 SpendMoney가 호출됨.");
     }
 
+    private bool HasPurchasedPrevChara()
+    {
+        GameData gd = dataManager.gameData;
+        if (gd.currentCharaIndex > 0)
+        {
+            if (gd.purchasedCharacters[gd.currentCharaIndex - 1].Purchased)
+            {
+                return true;
+            }
+            return false;
+        }
+        return true; // currIndex==0이면 참
+    }
+
     public void PurchaseCharacter()
     {
         // 현재 선택된 캐릭터를 구매
@@ -205,6 +220,11 @@ public class LobbyScene : BaseScene
 
         if (currChar.Purchased){
             WarnUser("이미 보유하고 있습니다.");
+            return;
+        }
+        else if (!HasPurchasedPrevChara())
+        {
+            WarnUser("이전 단계의 캐릭터부터 구매하세요!");
             return;
         }
 
