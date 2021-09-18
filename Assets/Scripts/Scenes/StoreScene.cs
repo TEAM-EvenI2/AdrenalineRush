@@ -143,7 +143,7 @@ public class StoreScene : BaseScene
             if (itemData.ItemId == itemId)
             {
                 int upgrade = itemData.Upgrade;
-                if (upgrade >= 5){
+                if ((itemId == "slot" && upgrade >= 4) || upgrade >= 5){
                     WarnUser("더 이상 업그레이드 할 수 없습니다.");
                     break;
                 }
@@ -267,7 +267,7 @@ public class StoreScene : BaseScene
                         ItemNextUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "";
                         if (itemData.Upgrade > 0) {
                             ItemCurrUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "현재: "+ItemDescChart.SLOT[itemData.Upgrade - 1];
-                            if (itemData.Upgrade < 5) {
+                            if (itemData.Upgrade < 4) {
                                 ItemNextUpgradeDescUI.GetComponent<TextMeshProUGUI>().text = "강화 후: "+ItemDescChart.SLOT[itemData.Upgrade];
                                 ItemUpgradeArrow.SetActive(true);
                             }
@@ -283,7 +283,7 @@ public class StoreScene : BaseScene
                     CurrentItemUpgradeUI.GetComponent<TextMeshProUGUI>().text = "현재 " + itemData.Upgrade.ToString() + "단계 업그레이드";
                 }
                 
-                if (itemData.Upgrade >= 5){
+                if ((itemId == "slot" && itemData.Upgrade >= 4) || itemData.Upgrade >= 5){
                     CurrentItemPriceUI.GetComponent<TextMeshProUGUI>().text = "업그레이드 최대치 도달";
                 } else {
                     CurrentItemPriceUI.GetComponent<TextMeshProUGUI>().text = "가격: " + GetItemPrice(itemId, itemData.Upgrade).ToString() + " 혈액";
