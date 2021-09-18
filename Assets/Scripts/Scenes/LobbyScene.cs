@@ -87,7 +87,13 @@ public class LobbyScene : BaseScene
             ()=>
             {
                 Managers.Instance.GetScene<GameScene>().SettingBuff(selectedItem);
-            }, true);
+            }, dataManager.gameData.shownLoadingScene || dataManager.gameData.alwaysShowLoadingScene);
+        if (dataManager.gameData.shownLoadingScene)
+        {
+            dataManager.gameData.shownLoadingScene = false;
+            dataManager.SaveGameData();
+        }
+        
     }
 
     public void MoveOptionScene()
