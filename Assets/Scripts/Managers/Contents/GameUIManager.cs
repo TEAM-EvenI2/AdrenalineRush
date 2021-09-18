@@ -26,10 +26,6 @@ public class GameUIManager : UIManager
 
     public Color[] earnedItemTextColors;
 
-    private void Start()
-    {
-        stageChangeView.alpha = 1;
-    }
 
     public void OpenPauseWindow()
     {
@@ -71,7 +67,7 @@ public class GameUIManager : UIManager
         healthBar.GetChild(0).GetComponent<Image>().color = Color.Lerp(minColor, fullColor, percent);
         if (health > 0)
         {
-            bloodParticle.particlePerSecond = percent < 0.8f ? Mathf.Lerp(7, 1, Utils.Easing.Exponential.Out(percent)) : 0;
+            bloodParticle.particlePerSecond = percent < 0.8f ? Mathf.Lerp(10, 2, Utils.Easing.Exponential.Out(percent)) : 0;
             bloodParticle.GetComponent<RectTransform>().anchoredPosition = new Vector2(800 * percent, healthBar.sizeDelta.y);
         }
         else
