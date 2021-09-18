@@ -7,14 +7,20 @@ using TMPro;
 
 public class SceneLoader : MonoBehaviour
 {
-    private CanvasGroup canvasGroup;
     private Image loadingImage;
     private TextMeshProUGUI loadingText;
+    private SpriteSlider storyToon;
     private TextMeshProUGUI touchText;
 
     private string loadSceneName;
 
-    private bool hasCondition;
+    private bool _diplayLoadScene;
+    private bool _hasCondition;
+
+    private int fadeState = 0;
+    private bool doFadeAnim = false;
+
+    private Animator animator;
 
     public static SceneLoader Create()
     {
@@ -24,14 +30,17 @@ public class SceneLoader : MonoBehaviour
 
     private void Awake()
     {
-        canvasGroup = GetComponent<CanvasGroup>();
         loadingImage = transform.Find("LoadingImage").GetComponent<Image>();
         loadingText = transform.Find("LoadingMessage").GetComponent<TextMeshProUGUI>();
+        storyToon = transform.Find("StoryToon").GetComponent<SpriteSlider>();
         touchText = transform.Find("TouchText").GetComponent<TextMeshProUGUI>();
+
+        animator = GetComponent<Animator>();
     }
 
-    public void LoadScene(string sceneName, System.Func<bool> condition, System.Action action, bool diplayLoadScene=false)
+    public void LoadScene(string sceneName, System.Func<bool> condition, System.Action action, bool diplayLoadScene=false, bool showToon=false)
     {
+        _diplayLoadScene = diplayLoadScene;
         gameObject.SetActive(true);
         if (diplayLoadScene)
         {
@@ -39,8 +48,8 @@ public class SceneLoader : MonoBehaviour
         }
         loadSceneName = sceneName;
 
-        hasCondition = condition != null;
-        StartCoroutine(CoLoad(sceneName, diplayLoadScene));
+        _hasCondition = condition != null;
+        StartCoroutine(CoLoad(sceneName, diplayLoadScene, showToon));
 
         if (condition != null && action != null)
         {
@@ -55,17 +64,19 @@ public class SceneLoader : MonoBehaviour
 
         action.Invoke();
 
-
-        gameObject.SetActive(false);
+        if(!_diplayLoadScene)
+            gameObject.SetActive(false);
     }
 
-    private IEnumerator CoLoad(string sceneName, bool diplayLoadScene=false)
+    private IEnumerator CoLoad(string sceneName, bool diplayLoadScene, bool showToon)
     {
         if (diplayLoadScene)
         {
             touchText.text = "로딩중...";
             //loadingText.text = "0%";
             yield return StartCoroutine(CoFade(true)); // 스크린 fade out + screenLoader 프리팹의 박스 알파값 변경
+
+            storyToon.gameObject.SetActive(showToon);
 
             AsyncOperation op = SceneManager.LoadSceneAsync(sceneName); // 엔진단에서 실제로 씬이 로딩되는 부분
 
@@ -77,15 +88,19 @@ public class SceneLoader : MonoBehaviour
                 //loadingText.text = op.progress * 100 + "%";
                 if (op.progress >= 0.9f)
                 {
-                    //loadingText.text = "100%";
-                    touchText.text = "화면을 터치하면 시작합니다";
+                    bool tourched = true;
+                    if (showToon)
+                    {
+                        tourched = false;
+                        //loadingText.text = "100%";
+                        touchText.text = "화면을 터치하면 시작합니다";
 
-                    bool tourched = false;
-                    #if UNITY_EDITOR
+#if UNITY_EDITOR
                         tourched = Input.GetMouseButtonDown(0);
-                    #else
+#else
                         tourched = Input.touchCount > 0;
-                    #endif
+#endif
+                    }
                     if (tourched)
                     {
                         op.allowSceneActivation = true;
@@ -112,23 +127,44 @@ public class SceneLoader : MonoBehaviour
 
     private IEnumerator CoFade(bool isFadeIn)
     {
-        float timer = 0f;
-        while (timer <= 1f)
+        //float timer = 0f;
+        //while (timer <= 1f)
+        //{
+        //    yield return null;
+        //    timer += Time.unscaledDeltaTime * 2f;
+        //    canvasGroup.alpha = Mathf.Lerp(isFadeIn ? 0 : 1, isFadeIn ? 1 : 0, timer);
+        //}
+
+        if (isFadeIn) { 
+        animator.Play("SceneLoading_FadeIn");
+    }
+        else
+        {
+            animator.Play("SceneLoading_FadeOut");
+        }
+
+        doFadeAnim = true;
+
+        while (doFadeAnim)
         {
             yield return null;
-            timer += Time.unscaledDeltaTime * 2f;
-            canvasGroup.alpha = Mathf.Lerp(isFadeIn ? 0 : 1, isFadeIn ? 1 : 0, timer);
         }
+
         if (!isFadeIn)
         {
             gameObject.SetActive(false);
+            print("FadeOut");
         }
     }
 
     private void FadeOutImmediate()
     {
-        canvasGroup.alpha = 0;
-        if(!hasCondition)
+        if(!_hasCondition)
             gameObject.SetActive(false);
+    }
+
+    public void FinishedFadeAnim()
+    {
+        doFadeAnim = false;
     }
 }

@@ -88,7 +88,7 @@ public class LobbyScene : BaseScene
             ()=>
             {
                 Managers.Instance.GetScene<GameScene>().SettingBuff(selectedItem);
-            }, dataManager.gameData.shownLoadingScene || dataManager.gameData.alwaysShowLoadingScene);
+            }, true, dataManager.gameData.shownLoadingScene || dataManager.gameData.alwaysShowLoadingScene);
         if (dataManager.gameData.shownLoadingScene)
         {
             dataManager.gameData.shownLoadingScene = false;

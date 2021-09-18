@@ -30,23 +30,29 @@ public class SpriteSlider : MonoBehaviour
     {
         if(sprites != null && sprites.Length > 0)
         {
-            print("Start Fade");
             StartCoroutine("ImageSlide");
         }
     }
 
     IEnumerator ImageSlide()
     {
+        float percent = 0;
+        float speed = 1 / slideTime;
         imageA[curIndex].sprite = sprites[spriteIndex];
-        imageCg[curIndex].alpha = 1;
-        imageCg[(curIndex + 1) % 2].alpha =0;
+        imageCg[(curIndex + 1) % 2].alpha = 0;
+        while (percent < 1)
+        {
+            percent += speed * Time.deltaTime;
+            imageCg[curIndex].alpha = percent;
+            yield return null;
+        }
+
+
         while (true)
         {
             yield return new WaitForSeconds(remainTime);
 
-            float percent = 0;
-            float speed = 1 / slideTime;
-
+            percent = 0;
             int _curIndex = (curIndex + 1) % 2;
             spriteIndex = (spriteIndex + 1) % sprites.Length;
             imageA[_curIndex].sprite = sprites[spriteIndex];
