@@ -31,6 +31,8 @@ public class GameData
     public SerVector2[] buttonsPos;
     public int currentCharaIndex = 0; // 실제로 장착한 캐릭터 인덱스가 아님.
     public int equippedCharaIndex = 0; // 장착한 인덱스
+    public bool shownLoadingScene = true; // 1회 이상 로딩씬을 보여주었는가
+    public bool alwaysShowLoadingScene = false;
 
 
     public int SlotCount

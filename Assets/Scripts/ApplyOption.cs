@@ -10,9 +10,11 @@ public class ApplyOption : MonoBehaviour
     public GameObject SilencedUI;
     public GameObject VibrateOffUI;
     public GameObject HasVibrationUI;
+    public GameObject ShowLoadSceneUI;
     private DataManager dataManager;
     private float prevVolume;
     private bool prevVibration;
+    private bool prevShowLoadingScene; // 항상 로딩씬을 보여줄지 여부 (false면 처음 한번만 보여줌)
 
     void Start()
     {
@@ -21,10 +23,12 @@ public class ApplyOption : MonoBehaviour
         VolumeSlider.GetComponent<Slider>().value = dataManager.gameData.masterVolume;
         prevVibration = dataManager.gameData.hasVibration;
         HasVibrationUI.GetComponent<ToggleSetAnimatorBoolean>().SetBoolean(prevVibration);
+        prevShowLoadingScene = dataManager.gameData.alwaysShowLoadingScene;
+        ShowLoadSceneUI.GetComponent<ToggleSetAnimatorBoolean>().SetBoolean(prevShowLoadingScene);
+        UpdateUI();
     }
 
-    // Update is called once per frame
-    void Update()
+    void UpdateUI()
     {
         AudioListener.volume = dataManager.gameData.masterVolume;
         if (prevVolume != VolumeSlider.GetComponent<Slider>().value)
@@ -52,5 +56,17 @@ public class ApplyOption : MonoBehaviour
             }
         }
         prevVibration = dataManager.gameData.hasVibration;
+        if (prevShowLoadingScene != ShowLoadSceneUI.GetComponent<ToggleSetAnimatorBoolean>().GetBoolean())
+        {
+            dataManager.gameData.alwaysShowLoadingScene = !prevShowLoadingScene;
+            dataManager.SaveGameData();
+        }
+        prevShowLoadingScene = dataManager.gameData.alwaysShowLoadingScene;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        UpdateUI();
     }
 }
