@@ -204,10 +204,10 @@ public class Player : MonoBehaviour
 
 	public bool Hit()
 	{
-		audioManager.Vibrate(); // 무적상태와 관계없이 진동
 		if (_invincibleTime <= 0 && !invincible)
 		{
 			Managers.Instance.GetUIManager<GameUIManager>().HitScreen();
+			audioManager.Vibrate(); // 무적 아닐때만 진동
 
 			health -= 34;
 			curVelocity  = 0;
