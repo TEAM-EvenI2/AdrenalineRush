@@ -69,7 +69,7 @@ public class Player : MonoBehaviour
 
 		if(_invincibleTime > 0)
         {
-			_invincibleTime -= Time.deltaTime;
+			_invincibleTime -= Time.unscaledDeltaTime;
         }
 
 		if (curVelocity < maxVelocity)
