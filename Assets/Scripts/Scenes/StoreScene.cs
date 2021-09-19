@@ -60,7 +60,7 @@ public class StoreScene : BaseScene
 
     public void UserHelp()
     {
-        WarnUser("구매하신 버프 아이템은 아이템 슬롯에 장착할 수 있습니다. 아이템 슬롯을 추가로 구매해 한 번에 최대 4개의 버프 아이템을 장착할 수 있습니다.");
+        WarnUser("구매하신 버프 아이템은 아이템 슬롯에 장착할 수 있습니다.\n 아이템 슬롯을 추가로 구매해 한 번에 최대 4개의 버프 아이템을 장착할 수 있습니다.");
     }
 
     public void MovePlacerScene()

@@ -93,13 +93,10 @@ public class SceneLoader : MonoBehaviour
                     {
                         tourched = false;
                         //loadingText.text = "100%";
-                        touchText.text = "화면을 터치하면 시작합니다";
+                        //touchText.text = "화면을 터치하면 시작합니다";
+                        touchText.text = "";
 
-#if UNITY_EDITOR
-                        tourched = Input.GetMouseButtonDown(0);
-#else
-                        tourched = Input.touchCount > 0;
-#endif
+                        tourched = storyToon.finished;
                     }
                     if (tourched)
                     {

@@ -10,10 +10,16 @@ public class SpriteSlider : MonoBehaviour
     public Sprite[] sprites;
     private int spriteIndex;
 
+    public bool autoSlide = false;
+
+    public bool rotation = false;
+    public bool finished = false;
+
     private Image[] imageA;
     private CanvasGroup[] imageCg;
     private int curIndex;
 
+    bool touched = false;
     private void Awake()
     {
         curIndex = 1;
@@ -30,9 +36,11 @@ public class SpriteSlider : MonoBehaviour
     {
         if(sprites != null && sprites.Length > 0)
         {
+            spriteIndex = 0;
             StartCoroutine("ImageSlide");
         }
     }
+
 
     IEnumerator ImageSlide()
     {
@@ -46,17 +54,63 @@ public class SpriteSlider : MonoBehaviour
             imageCg[curIndex].alpha = percent;
             yield return null;
         }
-
+        print("Enter");
 
         while (true)
         {
-            yield return new WaitForSeconds(remainTime);
+            if (autoSlide)
+            {
+                yield return new WaitForSeconds(remainTime);
+            }
 
-            percent = 0;
+            if (spriteIndex + 1 == sprites.Length)
+            {
+                if (!rotation)
+                {
+                    bool touched = false;
+                    while (true)
+                    {
+#if UNITY_EDITOR
+                        touched = Input.GetMouseButtonDown(0);
+#else
+                    touched = Input.touchCount > 0;
+#endif
+                        if (touched)
+                        {
+                            break;
+                        }
+                        yield return null;
+                    }
+                    finished = true;
+                    yield break;
+                }
+            }
+
+            if (!autoSlide)
+            {
+                bool touched = false;
+                while (true)
+                {
+#if UNITY_EDITOR
+                    touched = Input.GetMouseButtonDown(0);
+#else
+                    touched = Input.touchCount > 0;
+#endif
+                    if (touched)
+                    {
+                        break;
+                    }
+                    yield return null;
+                }
+            }
+
             int _curIndex = (curIndex + 1) % 2;
             spriteIndex = (spriteIndex + 1) % sprites.Length;
             imageA[_curIndex].sprite = sprites[spriteIndex];
             imageCg[_curIndex].alpha = 1;
+            percent = 0;
+
+            imageA[_curIndex].transform.SetAsFirstSibling();
 
             while (percent < 1)
             {
@@ -64,6 +118,7 @@ public class SpriteSlider : MonoBehaviour
                 imageCg[curIndex].alpha = (1 - percent);
                 yield return null;
             }
+
             curIndex = _curIndex;
         }
     }
